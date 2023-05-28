@@ -1,0 +1,8 @@
+*
+!.gitignore
+!*/vendor
+!*/app/frota
+!*/resource/js/Components/frota
+!*/resource/js/Layouts/frota
+!*/resource/js/Pages/frota
+!*/resource/views/frota
