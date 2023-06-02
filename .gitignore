@@ -35,3 +35,16 @@
 /routes/*
 
 !/routes/Frota
+
+!/database
+/database/*
+
+!/database/migrations
+/database/migrations/*
+
+!/database/migrations/2023_06_02_*
+
+!/database/seeders
+/database/seeders/*
+
+!/database/seeders/Frota*

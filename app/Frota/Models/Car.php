@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 
-class Carro extends Model
+class Car extends Model
 {
     use HasFactory, HasRoles, SoftDeletes;
 }
