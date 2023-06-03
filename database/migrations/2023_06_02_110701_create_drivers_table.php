@@ -24,13 +24,13 @@ return new class extends Migration
                 ->references('id')
                 ->on('users');
 
-            $table->unsignedBigInteger('garagem');
+            $table->unsignedBigInteger('garagem')->nullable();
             $table->foreign('garagem')
                 ->references('id')
-                ->on('branch');
+                ->on('branches');
 
-            $table->unsignedBigInteger('favorite_car');
-            $table->foreign('favorite_car')
+            $table->unsignedBigInteger('carro_favorito')->nullable();
+            $table->foreign('carro_favorito')
                 ->references('id')
                 ->on('cars');
 

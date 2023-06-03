@@ -127,7 +127,7 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
-                <Link class="flex gap-4" :href="route('reports.index')">
+                <Link class="flex gap-4" :href="route('reports.index')" title="Relatórios">
                 <mdicon name="chart-bar" />
                 <div>
                     Relatórios
@@ -139,31 +139,31 @@ function openNav() {
         <div ref="miniSidebar" class="mt-20 flex flex-col space-y-2 w-full h-[calc(100vh)]">
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('home')">
+                <Link class="flex gap-4" :href="route('home')" title="Início">
                 <mdicon name="chart-pie" />
                 </Link>
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('tasks.index')">
+                <Link class="flex gap-4" :href="route('tasks.index')" title="Tarefas">
                 <mdicon name="calendar-check" />
                 </Link>
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('drivers.index')">
+                <Link class="flex gap-4" :href="route('drivers.index')" title="Motoristas">
                 <mdicon name="account-multiple" />
                 </Link>
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('cars.index')">
+                <Link class="flex gap-4" :href="route('cars.index')" title="Carros">
                 <mdicon name="car-multiple" />
                 </Link>
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('tasks.index')">
+                <Link class="flex gap-4" :href="route('tasks.index')" title="Relatórios">
                 <mdicon name="chart-bar" />
                 </Link>
             </div>

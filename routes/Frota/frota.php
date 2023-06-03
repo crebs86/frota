@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Frota\Controllers\CarsController;
 use App\Frota\Controllers\HomeController;
 use App\Frota\Controllers\TasksController;
+use App\Frota\Controllers\DriversController;
 use App\Frota\Controllers\ReportsController;
 use App\Frota\Controllers\IncidentsController;
 
