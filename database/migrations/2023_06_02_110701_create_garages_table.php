@@ -12,10 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('garages', function (Blueprint $table) {
-            $table->id();
 
-            $table->unsignedBigInteger('branch');
-            $table->foreign('branch')
+            $table->unsignedBigInteger('id')->unique();
+            $table->foreign('id')
                 ->references('id')
                 ->on('branches');
 

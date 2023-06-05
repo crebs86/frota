@@ -127,6 +127,15 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
+                <Link class="flex gap-4" :href="route('cars.index')">
+                <mdicon name="garage-open-variant" />
+                <div>
+                    Garagens
+                </div>
+                </Link>
+            </div>
+            <div
+                class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
                 <Link class="flex gap-4" :href="route('reports.index')" title="Relatórios">
                 <mdicon name="chart-bar" />
                 <div>
@@ -163,6 +172,12 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
+                <Link class="flex gap-4" :href="route('cars.index')" title="Carros">
+                <mdicon name="garage-open-variant" />
+                </Link>
+            </div>
+            <div
+                class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
                 <Link class="flex gap-4" :href="route('tasks.index')" title="Relatórios">
                 <mdicon name="chart-bar" />
                 </Link>
@@ -176,20 +191,12 @@ function openNav() {
         <nav class="flex px-5 py-3 text-gray-700  rounded-lg bg-gray-50 dark:bg-[#1E293B] " aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="#"
+                    <a href="/"
                         class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                         <mdicon class="text-gray-400" name="home" />
                     </a>
                 </li>
-                <li>
-                    <div class="flex items-center">
-                        <mdicon class="text-gray-400" name="chevron-right" />
-                        <a href="#"
-                            class="ml-1 text-sm font-medium text-gray-700 hover:text-gray-900 md:ml-2 dark:text-gray-400 dark:hover:text-white">
-                            <slot name="currentPage" />
-                        </a>
-                    </div>
-                </li>
+                <slot name="currentPage" />
             </ol>
         </nav>
         <div :class="$page.props.app.settingsStyles.main.container">

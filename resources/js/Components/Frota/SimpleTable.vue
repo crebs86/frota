@@ -1,6 +1,9 @@
 <script setup>
 
-const props = defineProps(['titles']);
+const props = defineProps({
+    titles: Array,
+    content: Object
+});
 
 </script>
 <template>

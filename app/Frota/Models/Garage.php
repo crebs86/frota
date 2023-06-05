@@ -2,19 +2,19 @@
 
 namespace App\Frota\Models;
 
+use App\Models\Branch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 
-class Car extends Model
+class Garage extends Model
 {
     use HasFactory, HasRoles, SoftDeletes;
 
-    protected $fillable = ['marca', 'modelo', 'placa', 'garagem_id', 'patrimonio', 'tombo'];
-
-    public function garage()
+    public function branch(): BelongsTo
     {
-        return $this->belongsTo(Garage::class, 'id', 'garagem_id')->select('id', 'deleted_at');
+        return $this->belongsTo(Branch::class, 'id')->select('id', 'name');
     }
 }

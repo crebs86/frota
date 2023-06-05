@@ -19,22 +19,22 @@ return new class extends Migration
             //     ->references('id')
             // ->on('users');
 
-            $table->unsignedBigInteger('id');
+            $table->unsignedBigInteger('id')->unique();
             $table->foreign('id')
                 ->references('id')
                 ->on('users');
 
-            $table->unsignedBigInteger('garagem')->nullable();
-            $table->foreign('garagem')
+            $table->unsignedBigInteger('garagem_id')->nullable();
+            $table->foreign('garagem_id')
                 ->references('id')
-                ->on('branches');
+                ->on('garages');
 
             $table->unsignedBigInteger('carro_favorito')->nullable();
             $table->foreign('carro_favorito')
                 ->references('id')
                 ->on('cars');
 
-            $table->boolean('proprio', true);
+            $table->boolean('proprio')->default(false);
             $table->string('matricula', 55)->nullable();
             $table->boolean('cnh')->nullable();
 
