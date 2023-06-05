@@ -13,6 +13,8 @@ class Garage extends Model
 {
     use HasFactory, HasRoles, SoftDeletes;
 
+    protected $fillable = ['id'];
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'id')->select('id', 'name');
