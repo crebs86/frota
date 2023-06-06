@@ -166,7 +166,7 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('garages.index')" title="Carros">
+                <Link class="flex gap-4" :href="route('cars.index')" title="Carros">
                 <mdicon name="car-multiple" />
                 </Link>
             </div>

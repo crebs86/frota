@@ -15,6 +15,6 @@ class Car extends Model
 
     public function garage()
     {
-        return $this->belongsTo(Garage::class, 'id', 'garagem_id')->select('id', 'deleted_at');
+        return $this->belongsTo(Garage::class, 'garagem_id', 'id')->select('id')->with('branch');
     }
 }

@@ -44,8 +44,8 @@ const driver = useForm({
 function saveDriver() {
     //fazer verificação de valores nulos
     driver.id = _id.value.id;
-    driver.garagem_id = _garagem.value.id;
-    driver.carro_favorito = _carro_favorito.value.id;
+    driver.garagem_id = _garagem.value?.id;
+    driver.carro_favorito = _carro_favorito.value?.id;
 
     driver.post(route('drivers.store'), {
         onSuccess: (a) => {
@@ -161,7 +161,7 @@ function saveDriver() {
                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Informe a Matrícula, se servidor (opcional)
                             </label>
-                            <input type="text" v-model="driver.matricula" name="matricula" placeholder="Matrícula"
+                            <input type="text" v-model="driver.matricula" name="matricula" placeholder="somente números"
                                 maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad]">
                         </div>

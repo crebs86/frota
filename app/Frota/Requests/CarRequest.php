@@ -5,7 +5,7 @@ namespace App\Frota\Requests;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class DriverRequest extends FormRequest
+class CarRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,20 +25,20 @@ class DriverRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => ['int', 'required', Rule::unique('drivers')],
             'garagem_id' => ['int', 'nullable', Rule::exists('garages', 'id')],
-            'carro_favorito' => ['int', 'nullable', Rule::exists('cars', 'id')],
-            'proprio' => 'boolean',
-            'cnh' => 'boolean|nullable',
-            'matricula' => 'max:25|string|required|regex:/^[0-9]+$/',
-
+            'marca' => 'max:25',
+            'modelo' => 'max:55',
+            'placa' => 'max:7',
+            'patrimonio' => 'boolean|nullable',
+            'tombo' => 'max:55|nullable'
         ];
     }
 
     public function messages()
     {
         return [
-            'id.unique' => 'Motorista já cadastrado.'
+            'garagem_id.exists' => 'Garagem não existe.',
+            'tombo.max' => 'Número de patrimônio muito grande.',
         ];
     }
 }

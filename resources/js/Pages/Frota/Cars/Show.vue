@@ -9,17 +9,13 @@ import { ref } from 'vue';
 const props = defineProps({
     canEdit: Boolean,
     driver: Object,
-    garages: Object
+    car: Object
 });
 
 const driverForm = useForm({
-    matricula: props.driver[0].matricula,
-    garagem: props.driver[0].garage,
+    matricula: props.car[0].matricula,
+    garagem: props.car[0].garage,
 });
-
-function carName({ modelo, placa }) {
-    return `${modelo} - ${placa}`
-}
 
 function garageName({ id, branch }) {
     return `${id} - ${branch?.name}`
@@ -34,7 +30,7 @@ function garageName({ id, branch }) {
 
         <template #currentPage>
             <BreadCrumbs
-                :breadCrumbs="[{ label: 'Motoristas', link: route('drivers.index') }, { label: $page.props.driver[0].user.name, link: '' }]">
+                :breadCrumbs="[{ label: 'Carros', link: route('cars.index') }, { label: $page.props.car[0].marca + ' - ' + $page.props.car[0].modelo, link: '' }]">
             </BreadCrumbs>
         </template>
 
@@ -71,32 +67,61 @@ function garageName({ id, branch }) {
                     <template v-else>
                         <div class="relative">
                             <label class="text-sm text-gray-500 dark:text-gray-400">
-                                Nome
+                                Marca
                             </label>
-                            <input readonly type="text" :value="props.driver[0].user.name" placeholder="Nome" maxlength="25"
+                            <input readonly type="text" :value="props.car[0].marca" placeholder="Marca" maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
                         </div>
+
                         <div class="relative">
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
-                                Carro Favorito
-                                <Link v-if="props.driver[0].car" :href="route('cars.show', props.driver[0].car)">
+                                Modelo
+                            </label>
+                            <input readonly type="text" :value="props.car[0].modelo" placeholder="Modelo"
+                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
+                        </div>
+
+                        <div class="relative">
+                            <label class="text-sm text-gray-500 dark:text-gray-400 flex">
+                                Placa
+                            </label>
+                            <input readonly type="text" :value="props.car[0].placa" placeholder="Placa"
+                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
+                        </div>
+                        <div class="mt-2">
+                            <div class="flex w-full mb-5">
+                                <label for="patrimonio" class="flex items-center cursor-pointer">
+                                    <div class="relative">
+                                        <input type="checkbox" id="patrimonio" class="sr-only" checked="checked" disabled>
+                                        <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
+                                        </div>
+                                        <div
+                                            class="dot absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition">
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
+                                        Patrimônio Próprio*
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="relative">
+                            <label class="text-sm text-gray-500 dark:text-gray-400 flex">
+                                Nº Patrimônio
+                            </label>
+                            <input readonly type="text" :value="props.car[0].tombo" placeholder="Nº Patrimônio"
+                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
+                        </div>
+
+                        <div class="relative">
+                            <label class="text-sm text-gray-500 dark:text-gray-400 flex">
+                                Garagem
+                                <Link v-if="props.car[0].garage" :href="route('garages.show', props.car[0].garage)">
                                 <mdicon name="open-in-new" />
                                 </Link>
                             </label>
-                            <input readonly type="text"
-                                :value="props.driver[0].car ? props.driver[0].car?.modelo + ' - ' + props.driver[0].car?.placa : ''"
-                                placeholder="Carro" maxlength="25"
-                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
-                        </div>
-                        <div class="relative">
-                            <label class="text-sm text-gray-500 dark:text-gray-400 flex">
-                                Garagem (local)
-                                <Link v-if="props.driver[0].garage" :href="route('garages.show', props.driver[0].garage)">
-                                <mdicon name="open-in-new" />
-                                </Link>
-                            </label>
-                            <input readonly type="text" :value="props.driver[0].garage?.branch.name" placeholder="Garagem"
-                                maxlength="25"
+                            <input readonly type="text" :value="props.car[0].garage?.branch.name" placeholder="Garagem"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
                         </div>
                     </template>
@@ -106,4 +131,10 @@ function garageName({ id, branch }) {
 
     </FrotaLayout>
 </template>
+<style scoped>
+input:checked~.dot {
+    transform: translateX(100%);
+    background-color: #0ae465;
+}
+</style>
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>

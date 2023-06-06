@@ -48,14 +48,14 @@ const garageForm = useForm({
                     <template v-else>
                         <div class="relative">
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
-                                Nome
+                                Nome (local)
                                 <Link :href="route('branches.show', props.garage[0].id)">
                                 <mdicon name="open-in-new" />
                                 </Link>
                             </label>
                             <input readonly type="text" :value="props.garage[0].branch.name" placeholder="Nome"
                                 maxlength="25"
-                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad]">
+                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
                         </div>
                         <div class="mt-2 pl-1.5">
                             <div class="flex w-full mb-5">
@@ -67,7 +67,7 @@ const garageForm = useForm({
                                         <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
                                         </div>
                                         <div
-                                            class="dot absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition">
+                                            class="dot-dis absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition">
                                         </div>
                                     </div>
                                     <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
@@ -88,6 +88,10 @@ const garageForm = useForm({
 input:checked~.dot {
     transform: translateX(100%);
     background-color: #0ae465;
+}
+input:checked~.dot-dis {
+    transform: translateX(100%);
+    background-color: #9afbbc;
 }
 </style>
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
