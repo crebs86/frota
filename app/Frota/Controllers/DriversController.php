@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Traits\Helpers;
 use App\Frota\Models\Car;
+use Illuminate\Support\Arr;
 use App\Frota\Models\Driver;
 use App\Frota\Models\Garage;
 use App\Http\Controllers\Controller;
@@ -38,7 +39,10 @@ class DriversController extends Controller
     {
         if ($this->can('Motorista Criar')) {
             return Inertia::render('Frota/Drivers/Create', [
-                'users' => User::select('id', 'name')->get(),
+                'users' => User::select('id', 'name')
+                    ->whereKeyNot(Arr::pluck(Driver::all('id')
+                        ->toArray(), 'id'))
+                    ->get(),
                 'garages' => Garage::with('branch')->select('id')->get(),
                 'cars' => Car::select('id', 'placa', 'modelo')->get(),
             ]);
@@ -69,12 +73,47 @@ class DriversController extends Controller
      */
     public function show(): Response
     {
+        if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar')) {
+            return $this->showUserPage();
+        }
+    }
+
+    /**
+     * @return Response
+     */
+    public function edit(): Response
+    {
+        if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar')) {
+            return $this->showUserPage($this->can('Motorista Editar'));
+        }
+    }
+
+    /**
+     * @return Response
+     */
+    public function showUserPage($canEdit = false): Response
+    {
         if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar', 'Motorista Criar')) {
             return Inertia::render('Frota/Drivers/Show', [
                 'driver' => Driver::where('id', request('driver'))->with('user', 'garage', 'car')->get(),
                 'garages' => Garage::with('branch')->select('id')->get(),
-                'canEdit' => false
+                'cars' => Car::select('id', 'placa', 'modelo')->get(),
+                'canEdit' => $canEdit
             ]);
         }
+    }
+
+    public function update(DriverRequest $request, Driver $driver): Response|RedirectResponse
+    {
+        if (true) {
+            //if ((int) getKeyValue($request->_checker, 'edit_driver_account') === (int) $request->id) {
+            if ($this->can('Motorista Editar')) {
+                if ($driver->update($request->validated())) {
+                    return redirect(route('drivers.index'))->with('success', 'Motorista editado!');
+                }
+                return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do motorista');
+            }
+        }
+        return Inertia::render('Admin/403');
     }
 }

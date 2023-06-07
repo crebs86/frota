@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('marca', 25);
             $table->string('modelo', 55);
-            $table->string('placa', 7);
+            $table->string('placa', 7)->unique();
             $table->boolean('patrimonio', false);
             $table->string('tombo', 55)->nullable();
             

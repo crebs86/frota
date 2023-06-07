@@ -20,7 +20,7 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
             <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
                 <Link
                     v-if="hasPermission(
-                            $page.props.auth.permissions, ['Motorista Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
+                        $page.props.auth.permissions, ['Motorista Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
                     class="flex gap-1 max-w-max hover:text-gray-700 dark:hover:text-green-100 p-1.5 border m-0.5 mb-1 rounded"
                     :href="route('drivers.create')" title="Novo Motorista">
                 <mdicon name="account-multiple-plus" />
@@ -29,7 +29,7 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
                 </div>
                 </Link>
 
-                <div class="p-2 rounded-lg" :class="$page.props.app.settingsStyles.main.innerSection">
+                <div class="p-2 rounded-lg overflow-y-auto" :class="$page.props.app.settingsStyles.main.innerSection">
                     <table class="min-w-full">
                         <thead>
                             <tr>
@@ -68,9 +68,9 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
                                                 $page.props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
                                         <mdicon name="account-eye" />
                                         </Link>
-                                        <Link href="" title="Editar"
+                                        <Link :href="route('drivers.edit', d.user.id)" title="Editar"
                                             v-if="hasPermission(
-                                                    $page.props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                                                $page.props.auth.permissions, ['Motorista Editar', 'Motorista Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
                                         <mdicon name="account-edit" />
                                         </Link>
                                     </div>

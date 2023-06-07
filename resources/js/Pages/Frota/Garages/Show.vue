@@ -61,9 +61,8 @@ const garageForm = useForm({
                             <div class="flex w-full mb-5">
                                 <label for="cnh" class="flex items-center cursor-pointer">
                                     <div class="relative">
-                                        <input type="checkbox" id="cnh" class="sr-only"
-                                            :checked="garageForm.deleted_at === null ? true : false" disabled
-                                            v-model="garageForm.deleted_at" />
+                                        <input type="checkbox" id="cnh" class="sr-only" :checked="garageForm.deleted_at"
+                                            disabled />
                                         <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
                                         </div>
                                         <div
@@ -89,6 +88,7 @@ input:checked~.dot {
     transform: translateX(100%);
     background-color: #0ae465;
 }
+
 input:checked~.dot-dis {
     transform: translateX(100%);
     background-color: #9afbbc;

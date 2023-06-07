@@ -3,13 +3,14 @@
 namespace App\Frota\Controllers;
 
 use App\Traits\ACL;
+use Inertia\Inertia;
+use Inertia\Response;
 use App\Traits\Helpers;
 use App\Frota\Models\Car;
 use App\Frota\Models\Garage;
 use App\Frota\Requests\CarRequest;
-use Inertia\Inertia;
-use Inertia\Response;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 
 
 class CarsController extends Controller

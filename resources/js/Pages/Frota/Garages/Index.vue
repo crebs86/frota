@@ -29,7 +29,7 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
                 </div>
                 </Link>
 
-                <div class="p-2 rounded-lg" :class="$page.props.app.settingsStyles.main.innerSection">
+                <div class="p-2 rounded-lg overflow-y-auto" :class="$page.props.app.settingsStyles.main.innerSection">
                     <table class="min-w-full">
                         <thead>
                             <tr>
