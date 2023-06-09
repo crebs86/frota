@@ -25,7 +25,7 @@ class DriverRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => ['int', 'required', Rule::unique('drivers')],
+            'id' => ['int', 'requiredOnCreate', Rule::unique('drivers')->ignore($this->driver)],
             'garagem_id' => ['int', 'nullable', Rule::exists('garages', 'id')],
             'carro_favorito' => ['int', 'nullable', Rule::exists('cars', 'id')],
             'proprio' => 'boolean',
@@ -38,7 +38,8 @@ class DriverRequest extends FormRequest
     public function messages()
     {
         return [
-            'id.unique' => 'Motorista já cadastrado.'
+            'id.unique' => 'Motorista já cadastrado.',
+            'matricula.string' => 'Informe uma matrícula válida'
         ];
     }
 }

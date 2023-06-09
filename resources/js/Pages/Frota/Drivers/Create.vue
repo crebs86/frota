@@ -84,7 +84,8 @@ function saveDriver() {
                                 selectedLabel="atual" placeholder="Usuários ativos" label="name" track-by="id"
                                 selectLabel="Selecionar" deselectLabel="Remover" />
 
-                            <div v-if="$page.props.errors.id" class="text-sm text-red-500">
+                            <div v-if="$page.props.errors.id"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                 {{ $page.props.errors.id }}
                             </div>
                         </div>
@@ -96,7 +97,8 @@ function saveDriver() {
                                 :close-on-select="true" selectedLabel="atual" placeholder="Garagens"
                                 :custom-label="garageName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
 
-                            <div v-if="$page.props.errors.garagem_id" class="text-sm text-red-500">
+                            <div v-if="$page.props.errors.garagem_id"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                 {{ $page.props.errors.garagem_id }}
                             </div>
                         </div>
@@ -109,7 +111,8 @@ function saveDriver() {
                                 :custom-label="carName" label="name" :showNoOptions="false" track-by="id"
                                 selectLabel="Selecionar" deselectLabel="Remover" />
 
-                            <div v-if="$page.props.errors.carro_favorito" class="text-sm text-red-500">
+                            <div v-if="$page.props.errors.carro_favorito"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                 {{ $page.props.errors.carro_favorito }}
                             </div>
                         </div>
@@ -131,7 +134,8 @@ function saveDriver() {
                                 </label>
                             </div>
 
-                            <div v-if="$page.props.errors.proprio" class="text-sm text-red-500">
+                            <div v-if="$page.props.errors.proprio"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                 {{ $page.props.errors.proprio }}
                             </div>
                         </div>
@@ -152,7 +156,8 @@ function saveDriver() {
                                 </label>
                             </div>
 
-                            <div v-if="$page.props.errors.cnh" class="text-sm text-red-500">
+                            <div v-if="$page.props.errors.cnh"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                 {{ $page.props.errors.cnh }}
                             </div>
                         </div>
@@ -165,12 +170,13 @@ function saveDriver() {
                                 maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad]">
                         </div>
-                        <div v-if="$page.props.errors.matricula" class="text-sm text-red-500">
+                        <div v-if="$page.props.errors.matricula"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                             {{ $page.props.errors.matricula }}
                         </div>
                         <button type="button" @click="saveDriver"
-                            class="border border-blue-600 bg-blue-500 text-white rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
-                            Cadastrar
+                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                            Cadastrar Motorista
                         </button>
                     </div>
                 </div>

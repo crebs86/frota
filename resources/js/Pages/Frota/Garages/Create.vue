@@ -15,7 +15,7 @@ const props = defineProps({
 const branchesOptions = props.branches;
 const _branch = ref(null);
 
-function brancheName({ id, name }) {
+function branchName({ id, name }) {
     return `${id} - ${name}`
 }
 
@@ -65,11 +65,11 @@ function saveDriver() {
                             </label>
                             <VueMultiselect v-model="_branch" :options="branchesOptions" :multiple="false"
                                 :close-on-select="true" selectedLabel="atual" placeholder="Unidades"
-                                :custom-label="brancheName" track-by="id" selectLabel="Selecionar"
-                                deselectLabel="Remover" />
+                                :custom-label="branchName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
 
-                            <div v-if="$page.props.errors.garagem_id" class="text-sm text-red-500">
-                                {{ $page.props.errors.garagem_id }}
+                            <div v-if="$page.props.errors.id"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                {{ $page.props.errors.id }}
                             </div>
                         </div>
                         <div class="px-0.5 mt-1">
@@ -95,7 +95,7 @@ function saveDriver() {
                             </ul>
                         </div>
                         <button type="button" @click="saveDriver"
-                            class="border border-blue-600 bg-blue-500 text-white rounded-md px-4 py-2 mt-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
+                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
                             Cadastrar Garagem
                         </button>
                     </div>

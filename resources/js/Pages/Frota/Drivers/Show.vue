@@ -4,6 +4,7 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
 import VueMultiselect from 'vue-multiselect';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import hasPermission from '@/permissions';
+import { toast } from '@/toast';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -11,7 +12,10 @@ const props = defineProps({
     driver: Object,
     garages: Object,
     cars: Object,
+    _checker: String
 });
+
+const canEdit = ref(props.canEdit);
 
 const driverForm = useForm({
     cnh: props.driver[0].cnh,
@@ -19,29 +23,29 @@ const driverForm = useForm({
     matricula: props.driver[0].matricula,
     garagem_id: props.driver[0].garage,
     carro_favorito: props.driver[0].car,
+    _checker: props._checker,
 });
 
 function carName({ modelo, placa }) {
-    return `${modelo} - ${placa}`
+    return `${modelo ? modelo : ''} - ${placa ? placa : ''}`;
 }
 
 function garageName({ id, branch }) {
-    return `${id} - ${branch?.name}`
+    return `${id ? id : ''} - ${branch?.name ? branch?.name : ''}`;
 }
 
 function saveDriver() {
-    //fazer verificação de valores nulos
-    driverForm.garagem_id = driverForm.garagem_id.id;
-    driverForm.carro_favorito = driverForm.carro_favorito.id;
+    driverForm.garagem_id = driverForm.garagem_id ? driverForm.garagem_id.id : null;
+    driverForm.carro_favorito = driverForm.carro_favorito ? driverForm.carro_favorito.id : null;
 
-    driverForm.put(route('drivers.update',  props.driver[0].id), {
-        onSuccess: (a) => {
-            console.log(a)
+    driverForm.put(route('drivers.update', props.driver[0].id), {
+        onSuccess: () => {
+            driverForm.garagem_id = props.driver[0].garage;
+            driverForm.carro_favorito = props.driver[0].car;
+            toast.success('Motorista atualizado com sucesso.');
         },
         onError: () => {
-            if (props.errors) {
-                toast.error('Foram encontrado erros ao processar sua solicitação');
-            }
+            toast.error('Foram encontrado erros ao processar sua solicitação.');
         },
     })
 }
@@ -49,21 +53,21 @@ function saveDriver() {
 </script>
 
 <template>
-    <Head title="Frota Inteligente" />
+    <Head title="Editar Motorista" />
 
     <FrotaLayout>
 
         <template #currentPage>
             <BreadCrumbs
-                :breadCrumbs="[{ label: 'Motoristas', link: route('drivers.index') }, { label: $page.props.driver[0].user.name, link: '' }]">
+                :breadCrumbs="[{ label: 'Motoristas', link: route('drivers.index') }, { label: 'Editando: ' + $page.props.driver[0].user.name, link: '' }]">
             </BreadCrumbs>
         </template>
-
         <template #contentMain>
             <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
                 <div class="p-2 rounded-lg min-h-[calc(100vh/1.33)]"
                     :class="$page.props.app.settingsStyles.main.innerSection">
-                    <template v-if="$page.props.canEdit">
+                    <template v-if="canEdit">
+
                         <div class="relative">
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                 Nome
@@ -74,7 +78,7 @@ function saveDriver() {
                             <input readonly type="text" :value="props.driver[0].user.name" placeholder="Nome" maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
                         </div>
-                        {{ driverForm }}
+
                         <div class="mt-2 pl-1.5">
                             <div class="flex w-full mb-5">
                                 <label for="cnh" class="flex items-center cursor-pointer">
@@ -92,6 +96,9 @@ function saveDriver() {
                                     </div>
                                 </label>
                             </div>
+                        </div>
+                        <div v-if="$page.props.errors.cnh" class="text-sm text-red-500">
+                            {{ $page.props.errors.cnh }}
                         </div>
 
                         <div class="mt-2 pl-1.5">
@@ -112,6 +119,9 @@ function saveDriver() {
                                 </label>
                             </div>
                         </div>
+                        <div v-if="$page.props.errors.proprio" class="text-sm text-red-500">
+                            {{ $page.props.errors.proprio }}
+                        </div>
 
                         <div class="relative">
                             <label class="text-sm text-gray-500 dark:text-gray-400">
@@ -129,7 +139,7 @@ function saveDriver() {
                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Garagem (opcional)
                             </label>
-                            <VueMultiselect v-model="driverForm.garagem" :options="$page.props.garages" :multiple="false"
+                            <VueMultiselect v-model="driverForm.garagem_id" :options="$page.props.garages" :multiple="false"
                                 :close-on-select="true" selectedLabel="atual" placeholder="Garagens"
                                 :custom-label="garageName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
 
@@ -137,6 +147,7 @@ function saveDriver() {
                                 {{ $page.props.errors.garagem_id }}
                             </div>
                         </div>
+
                         <div class="mt-2">
                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Carro favorito (opcional)
@@ -151,7 +162,7 @@ function saveDriver() {
                             </div>
                         </div>
                         <button type="button" @click="saveDriver"
-                            class="border border-blue-600 bg-blue-500 text-white rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
+                            class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
                             Atualizar
                         </button>
                     </template>
@@ -234,6 +245,11 @@ function saveDriver() {
                                 maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
                         </div>
+
+                        <button type="button" @click="canEdit = true"
+                            class="border border-yellow-600 bg-yellow-500 text-yellow-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-yellow-700 focus:outline-none focus:shadow-outline">
+                            Editar Motorista
+                        </button>
                     </template>
                 </div>
             </div>

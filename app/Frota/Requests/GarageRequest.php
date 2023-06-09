@@ -25,15 +25,15 @@ class GarageRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => ['int', 'required', Rule::exists('branches', 'id'), Rule::unique('garages')],
+            'id' => ['int', 'requiredOnCreate', Rule::exists('branches', 'id'), Rule::unique('garages')],
         ];
     }
 
     public function messages()
     {
         return [
-            'id.unique'=> 'Garagem já está cadastrada',
-            'id.exists'=> 'Não foi encontrada unidade na base de dados.'
+            'id.unique' => 'Garagem já está cadastrada',
+            'id.exists' => 'Não foi encontrada a unidade referência na base de dados.'
         ];
     }
 }

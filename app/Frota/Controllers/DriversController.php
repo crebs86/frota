@@ -63,7 +63,7 @@ class DriversController extends Controller
             if ($d = $driver->create($driverRequest->validated())) {
                 return redirect(route('drivers.index'))->with('success', 'Motorista adicionado!' . $d);
             }
-            return redirect()->back()->with('error', 'Ocorreu um erro ao adicionar motorista');
+            return redirect()->back()->with('error', 'Ocorreu um erro ao adicionar motorista.');
         }
         return Inertia::render('Admin/403');
     }
@@ -98,20 +98,26 @@ class DriversController extends Controller
                 'driver' => Driver::where('id', request('driver'))->with('user', 'garage', 'car')->get(),
                 'garages' => Garage::with('branch')->select('id')->get(),
                 'cars' => Car::select('id', 'placa', 'modelo')->get(),
+                '_checker' => setGetKey(request('driver'), 'edit_driver'),
                 'canEdit' => $canEdit
             ]);
         }
     }
 
+    /**
+     * @param DriverRequest $request
+     * @param Driver $driver
+     * 
+     * @return Response
+     */
     public function update(DriverRequest $request, Driver $driver): Response|RedirectResponse
     {
-        if (true) {
-            //if ((int) getKeyValue($request->_checker, 'edit_driver_account') === (int) $request->id) {
+        if ((int) getKeyValue($request->_checker, 'edit_driver') === (int) $request->driver->id) {
             if ($this->can('Motorista Editar')) {
                 if ($driver->update($request->validated())) {
-                    return redirect(route('drivers.index'))->with('success', 'Motorista editado!');
+                    return redirect()->back()->with(['driver' => Driver::where('id', request('driver'))->with('user', 'garage', 'car')->get()]);
                 }
-                return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do motorista');
+                return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do motorista.');
             }
         }
         return Inertia::render('Admin/403');

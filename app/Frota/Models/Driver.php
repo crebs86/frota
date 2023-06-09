@@ -23,7 +23,6 @@ class Driver extends Model
         return $this->belongsTo(User::class, 'id')->select('id', 'name');
     }
 
-
     /**
      * @return BelongsTo
      */

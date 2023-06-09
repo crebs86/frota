@@ -20,7 +20,7 @@ Route::prefix('/')->middleware(
 
     Route::resource('/motoristas', DriversController::class, ['names' => 'drivers'])->parameter('motoristas', 'driver')->withTrashed(['show', 'edit', 'update', 'restore']);
 
-    Route::resource('/garagens', GaragesController::class, ['names' => 'garages'])->parameter('motoristas', 'garage')->withTrashed(['show', 'edit', 'update', 'restore']);
+    Route::resource('/garagens', GaragesController::class, ['names' => 'garages'])->parameter('garagens', 'garage')->withTrashed(['show', 'edit', 'update', 'restore']);
 
     Route::resource('/ocorrencias', IncidentsController::class, ['names' => 'incidents'])->parameter('ocorrencias', 'incident')->withTrashed(['show', 'edit', 'update', 'restore']);
 

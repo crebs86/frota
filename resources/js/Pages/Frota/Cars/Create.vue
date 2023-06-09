@@ -68,7 +68,8 @@ function saveCar() {
                             <input type="text" v-model="car.marca" name="marca" placeholder="Marca" maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad]">
                         </div>
-                        <div v-if="$page.props.errors.marca" class="text-sm text-red-500">
+                        <div v-if="$page.props.errors.marca"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                             {{ $page.props.errors.marca }}
                         </div>
 
@@ -79,7 +80,8 @@ function saveCar() {
                             <input type="text" v-model="car.modelo" name="modelo" placeholder="Modelo" maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad]">
                         </div>
-                        <div v-if="$page.props.errors.modelo" class="text-sm text-red-500">
+                        <div v-if="$page.props.errors.modelo"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                             {{ $page.props.errors.modelo }}
                         </div>
 
@@ -90,7 +92,8 @@ function saveCar() {
                             <input type="text" v-model="car.placa" name="matricula" placeholder="Placa" maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad]">
                         </div>
-                        <div v-if="$page.props.errors.placa" class="text-sm text-red-500">
+                        <div v-if="$page.props.errors.placa"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                             {{ $page.props.errors.placa }}
                         </div>
                         <div class="mt-2 px-1.5">
@@ -111,7 +114,8 @@ function saveCar() {
                                 </label>
                             </div>
 
-                            <div v-if="$page.props.errors.proprio" class="text-sm text-red-500">
+                            <div v-if="$page.props.errors.proprio"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                 {{ $page.props.errors.proprio }}
                             </div>
                         </div>
@@ -124,7 +128,8 @@ function saveCar() {
                                 maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad]">
                         </div>
-                        <div v-if="$page.props.errors.tombo" class="text-sm text-red-500">
+                        <div v-if="$page.props.errors.tombo"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                             {{ $page.props.errors.tombo }}
                         </div>
 
@@ -136,13 +141,14 @@ function saveCar() {
                                 :close-on-select="true" selectedLabel="atual" placeholder="Garagens"
                                 :custom-label="garageName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
 
-                            <div v-if="$page.props.errors.garagem_id" class="text-sm text-red-500">
+                            <div v-if="$page.props.errors.garagem_id"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                 {{ $page.props.errors.garagem_id }}
                             </div>
                         </div>
 
                         <button type="button" @click="saveCar"
-                            class="border border-blue-600 bg-blue-500 text-white rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
+                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
                             Cadastrar Carro
                         </button>
                     </div>
@@ -156,6 +162,5 @@ function saveCar() {
 input:checked~.dot {
     transform: translateX(100%);
     background-color: #0ae465;
-}
-</style>
+}</style>
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
