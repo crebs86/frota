@@ -69,12 +69,12 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
                                         <Link :href="route('cars.show', c.id)" title="Ver"
                                             v-if="hasPermission(
                                                 $page.props.auth.permissions, ['Carros Editar', 'Carros Ver', 'Carros Criar', 'Carros Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
-                                        <mdicon name="account-eye" />
+                                        <mdicon name="car-info" />
                                         </Link>
-                                        <Link href="" title="Editar"
+                                        <Link :href="route('cars.edit', c.id)" title="Editar"
                                             v-if="hasPermission(
-                                                $page.props.auth.permissions, ['Carros Editar', 'Carros Ver', 'Carros Criar', 'Carros Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
-                                        <mdicon name="account-edit" />
+                                                $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                                        <mdicon name="car-wrench" />
                                         </Link>
                                     </div>
                                 </td>

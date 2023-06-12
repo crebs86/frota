@@ -69,8 +69,13 @@ function garageName({ id, branch }) {
                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Marca
                             </label>
-                            <input readonly type="text" :value="props.car[0].marca" placeholder="Marca" maxlength="25"
+                            <input :readonly="$page.props.canEdit" type="text" :value="props.car[0].marca"
+                                placeholder="Marca" maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
+                        </div>
+                        <div v-if="$page.props.errors.marca"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                            {{ $page.props.errors.marca }}
                         </div>
 
                         <div class="relative">
@@ -80,6 +85,10 @@ function garageName({ id, branch }) {
                             <input readonly type="text" :value="props.car[0].modelo" placeholder="Modelo"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
                         </div>
+                        <div v-if="$page.props.errors.modelo"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                            {{ $page.props.errors.modelo }}
+                        </div>
 
                         <div class="relative">
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
@@ -88,6 +97,11 @@ function garageName({ id, branch }) {
                             <input readonly type="text" :value="props.car[0].placa" placeholder="Placa"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
                         </div>
+                        <div v-if="$page.props.errors.placa"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                            {{ $page.props.errors.placa }}
+                        </div>
+
                         <div class="mt-2">
                             <div class="flex w-full mb-5">
                                 <label for="patrimonio" class="flex items-center cursor-pointer">
@@ -105,6 +119,10 @@ function garageName({ id, branch }) {
                                 </label>
                             </div>
                         </div>
+                        <div v-if="$page.props.errors.patrimonio"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                            {{ $page.props.errors.patrimonio }}
+                        </div>
 
                         <div class="relative">
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
@@ -112,6 +130,10 @@ function garageName({ id, branch }) {
                             </label>
                             <input readonly type="text" :value="props.car[0].tombo" placeholder="Nº Patrimônio"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
+                        </div>
+                        <div v-if="$page.props.errors.tombo"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                            {{ $page.props.errors.tombo }}
                         </div>
 
                         <div class="relative">
@@ -123,6 +145,10 @@ function garageName({ id, branch }) {
                             </label>
                             <input readonly type="text" :value="props.car[0].garage?.branch.name" placeholder="Garagem"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
+                        </div>
+                        <div v-if="$page.props.errors.garagem_id"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                            {{ $page.props.errors.garagem_id }}
                         </div>
                     </template>
                 </div>

@@ -109,6 +109,15 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
+                <Link class="flex gap-4" :href="route('garages.index')">
+                <mdicon name="garage-open-variant" />
+                <div>
+                    Garagens
+                </div>
+                </Link>
+            </div>
+            <div
+                class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
                 <Link class="flex gap-4" :href="route('drivers.index')">
                 <mdicon name="account-multiple" />
                 <div>
@@ -122,15 +131,6 @@ function openNav() {
                 <mdicon name="car-multiple" />
                 <div>
                     Veículos
-                </div>
-                </Link>
-            </div>
-            <div
-                class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
-                <Link class="flex gap-4" :href="route('garages.index')">
-                <mdicon name="garage-open-variant" />
-                <div>
-                    Garagens
                 </div>
                 </Link>
             </div>
@@ -160,6 +160,12 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
+                <Link class="flex gap-4" :href="route('garages.index')" title="Carros">
+                <mdicon name="garage-open-variant" />
+                </Link>
+            </div>
+            <div
+                class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
                 <Link class="flex gap-4" :href="route('drivers.index')" title="Motoristas">
                 <mdicon name="account-multiple" />
                 </Link>
@@ -168,12 +174,6 @@ function openNav() {
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
                 <Link class="flex gap-4" :href="route('cars.index')" title="Carros">
                 <mdicon name="car-multiple" />
-                </Link>
-            </div>
-            <div
-                class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('garages.index')" title="Carros">
-                <mdicon name="garage-open-variant" />
                 </Link>
             </div>
             <div

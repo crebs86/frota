@@ -20,7 +20,7 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
             <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
                 <Link
                     v-if="hasPermission(
-                        $page.props.auth.permissions, ['Garagem Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
+                            $page.props.auth.permissions, ['Garagem Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
                     class="flex gap-1 max-w-max hover:text-gray-700 dark:hover:text-green-100 p-1.5 border m-0.5 mb-1 rounded"
                     :href="route('garages.create')" title="Relatórios">
                 <mdicon name="home-plus" />
@@ -58,9 +58,9 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
                                                 $page.props.auth.permissions, ['Garagem Editar', 'Garagem Ver', 'Garagem Criar', 'Garagem Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
                                         <mdicon name="home-search" />
                                         </Link>
-                                        <Link href="" title="Editar"
+                                        <Link :href="route('garages.edit', g.id)" title="Editar"
                                             v-if="hasPermission(
-                                                $page.props.auth.permissions, ['Garagem Editar', 'Garagem Ver', 'Garagem Criar', 'Garagem Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                                                    $page.props.auth.permissions, ['Garagem Editar', 'Garagem Ver', 'Garagem Criar', 'Garagem Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
                                         <mdicon name="home-edit" />
                                         </Link>
                                     </div>

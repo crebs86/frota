@@ -66,10 +66,53 @@ class CarsController extends Controller
      */
     public function show(): Response
     {
-        if ($this->can('Carros Ver', 'Carros Editar', 'Carros Apagar', 'Carros Criar')) {
+        if ($this->can('Carros Ver', 'Carros Editar', 'Carros Apagar')) {
+            return $this->showCarPage();
+        }
+    }
+
+    /**
+     * @return Response
+     */
+    public function edit(): Response
+    {
+        if ($this->can('Carro Ver', 'Carro Editar', 'Carro Apagar')) {
+            return $this->showCarPage($this->can('Carro Editar'));
+        }
+    }
+
+    /**
+     * @return Response
+     */
+    public function showCarPage($canEdit = false): Response
+    {
+        if ($this->can('Carro Ver', 'Carro Editar', 'Carro Apagar', 'Motorista Criar')) {
             return Inertia::render('Frota/Cars/Show', [
-                'car' => Car::where('id', request('car'))->select('id', 'marca', 'modelo', 'placa', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')->with('garage')->withTrashed()->get()->toArray()
+                'garages' => Garage::with('branch')->select('id')->get(),
+                'car' => Car::select('id', 'placa', 'marca', 'modelo', 'patrimonio', 'tombo', 'deleted_at')->where('id', request('car'))->with('garage')->get(),
+                '_checker' => setGetKey(request('car'), 'edit_car'),
+                'canEdit' => $canEdit
             ]);
         }
+    }
+
+    /**
+     * @param CarRequest $request
+     * @param Car $car
+     * 
+     * @return Response
+     */
+    public function update(CarRequest $request, Car $car): Response|RedirectResponse
+    {
+        if (
+            (int) getKeyValue($request->_checker, 'edit_car') === $request->garage->id
+        ) {
+            if ($this->can('Carros Editar', 'Carros Apagar')) {
+                return Inertia::render('Frota/Cars/Show', [
+                    'car' => Car::where('id', request('car'))->select('id', 'marca', 'modelo', 'placa', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')->with('garage')->withTrashed()->get()->toArray()
+                ]);
+            }
+        }
+        return Inertia::render('Admin/403');
     }
 }

@@ -137,19 +137,6 @@ function saveDriver() {
 
                         <div class="mt-2">
                             <label class="text-sm text-gray-500 dark:text-gray-400">
-                                Garagem (opcional)
-                            </label>
-                            <VueMultiselect v-model="driverForm.garagem_id" :options="$page.props.garages" :multiple="false"
-                                :close-on-select="true" selectedLabel="atual" placeholder="Garagens"
-                                :custom-label="garageName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
-
-                            <div v-if="$page.props.errors.garagem_id" class="text-sm text-red-500">
-                                {{ $page.props.errors.garagem_id }}
-                            </div>
-                        </div>
-
-                        <div class="mt-2">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Carro favorito (opcional)
                             </label>
                             <VueMultiselect v-model="driverForm.carro_favorito" :options="$page.props.cars"
@@ -161,6 +148,20 @@ function saveDriver() {
                                 {{ $page.props.errors.carro_favorito }}
                             </div>
                         </div>
+                        
+                        <div class="mt-2">
+                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                Garagem (opcional)
+                            </label>
+                            <VueMultiselect v-model="driverForm.garagem_id" :options="$page.props.garages" :multiple="false"
+                                :close-on-select="true" selectedLabel="atual" placeholder="Garagens"
+                                :custom-label="garageName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
+
+                            <div v-if="$page.props.errors.garagem_id" class="text-sm text-red-500">
+                                {{ $page.props.errors.garagem_id }}
+                            </div>
+                        </div>
+
                         <button type="button" @click="saveDriver"
                             class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
                             Atualizar
