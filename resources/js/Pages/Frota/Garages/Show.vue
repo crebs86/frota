@@ -68,28 +68,21 @@ function saveGarage(status) {
                         <input readonly type="text" :value="props.garage[0].branch.name" placeholder="Nome" maxlength="25"
                             class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
                     </div>
-                    <div class="mt-2 pl-1.5">
-                        <div class="flex w-full mb-5">
-                            <label for="cnh" class="flex items-center cursor-pointer">
-                                <div class="relative">
-                                    <input type="checkbox" id="cnh" class="sr-only" :checked="garageForm.deleted_at"
-                                        disabled />
-                                    <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
-                                    </div>
-                                    <div class="absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition"
-                                        :class="!canEdit ? 'dot-dis' : 'dot'">
-                                    </div>
-                                </div>
-                                <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
-                                    Garagem Ativa?
-                                </div>
-                            </label>
-                        </div>
+
+                    <div class="p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800"
+                        v-if="garageForm.deleted_at" role="alert">
+                        Status da garagem: <span class="font-medium">garagem ativa.</span>
                     </div>
+                    <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
+                        role="alert" v-else>
+                        Status da garagem: <span class="font-medium">garagem inativa.</span>
+                    </div>
+
                     <button type="button" @click="canEdit = true" v-if="!canEdit"
                         class="border border-yellow-600 bg-yellow-500 text-yellow-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-yellow-700 focus:outline-none focus:shadow-outline">
                         Editar Garagem
                     </button>
+                    
                     <template v-else>
                         <button type="button" @click="saveGarage(true)" v-if="!garageForm.deleted_at"
                             class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
@@ -98,6 +91,10 @@ function saveGarage(status) {
                         <button type="button" @click="saveGarage(false)" v-else
                             class="border border-red-600 bg-red-500 text-red-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-red-700 focus:outline-none focus:shadow-outline">
                             Inativar Garagem
+                        </button>
+                        <button type="button" @click="canEdit = false" v-if="canEdit"
+                            class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-gray-700 focus:outline-none focus:shadow-outline">
+                            Cancelar Edição de Garagem
                         </button>
                     </template>
 

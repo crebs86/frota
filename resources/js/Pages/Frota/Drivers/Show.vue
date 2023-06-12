@@ -10,16 +10,14 @@ import { ref } from 'vue';
 const props = defineProps({
     canEdit: Boolean,
     driver: Object,
-    garages: Object,
-    cars: Object,
     _checker: String
 });
 
 const canEdit = ref(props.canEdit);
 
 const driverForm = useForm({
-    cnh: props.driver[0].cnh,
-    proprio: props.driver[0].proprio,
+    cnh: props.driver[0].cnh === 1,
+    proprio: props.driver[0].proprio === 1,
     matricula: props.driver[0].matricula,
     garagem_id: props.driver[0].garage,
     carro_favorito: props.driver[0].car,
@@ -66,192 +64,134 @@ function saveDriver() {
             <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
                 <div class="p-2 rounded-lg min-h-[calc(100vh/1.33)]"
                     :class="$page.props.app.settingsStyles.main.innerSection">
-                    <template v-if="canEdit">
 
-                        <div class="relative">
-                            <label class="text-sm text-gray-500 dark:text-gray-400 flex">
-                                Nome
-                                <Link :href="route('admin.acl.users.show', props.driver[0].id)">
-                                <mdicon name="open-in-new" size="20" />
-                                </Link>
-                            </label>
-                            <input readonly type="text" :value="props.driver[0].user.name" placeholder="Nome" maxlength="25"
-                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
-                        </div>
+                    <div class="relative">
+                        <label class="text-sm text-gray-500 dark:text-gray-400 flex">
+                            Nome
+                            <Link :href="route('admin.acl.users.show', props.driver[0].id)">
+                            <mdicon name="open-in-new" size="20" />
+                            </Link>
+                        </label>
+                        <input readonly type="text" :value="props.driver[0].user.name" placeholder="Nome" maxlength="25"
+                            class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300"
+                            :class="canEdit ? 'bg-slate-400' : ''" />
+                    </div>
 
-                        <div class="mt-2 pl-1.5">
-                            <div class="flex w-full mb-5">
-                                <label for="cnh" class="flex items-center cursor-pointer">
-                                    <div class="relative">
-                                        <input type="checkbox" id="cnh" class="sr-only"
-                                            :checked="props.driver[0].cnh === null ? true : true" />
-                                        <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
-                                        </div>
-                                        <div
-                                            class="dot absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition">
-                                        </div>
+                    <div class="mt-1 pl-1.5">
+                        <div class="flex w-full mb-5">
+                            <label for="cnh" class="flex items-center cursor-pointer">
+                                <div class="relative">
+                                    <input type="checkbox" id="cnh" class="sr-only" v-model="driverForm.cnh" />
+                                    <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
                                     </div>
-                                    <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
-                                        CNH Verificada?
+                                    <div class="dot absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition"
+                                        :class="!canEdit ? 'dot-dis' : ''">
                                     </div>
-                                </label>
-                            </div>
+                                </div>
+                                <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
+                                    CNH Verificada?
+                                </div>
+                            </label>
                         </div>
-                        <div v-if="$page.props.errors.cnh" class="text-sm text-red-500">
-                            {{ $page.props.errors.cnh }}
-                        </div>
+                    </div>
 
-                        <div class="mt-2 pl-1.5">
-                            <div class="flex w-full mb-5">
-                                <label for="proprio" class="flex items-center cursor-pointer">
-                                    <div class="relative">
-                                        <input type="checkbox" id="proprio" class="sr-only"
-                                            :checked="props.driver[0].proprio === null ? true : true" />
-                                        <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
-                                        </div>
-                                        <div
-                                            class="dot absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition">
-                                        </div>
+                    <div class="mt-1 pl-1.5">
+                        <div class="flex w-full mb-5">
+                            <label for="proprio" class="flex items-center cursor-pointer">
+                                <div class="relative">
+                                    <input type="checkbox" id="proprio" class="sr-only" v-model="driverForm.proprio" />
+                                    <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
                                     </div>
-                                    <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
-                                        Servidor próprio?
+                                    <div class="dot absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition"
+                                        :class="!canEdit ? 'dot-dis' : ''">
                                     </div>
-                                </label>
-                            </div>
-                        </div>
-                        <div v-if="$page.props.errors.proprio" class="text-sm text-red-500">
-                            {{ $page.props.errors.proprio }}
-                        </div>
-
-                        <div class="relative">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                Matrícula (opcional)
+                                </div>
+                                <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
+                                    Servidor próprio?
+                                </div>
                             </label>
-                            <input type="text" v-model="driverForm.matricula" name="matricula" placeholder="somente números"
-                                maxlength="25"
-                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad]">
                         </div>
-                        <div v-if="$page.props.errors.matricula" class="text-sm text-red-500">
-                            {{ $page.props.errors.matricula }}
-                        </div>
+                    </div>
 
-                        <div class="mt-2">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                Carro favorito (opcional)
-                            </label>
-                            <VueMultiselect v-model="driverForm.carro_favorito" :options="$page.props.cars"
-                                :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Carro favorito"
-                                :custom-label="carName" label="name" :showNoOptions="false" track-by="id"
-                                selectLabel="Selecionar" deselectLabel="Remover" />
+                    <div class="relative">
+                        <label class="text-sm text-gray-500 dark:text-gray-400 flex">
+                            Matrícula
+                        </label>
+                        <input :readonly="!canEdit" type="text" v-model="driverForm.matricula" placeholder="Matrícula"
+                            maxlength="25"
+                            class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-100"
+                            :class="!canEdit ? 'bg-slate-300' : ''" />
+                    </div>
 
-                            <div v-if="$page.props.errors.carro_favorito" class="text-sm text-red-500">
-                                {{ $page.props.errors.carro_favorito }}
-                            </div>
-                        </div>
-                        
-                        <div class="mt-2">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                Garagem (opcional)
-                            </label>
-                            <VueMultiselect v-model="driverForm.garagem_id" :options="$page.props.garages" :multiple="false"
-                                :close-on-select="true" selectedLabel="atual" placeholder="Garagens"
-                                :custom-label="garageName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
+                    <div v-if="canEdit">
+                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                            Selecione um carro favorito (opcional)
+                        </label>
+                        <VueMultiselect v-model="driverForm.carro_favorito" :options="$page.props.cars" :multiple="false"
+                            :close-on-select="true" selectedLabel="atual" placeholder="Carro favorito"
+                            :custom-label="carName" label="name" :showNoOptions="false" track-by="id"
+                            selectLabel="Selecionar" deselectLabel="Remover" readonly />
 
-                            <div v-if="$page.props.errors.garagem_id" class="text-sm text-red-500">
-                                {{ $page.props.errors.garagem_id }}
-                            </div>
+                        <div v-if="$page.props.errors.carro_favorito"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                            {{ $page.props.errors.carro_favorito }}
                         </div>
+                    </div>
+                    <div class="relative -mt-0.5" v-else>
+                        <label class="text-sm text-gray-500 dark:text-gray-400 flex">
+                            Carro Favorito
+                            <Link v-if="props.driver[0].car" :href="route('cars.show', props.driver[0].car)">
+                            <mdicon name="open-in-new" size="20" />
+                            </Link>
+                        </label>
+                        <input readonly type="text"
+                            :value="props.driver[0].car ? props.driver[0].car?.modelo + ' - ' + props.driver[0].car?.placa : ''"
+                            placeholder="Carro" maxlength="25"
+                            class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
+                    </div>
 
-                        <button type="button" @click="saveDriver"
-                            class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
-                            Atualizar
-                        </button>
-                    </template>
+                    <div class="mt-2" v-if="canEdit">
+                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                            Selecione uma garagem (opcional)
+                        </label>
+                        <VueMultiselect v-model="driverForm.garagem_id" :options="$page.props.garages" :multiple="false"
+                            :close-on-select="true" selectedLabel="atual" placeholder="Garagens" :custom-label="garageName"
+                            track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
 
-                    <template v-else>
-                        <div class="relative">
-                            <label class="text-sm text-gray-500 dark:text-gray-400 flex">
-                                Nome
-                                <Link :href="route('admin.acl.users.show', props.driver[0].id)">
-                                <mdicon name="open-in-new" size="20" />
-                                </Link>
-                            </label>
-                            <input readonly type="text" :value="props.driver[0].user.name" placeholder="Nome" maxlength="25"
-                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
+                        <div v-if="$page.props.errors.garagem_id"
+                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                            {{ $page.props.errors.garagem_id }}
                         </div>
-                        <div class="mt-2 pl-1.5">
-                            <div class="flex w-full mb-5">
-                                <label for="cnh" class="flex items-center cursor-pointer">
-                                    <div class="relative">
-                                        <input type="checkbox" id="cnh" class="sr-only"
-                                            :checked="props.driver[0].cnh === null ? true : true" disabled />
-                                        <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
-                                        </div>
-                                        <div
-                                            class="dot-dis absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition">
-                                        </div>
-                                    </div>
-                                    <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
-                                        CNH Verificada?
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="mt-2 pl-1.5">
-                            <div class="flex w-full mb-5">
-                                <label for="proprio" class="flex items-center cursor-pointer">
-                                    <div class="relative">
-                                        <input type="checkbox" id="proprio" class="sr-only"
-                                            :checked="props.driver[0].proprio === null ? true : true" disabled />
-                                        <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
-                                        </div>
-                                        <div
-                                            class="dot-dis absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition">
-                                        </div>
-                                    </div>
-                                    <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
-                                        Servidor próprio?
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="relative">
-                            <label class="text-sm text-gray-500 dark:text-gray-400 flex">
-                                Matrícula
-                            </label>
-                            <input readonly type="text" :value="props.driver[0].matricula" placeholder="Matrícula"
-                                maxlength="25"
-                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
-                        </div>
-                        <div class="relative">
-                            <label class="text-sm text-gray-500 dark:text-gray-400 flex">
-                                Carro Favorito
-                                <Link v-if="props.driver[0].car" :href="route('cars.show', props.driver[0].car)">
-                                <mdicon name="open-in-new" size="20" />
-                                </Link>
-                            </label>
-                            <input readonly type="text"
-                                :value="props.driver[0].car ? props.driver[0].car?.modelo + ' - ' + props.driver[0].car?.placa : ''"
-                                placeholder="Carro" maxlength="25"
-                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
-                        </div>
-                        <div class="relative">
-                            <label class="text-sm text-gray-500 dark:text-gray-400 flex">
-                                Garagem (local)
-                                <Link v-if="props.driver[0].garage" :href="route('garages.show', props.driver[0].garage)">
-                                <mdicon name="open-in-new" size="20" />
-                                </Link>
-                            </label>
-                            <input readonly type="text" :value="props.driver[0].garage?.branch.name" placeholder="Garagem"
-                                maxlength="25"
-                                class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
-                        </div>
+                    </div>
+                    <div class="relative -mt-1" v-else>
+                        <label class="text-sm text-gray-500 dark:text-gray-400 flex">
+                            Garagem (local)
+                            <Link v-if="props.driver[0].garage" :href="route('garages.show', props.driver[0].garage)">
+                            <mdicon name="open-in-new" size="20" />
+                            </Link>
+                        </label>
+                        <input readonly type="text" :value="props.driver[0].garage?.branch.name" placeholder="Garagem"
+                            maxlength="25"
+                            class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
+                    </div>
 
+                    <template v-if="!canEdit">
                         <button type="button" @click="canEdit = true"
                             class="border border-yellow-600 bg-yellow-500 text-yellow-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-yellow-700 focus:outline-none focus:shadow-outline">
                             Editar Motorista
                         </button>
                     </template>
+                    <template v-else>
+                        <button type="button" @click="canEdit = false"
+                            class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 mt-4 transition duration-500 ease select-none hover:bg-gray-700 focus:outline-none focus:shadow-outline">
+                            Cancelar Edição de Motorista
+                        </button>
+                        <button type="button" @click="saveDriver"
+                            class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
+                            Salvar
+                        </button>
+                    </template>
+
                 </div>
             </div>
         </template>
