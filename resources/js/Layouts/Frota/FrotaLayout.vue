@@ -55,7 +55,7 @@ function openNav() {
                 <div class="flex-none flex justify-center">
                     <div class="w-8 h-8 flex ">
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShta_GXR2xdnsxSzj_GTcJHcNykjVKrCBrZ9qouUl0usuJWG2Rpr_PbTDu3sA9auNUH64&usqp=CAU"
-                            alt="profile" class="shadow rounded-full object-cover" />
+                            alt="" class="shadow rounded-full object-cover" />
                     </div>
                 </div>
 
@@ -109,6 +109,15 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
+                <Link class="flex gap-4" :href="route('schedules.index')">
+                <mdicon name="car-clock" />
+                <div>
+                    Agendas
+                </div>
+                </Link>
+            </div>
+            <div
+                class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
                 <Link class="flex gap-4" :href="route('garages.index')">
                 <mdicon name="garage-open-variant" />
                 <div>
@@ -156,6 +165,12 @@ function openNav() {
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
                 <Link class="flex gap-4" :href="route('tasks.index')" title="Tarefas">
                 <mdicon name="calendar-check" />
+                </Link>
+            </div>
+            <div
+                class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
+                <Link class="flex gap-4" :href="route('schedules.index')" title="Agendas">
+                <mdicon name="car-clock" />
                 </Link>
             </div>
             <div

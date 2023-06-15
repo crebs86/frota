@@ -82,7 +82,7 @@ function saveGarage(status) {
                         class="border border-yellow-600 bg-yellow-500 text-yellow-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-yellow-700 focus:outline-none focus:shadow-outline">
                         Editar Garagem
                     </button>
-                    
+
                     <template v-else>
                         <button type="button" @click="saveGarage(true)" v-if="!garageForm.deleted_at"
                             class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
@@ -92,7 +92,8 @@ function saveGarage(status) {
                             class="border border-red-600 bg-red-500 text-red-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-red-700 focus:outline-none focus:shadow-outline">
                             Inativar Garagem
                         </button>
-                        <button type="button" @click="canEdit = false" v-if="canEdit"
+                        <button type="button" @click="canEdit = false"
+                            v-if="canEdit && route().current() !== 'garages.edit'"
                             class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-gray-700 focus:outline-none focus:shadow-outline">
                             Cancelar Edição de Garagem
                         </button>

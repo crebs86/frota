@@ -7,12 +7,12 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
 </script>
 
 <template>
-    <Head title="Carros" />
+    <Head title="Agendas" />
 
     <FrotaLayout>
 
         <template #currentPage>
-            <BreadCrumbs :breadCrumbs="[{ label: 'Carros', link: '' }]">
+            <BreadCrumbs :breadCrumbs="[{ label: 'Agendas', link: '' }]">
             </BreadCrumbs>
         </template>
 
@@ -20,12 +20,12 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
             <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
                 <Link
                     v-if="hasPermission(
-                        $page.props.auth.permissions, ['Carro Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
+                        $page.props.auth.permissions, ['Agenda Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
                     class="flex gap-1 max-w-max hover:text-gray-700 dark:hover:text-green-100 p-1.5 border m-0.5 mb-1 rounded"
-                    :href="route('cars.create')" title="Novo Carro">
+                    :href="route('schedules.create')" title="Nova Agenda">
                 <mdicon name="car-arrow-right" />
                 <div>
-                    Novo Veículo
+                    Nova Agenda
                 </div>
                 </Link>
 
@@ -33,8 +33,7 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
                     <table class="min-w-full">
                         <thead>
                             <tr>
-                                <th v-for=" (value, index) in ['Marca', 'Modelo', 'Placa', 'Próprio?'
-                                    , 'Nº Patrimônio', 'Garagem', 'Ativo', 'Ações']" :key="index + '' + value"
+                                <th v-for=" (value, index) in ['Motorista', 'Garagem', 'Ações']" :key="index + '' + value"
                                     class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-left leading-4 tracking-wider"
                                     :class="$page.props.app.settingsStyles.main.container">
                                     {{ value }}
@@ -42,36 +41,17 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
                             </tr>
                         </thead>
                         <tbody :class="$page.props.app.settingsStyles.main.body">
-                            <tr v-for="( c, i ) in  $page.props.cars " :key="i">
+                            <tr v-for="( s, i ) in  $page.props.cars " :key="i">
                                 <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                    {{ c.marca }}
+                                    {{ s.driver.user.name }}
                                 </td>
                                 <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                    {{ c.modelo }}
-                                </td>
-                                <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                    {{ c.placa }}
-                                </td>
-                                <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                    {{ c.patrimonio ? 'Sim' : 'Não' }}
-                                </td>
-                                <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                    {{ c.tombo }}
-                                </td>
-                                <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                    {{ c.garage?.branch.name }}
-                                </td>
-                                <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                    {{ c.deleted_at ? 'Não' : 'Sim' }}
+                                    {{ s.garage.branch.name }}
                                 </td>
                                 <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
                                     <div class="flex justify-center gap-1">
-                                        <Link :href="route('cars.show', c.id)" title="Ver"
-                                            v-if="hasPermission(
-                                                $page.props.auth.permissions, ['Carros Editar', 'Carros Ver', 'Carros Criar', 'Carros Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
-                                        <mdicon name="car-info" />
-                                        </Link>
-                                        <Link :href="route('cars.edit', c.id)" title="Editar"
+
+                                        <Link :href="route('schedules.edit', s.id)" title="Editar"
                                             v-if="hasPermission(
                                                 $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
                                         <mdicon name="car-wrench" />

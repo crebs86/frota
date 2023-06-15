@@ -81,7 +81,7 @@ function saveDriver() {
                         <div class="flex w-full mb-5">
                             <label for="cnh" class="flex items-center cursor-pointer">
                                 <div class="relative">
-                                    <input type="checkbox" id="cnh" class="sr-only" v-model="driverForm.cnh" />
+                                    <input type="checkbox" id="cnh" class="sr-only" v-model="driverForm.cnh" :disabled="!canEdit" />
                                     <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
                                     </div>
                                     <div class="dot absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition"
@@ -99,7 +99,7 @@ function saveDriver() {
                         <div class="flex w-full mb-5">
                             <label for="proprio" class="flex items-center cursor-pointer">
                                 <div class="relative">
-                                    <input type="checkbox" id="proprio" class="sr-only" v-model="driverForm.proprio" />
+                                    <input type="checkbox" id="proprio" class="sr-only" v-model="driverForm.proprio" :disabled="!canEdit" />
                                     <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
                                     </div>
                                     <div class="dot absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition"

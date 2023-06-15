@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Frota\Controllers\CarsController;
 use App\Frota\Controllers\HomeController;
 use App\Frota\Controllers\TasksController;
+use App\Frota\Controllers\SchedulesController;
 use App\Frota\Controllers\DriversController;
 use App\Frota\Controllers\GaragesController;
 use App\Frota\Controllers\ReportsController;
@@ -15,6 +16,8 @@ Route::prefix('/')->middleware(
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
     Route::resource('/tarefas', TasksController::class, ['names' => 'tasks'])->parameter('tarefas', 'task')->withTrashed(['show', 'edit', 'update', 'restore']);
+
+    Route::resource('/agendas', SchedulesController::class, ['names' => 'schedules'])->parameter('agendas', 'schedule')->withTrashed(['show', 'edit', 'update', 'restore']);
 
     Route::resource('/carros', CarsController::class, ['names' => 'cars'])->parameter('carros', 'car')->withTrashed(['show', 'edit', 'update', 'restore']);
 
