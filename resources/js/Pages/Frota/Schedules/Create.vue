@@ -4,8 +4,7 @@ import FrotaLayout from '@/Layouts/Frota/FrotaLayout.vue';
 import VueMultiselect from 'vue-multiselect';
 import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { toast } from '@/toast'
-import { ref } from 'vue';
+import { toast } from '@/toast';
 
 const props = defineProps({
     drivers: Object,
@@ -15,11 +14,12 @@ const props = defineProps({
 
 
 const schedule = useForm({
-    user: { id: '', neme: '' }
+    driver: { id: '', name: '' },
+    times: []
 });
 
 function driverName({ id, user }) {
-    return `${id ? id : ''} - ${user.name ? user.name : ''}`
+    return `${id ? id : ''} - ${user?.name ? user.name : ''}`
 }
 
 function saveCar() {
@@ -43,13 +43,13 @@ function split(obj, start, end) {
 </script>
 
 <template>
-    <Head title="Nova Configuração de Agenda" />
+    <Head title="Configuração de Agenda" />
 
     <FrotaLayout>
 
         <template #currentPage>
             <BreadCrumbs
-                :breadCrumbs="[{ label: 'Agendas', link: route('schedules.index') }, { label: 'Nova Configuração de Agenda', link: '' }]">
+                :breadCrumbs="[{ label: 'Agendas', link: route('schedules.index') }, { label: 'Configuração de Agenda', link: '' }]">
             </BreadCrumbs>
         </template>
 
@@ -62,7 +62,7 @@ function split(obj, start, end) {
                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Selecione um motorista
                             </label>
-                            <VueMultiselect v-model="schedule" :options="props.drivers" :multiple="false"
+                            <VueMultiselect v-model="schedule.driver" :options="props.drivers" :multiple="false"
                                 :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
                                 :custom-label="driverName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
 
@@ -82,11 +82,14 @@ function split(obj, start, end) {
                 <div :class="$page.props.app.settingsStyles.main.innerSection"
                     class="my-2 px-2 py-0.5 rounded grid grid-cols-1 md:grid-cols-2">
 
-                    <div class="rounded m-1 p-1.5 grid grid-cols-4 gap-x-1 gap-y-5"
+                    <div class="rounded m-1 p-1.5 grid grid-cols-3 md:grid-cols-4 gap-x-1 gap-y-5"
                         :class="$page.props.app.settingsStyles.main.body">
-                        <h3 class="text-lg col-span-4 text-center border-b">Manhã</h3>
+                        <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Manhã</h3>
                         <span v-for="(v, i) in split(props.timetables, 1, 24)" :key="'t_' + i">
-                            <input type="checkbox" :id="v.id" /> <label :for="v.id"> {{ v.time }}</label>
+                            <input type="checkbox" v-model="schedule.times" :value="v.id"
+                                class="w-5 h-5 mx-1 text-green-600 bg-gray-100 border-gray-300 rounded-md focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                :id="'tId_' + v.id" />
+                            <label :for="v.id"> {{ v.time }} </label>
                         </span>
                     </div>
 
@@ -94,7 +97,10 @@ function split(obj, start, end) {
                         :class="$page.props.app.settingsStyles.main.body">
                         <h3 class="text-lg col-span-4 text-center border-b">Tarde</h3>
                         <span v-for="(v, i) in split(props.timetables, 25, 48)" :key="'t_' + i">
-                            <input type="checkbox" :id="v.id" /> <label :for="v.id"> {{ v.time }}</label>
+                            <input type="checkbox" v-model="schedule.times" :value="v.id"
+                                class="w-5 h-5 mx-1 text-green-600 bg-gray-100 border-gray-300 rounded-md focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                :id="'tId_' + v.id" />
+                            <label :for="v.id"> {{ v.time }} </label>
                         </span>
                     </div>
 
@@ -102,7 +108,10 @@ function split(obj, start, end) {
                         :class="$page.props.app.settingsStyles.main.body">
                         <h3 class="text-lg col-span-4 text-center border-b">Noite</h3>
                         <span v-for="(v, i) in split(props.timetables, 49, 72)" :key="'t_' + i">
-                            <input type="checkbox" :id="v.id" /> <label :for="v.id"> {{ v.time }}</label>
+                            <input type="checkbox" v-model="schedule.times" :value="v.id"
+                                class="w-5 h-5 mx-1 text-green-600 bg-gray-100 border-gray-300 rounded-md focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                :id="'tId_' + v.id" />
+                            <label :for="v.id"> {{ v.time }} </label>
                         </span>
                     </div>
 
@@ -110,7 +119,10 @@ function split(obj, start, end) {
                         :class="$page.props.app.settingsStyles.main.body">
                         <h3 class="text-lg col-span-4 text-center border-b">Especial</h3>
                         <span v-for="(v, i) in split(props.timetables, 73, 96)" :key="'t_' + i">
-                            <input type="checkbox" :id="v.id" /> <label :for="v.id"> {{ v.time }}</label>
+                            <input type="checkbox" v-model="schedule.times" :value="v.id"
+                                class="w-5 h-5 mx-1 text-green-600 bg-gray-100 border-gray-300 rounded-md focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                :id="'tId_' + v.id" />
+                            <label :for="v.id"> {{ v.time }} </label>
                         </span>
                     </div>
 
@@ -124,5 +136,6 @@ function split(obj, start, end) {
 input:checked~.dot {
     transform: translateX(100%);
     background-color: #0ae465;
-}</style>
+}
+</style>
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
