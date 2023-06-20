@@ -26,7 +26,7 @@ function saveCar() {
     car.garagem_id = _garagem.value?.id;
     car.post(route('cars.store'), {
         onSuccess: (a) => {
-            toast.success('Carro cadastrado com sucesso.');
+            toast.success('Agenda atualizada com sucesso.');
         },
         onError: () => {
             if (props.errors) {
