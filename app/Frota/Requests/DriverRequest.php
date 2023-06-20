@@ -25,7 +25,7 @@ class DriverRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => ['int', 'requiredOnCreate', Rule::unique('drivers')->ignore($this->driver)],
+            'id' => ['int', Rule::unique('drivers')->ignore($this->driver)],
             'garagem_id' => ['int', 'nullable', Rule::exists('garages', 'id')],
             'carro_favorito' => ['int', 'nullable', Rule::exists('cars', 'id')],
             'proprio' => 'boolean',

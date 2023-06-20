@@ -25,7 +25,7 @@ class GarageRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => ['int', 'requiredOnCreate', Rule::exists('branches', 'id'), Rule::unique('garages')],
+            'id' => ['int', Rule::exists('branches', 'id'), Rule::unique('garages')],
         ];
     }
 
