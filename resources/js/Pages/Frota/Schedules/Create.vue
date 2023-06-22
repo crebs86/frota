@@ -74,7 +74,7 @@ function split(obj, start, end) {
 
                         <button type="button" @click="saveCar"
                             class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
-                            Cadastrar Carro
+                            Cadastrar
                         </button>
                     </div>
                 </div>
@@ -82,48 +82,47 @@ function split(obj, start, end) {
                 <div :class="$page.props.app.settingsStyles.main.innerSection"
                     class="my-2 px-2 py-0.5 rounded grid grid-cols-1 md:grid-cols-2">
 
-                    <div class="rounded m-1 p-1.5 grid grid-cols-3 md:grid-cols-4 gap-x-1 gap-y-5"
+                    <div class="rounded m-1 p-1.5 grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-5"
                         :class="$page.props.app.settingsStyles.main.body">
                         <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Manhã</h3>
-                        <span v-for="(v, i) in split(props.timetables, 1, 24)" :key="'t_' + i">
-                            <input type="checkbox" v-model="schedule.times" :value="v.id"
-                                class="w-5 h-5 mx-1 text-green-600 bg-gray-100 border-gray-300 rounded-md focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                :id="'tId_' + v.id" />
-                            <label :for="v.id"> {{ v.time }} </label>
-                        </span>
+                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 1, 24)" :multiple="false"
+                            :close-on-select="true" selectedLabel="atual" placeholder="Início" track-by="id" label="time"
+                            selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 1, 24)" :multiple="false"
+                            :close-on-select="true" selectedLabel="atual" placeholder="Término" track-by="id" label="time"
+                            selectLabel="Selecionar" deselectLabel="Remover" />
                     </div>
-
-                    <div class="rounded m-1 p-1.5 grid grid-cols-4 gap-x-1 gap-y-5"
+                    
+                    <div class="rounded m-1 p-1.5 grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-5"
                         :class="$page.props.app.settingsStyles.main.body">
-                        <h3 class="text-lg col-span-4 text-center border-b">Tarde</h3>
-                        <span v-for="(v, i) in split(props.timetables, 25, 48)" :key="'t_' + i">
-                            <input type="checkbox" v-model="schedule.times" :value="v.id"
-                                class="w-5 h-5 mx-1 text-green-600 bg-gray-100 border-gray-300 rounded-md focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                :id="'tId_' + v.id" />
-                            <label :for="v.id"> {{ v.time }} </label>
-                        </span>
+                        <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Tarde</h3>
+                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 25, 48)" :multiple="false"
+                            :close-on-select="true" selectedLabel="atual" placeholder="Início" track-by="id" label="time"
+                            selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 25, 48)" :multiple="false"
+                            :close-on-select="true" selectedLabel="atual" placeholder="Término" track-by="id" label="time"
+                            selectLabel="Selecionar" deselectLabel="Remover" />
                     </div>
-
-                    <div class="rounded m-1 p-1.5 grid grid-cols-4 gap-x-1 gap-y-5"
+                    
+                    <div class="rounded m-1 p-1.5 grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-5"
                         :class="$page.props.app.settingsStyles.main.body">
-                        <h3 class="text-lg col-span-4 text-center border-b">Noite</h3>
-                        <span v-for="(v, i) in split(props.timetables, 49, 72)" :key="'t_' + i">
-                            <input type="checkbox" v-model="schedule.times" :value="v.id"
-                                class="w-5 h-5 mx-1 text-green-600 bg-gray-100 border-gray-300 rounded-md focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                :id="'tId_' + v.id" />
-                            <label :for="v.id"> {{ v.time }} </label>
-                        </span>
+                        <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Noite</h3>
+                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 49, 72)" :multiple="false"
+                            :close-on-select="true" selectedLabel="atual" placeholder="Início" track-by="id" label="time"
+                            selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 49, 72)" :multiple="false"
+                            :close-on-select="true" selectedLabel="atual" placeholder="Término" track-by="id" label="time"
+                            selectLabel="Selecionar" deselectLabel="Remover" />
                     </div>
-
-                    <div class="rounded m-1 p-1.5 grid grid-cols-4 gap-x-1 gap-y-5"
+                    <div class="rounded m-1 p-1.5 grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-5"
                         :class="$page.props.app.settingsStyles.main.body">
-                        <h3 class="text-lg col-span-4 text-center border-b">Especial</h3>
-                        <span v-for="(v, i) in split(props.timetables, 73, 96)" :key="'t_' + i">
-                            <input type="checkbox" v-model="schedule.times" :value="v.id"
-                                class="w-5 h-5 mx-1 text-green-600 bg-gray-100 border-gray-300 rounded-md focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                :id="'tId_' + v.id" />
-                            <label :for="v.id"> {{ v.time }} </label>
-                        </span>
+                        <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Especial</h3>
+                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 50, 96)" :multiple="false"
+                            :close-on-select="true" selectedLabel="atual" placeholder="Início" track-by="id" label="time"
+                            selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 50, 96)" :multiple="false"
+                            :close-on-select="true" selectedLabel="atual" placeholder="Término" track-by="id" label="time"
+                            selectLabel="Selecionar" deselectLabel="Remover" />
                     </div>
 
                 </div>

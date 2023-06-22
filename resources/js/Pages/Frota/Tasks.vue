@@ -2,7 +2,7 @@
 import SimpleTable from '@/Components/Frota/SimpleTable.vue';
 import FrotaLayout from '@/Layouts/Frota/FrotaLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-
+import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
 
 </script>
 
@@ -12,7 +12,9 @@ import { Head, Link } from '@inertiajs/vue3';
     <FrotaLayout>
 
         <template #currentPage>
-            Minhas Tarefas
+            <BreadCrumbs
+                :breadCrumbs="[{ label: 'Minhas Tarefas', link: route('tasks.index') }]">
+            </BreadCrumbs>
         </template>
 
         <template #contentMain>
