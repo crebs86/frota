@@ -15,7 +15,15 @@ const props = defineProps({
 
 const schedule = useForm({
     driver: { id: '', name: '' },
-    times: []
+    timesMorningStart: '',
+    timesMorningEnd: '',
+    timesAfternoonStart: '',
+    timesAfternoonEnd: '',
+    timesNightStart: '',
+    timesNightEnd: '',
+    timesSpecialStart: '',
+    timesSpecialEnd: '',
+
 });
 
 function driverName({ id, user }) {
@@ -57,7 +65,7 @@ function split(obj, start, end) {
             <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-max">
                 <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded">
                     <div class="relative mb-6 w-full z-auto min-h-fit">
-                        {{ schedule }}
+
                         <div class="mt-2">
                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Selecione um motorista
@@ -80,49 +88,50 @@ function split(obj, start, end) {
                 </div>
 
                 <div :class="$page.props.app.settingsStyles.main.innerSection"
-                    class="my-2 px-2 py-0.5 rounded grid grid-cols-1 md:grid-cols-2">
+                    class="my-2 px-0.5 py-0.5 rounded grid grid-cols-1 md:grid-cols-2">
 
-                    <div class="rounded m-1 p-1.5 grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-5"
+                    <div class="rounded m-1 p-1.5 pb-2 grid grid-cols-2 gap-x-1 gap-y-5"
                         :class="$page.props.app.settingsStyles.main.body">
                         <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Manhã</h3>
-                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 1, 24)" :multiple="false"
-                            :close-on-select="true" selectedLabel="atual" placeholder="Início" track-by="id" label="time"
-                            selectLabel="Selecionar" deselectLabel="Remover" />
-                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 1, 24)" :multiple="false"
-                            :close-on-select="true" selectedLabel="atual" placeholder="Término" track-by="id" label="time"
-                            selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.timesMorningStart" :options="split(props.timetables, 1, 24)"
+                            :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Início"
+                            track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.timesMorningEnd" :options="split(props.timetables, 1, 24)"
+                            :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Término"
+                            track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
                     </div>
-                    
-                    <div class="rounded m-1 p-1.5 grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-5"
+
+                    <div class="rounded m-1 p-1.5 pb-2 grid grid-cols-2 gap-x-1 gap-y-5"
                         :class="$page.props.app.settingsStyles.main.body">
                         <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Tarde</h3>
-                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 25, 48)" :multiple="false"
-                            :close-on-select="true" selectedLabel="atual" placeholder="Início" track-by="id" label="time"
-                            selectLabel="Selecionar" deselectLabel="Remover" />
-                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 25, 48)" :multiple="false"
-                            :close-on-select="true" selectedLabel="atual" placeholder="Término" track-by="id" label="time"
-                            selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.timesAfternoonStart" :options="split(props.timetables, 25, 48)"
+                            :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Início"
+                            track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.timesAfternoonEnd" :options="split(props.timetables, 25, 48)"
+                            :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Término"
+                            track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
                     </div>
-                    
-                    <div class="rounded m-1 p-1.5 grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-5"
+
+                    <div class="rounded m-1 p-1.5 pb-2 grid grid-cols-2 gap-x-1 gap-y-5"
                         :class="$page.props.app.settingsStyles.main.body">
                         <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Noite</h3>
-                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 49, 72)" :multiple="false"
-                            :close-on-select="true" selectedLabel="atual" placeholder="Início" track-by="id" label="time"
-                            selectLabel="Selecionar" deselectLabel="Remover" />
-                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 49, 72)" :multiple="false"
-                            :close-on-select="true" selectedLabel="atual" placeholder="Término" track-by="id" label="time"
-                            selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.timesNightStart" :options="split(props.timetables, 49, 72)"
+                            :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Início"
+                            track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.timesNightEnd" :options="split(props.timetables, 49, 72)"
+                            :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Término"
+                            track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
                     </div>
-                    <div class="rounded m-1 p-1.5 grid grid-cols-1 md:grid-cols-2 gap-x-1 gap-y-5"
+
+                    <div class="rounded m-1 p-1.5 pb-2 grid grid-cols-2 gap-x-1 gap-y-5"
                         :class="$page.props.app.settingsStyles.main.body">
                         <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Especial</h3>
-                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 50, 96)" :multiple="false"
-                            :close-on-select="true" selectedLabel="atual" placeholder="Início" track-by="id" label="time"
-                            selectLabel="Selecionar" deselectLabel="Remover" />
-                        <VueMultiselect v-model="schedule.times" :options="split(props.timetables, 50, 96)" :multiple="false"
-                            :close-on-select="true" selectedLabel="atual" placeholder="Término" track-by="id" label="time"
-                            selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.timesSpecialStart" :options="split(props.timetables, 73, 96)"
+                            :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Início"
+                            track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
+                        <VueMultiselect v-model="schedule.timesSpecialEnd" :options="split(props.timetables, 73, 96)"
+                            :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Término"
+                            track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
                     </div>
 
                 </div>
