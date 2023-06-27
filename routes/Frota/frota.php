@@ -19,6 +19,8 @@ Route::prefix('/')->middleware(
 
     Route::resource('/agendas', SchedulesController::class, ['names' => 'schedules'])->parameter('agendas', 'schedule')->withTrashed(['show', 'edit', 'update', 'restore']);
 
+    Route::post('/agendas/modelo/{driver}', [SchedulesController::class, 'storeScheduleTemplate'])->name('schedules.template.save');
+
     Route::resource('/carros', CarsController::class, ['names' => 'cars'])->parameter('carros', 'car')->withTrashed(['show', 'edit', 'update', 'restore']);
 
     Route::resource('/motoristas', DriversController::class, ['names' => 'drivers'])->parameter('motoristas', 'driver')->withTrashed(['show', 'edit', 'update', 'restore']);
