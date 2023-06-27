@@ -21,6 +21,8 @@ Route::prefix('/')->middleware(
 
     Route::post('/agendas/modelo/{driver}', [SchedulesController::class, 'storeScheduleTemplate'])->name('schedules.template.save');
 
+    Route::get('/agendas/{driver}/modelo', [SchedulesController::class, 'getDriverTimeTable'])->name('schedules.template.get');
+
     Route::resource('/carros', CarsController::class, ['names' => 'cars'])->parameter('carros', 'car')->withTrashed(['show', 'edit', 'update', 'restore']);
 
     Route::resource('/motoristas', DriversController::class, ['names' => 'drivers'])->parameter('motoristas', 'driver')->withTrashed(['show', 'edit', 'update', 'restore']);

@@ -4,6 +4,10 @@ import { Head, Link } from '@inertiajs/vue3';
 import hasPermission from '@/permissions'
 import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
 
+const props = defineProps({
+    drivers: Object
+});
+
 </script>
 
 <template>
@@ -25,10 +29,10 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
                     :href="route('schedules.create')" title="Nova Agenda">
                 <mdicon name="car-arrow-right" />
                 <div>
-                    Nova Agenda
+                    Configuração de Agenda
                 </div>
                 </Link>
-
+                {{ props.drivers }}
                 <div class="p-2 rounded-lg overflow-y-auto" :class="$page.props.app.settingsStyles.main.innerSection">
                     <table class="min-w-full">
                         <thead>
@@ -41,21 +45,21 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
                             </tr>
                         </thead>
                         <tbody :class="$page.props.app.settingsStyles.main.body">
-                            <tr v-for="( s, i ) in  $page.props.cars " :key="i">
+                            <tr v-for="( s, i ) in  props.drivers" :key="i">
                                 <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                    {{ s.driver.user.name }}
+                                    {{ s.driver.name }}
                                 </td>
                                 <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                    {{ s.garage.branch.name }}
+                                    {{ s.driver.id }}
                                 </td>
                                 <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
                                     <div class="flex justify-center gap-1">
 
-                                        <Link :href="route('schedules.edit', s.id)" title="Editar"
+                                        <!-- <Link :href="route('schedules.edit', s.id)" title="Editar"
                                             v-if="hasPermission(
                                                 $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
                                         <mdicon name="car-wrench" />
-                                        </Link>
+                                        </Link> -->
                                     </div>
                                 </td>
                             </tr>

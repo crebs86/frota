@@ -2,16 +2,17 @@
 
 namespace App\Frota\Controllers;
 
-use App\Frota\Models\Driver;
-use App\Frota\Models\Garage;
-use App\Frota\Models\ScheduleTemplate;
-use App\Frota\Models\Timetable;
-use App\Frota\Requests\ScheduleTemplateRequest;
 use App\Traits\ACL;
-use App\Traits\Helpers;
-use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Traits\Helpers;
+use App\Frota\Models\Driver;
+use App\Frota\Models\Garage;
+use Illuminate\Http\Request;
+use App\Frota\Models\Timetable;
+use App\Http\Controllers\Controller;
+use App\Frota\Models\ScheduleTemplate;
+use App\Frota\Requests\ScheduleTemplateRequest;
 
 class SchedulesController extends Controller
 {
@@ -22,7 +23,12 @@ class SchedulesController extends Controller
      */
     public function index(): Response
     {
-        return Inertia::render('Frota/Schedules/Index', []);
+        if ($this->can('Agenda Modelo Criar', 'Agenda Modelo Editar', 'Agenda Modelo Ver', 'Agenda Modelo Apagar')) {
+            return Inertia::render('Frota/Schedules/Index', [
+                'drivers' => ScheduleTemplate::with('driver')->get(['driver'])->toArray()
+            ]);
+        }
+        return Inertia::render('Admin/403');
     }
 
     /**
@@ -30,13 +36,21 @@ class SchedulesController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Frota/Schedules/Create', [
-            'drivers' => Driver::with('user')->select('id')->get(),
-            'timetables' => Timetable::all(['id', 'time'])
-        ]);
+        if ($this->can('Agenda Modelo Criar', 'Agenda Modelo Editar')) {
+            return Inertia::render('Frota/Schedules/Create', [
+                'drivers' => Driver::with('user')->select('id')->get(),
+                'timetables' => Timetable::all(['id', 'time'])
+            ]);
+        }
+        return Inertia::render('Admin/403');
     }
 
-    public function storeScheduleTemplate(ScheduleTemplateRequest $scheduleTemplateRequest)
+    /**
+     * @param ScheduleTemplateRequest $scheduleTemplateRequest
+     * 
+     * @return void
+     */
+    public function storeScheduleTemplate(ScheduleTemplateRequest $scheduleTemplateRequest): void
     {
         if ($this->can('Agenda Modelo Criar', 'Agenda Modelo Editar')) {
             $scheduleTemplate = ScheduleTemplate::where('driver', $scheduleTemplateRequest->driver)->get()->first();
@@ -46,5 +60,15 @@ class SchedulesController extends Controller
                 ScheduleTemplate::create($scheduleTemplateRequest->validated());
             }
         }
+    }
+
+    /**
+     * @param Request $request
+     * 
+     * @return ScheduleTemplate|null
+     */
+    public function getDriverTimeTable(Request $request): ScheduleTemplate|null
+    {
+        return ScheduleTemplate::where('driver', $request->driver)->get()->first();
     }
 }

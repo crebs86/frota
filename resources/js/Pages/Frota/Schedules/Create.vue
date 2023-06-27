@@ -6,6 +6,7 @@ import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { toast } from '@/toast';
 import { ref } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
     drivers: Object,
@@ -72,6 +73,20 @@ function split(obj, start, end) {
     return obj.filter((o) => o.id >= start && o.id <= end);
 }
 
+function setDriver() {
+    axios.get(route('schedules.template.get', driverUser.value.id))
+        .then(r => {
+            _scheduleTemplate.value.timesMorningStart = props.timetables.filter((t) => t.id === r.data.timesMorningStart)[0]
+            _scheduleTemplate.value.timesMorningEnd = props.timetables.filter((t) => t.id === r.data.timesMorningEnd)[0]
+            _scheduleTemplate.value.timesAfternoonStart = props.timetables.filter((t) => t.id === r.data.timesAfternoonStart)[0]
+            _scheduleTemplate.value.timesAfternoonEnd = props.timetables.filter((t) => t.id === r.data.timesAfternoonEnd)[0]
+            _scheduleTemplate.value.timesNightStart = props.timetables.filter((t) => t.id === r.data.timesNightStart)[0]
+            _scheduleTemplate.value.timesNightEnd = props.timetables.filter((t) => t.id === r.data.timesNightEnd)[0]
+            _scheduleTemplate.value.timesSpecialStart = props.timetables.filter((t) => t.id === r.data.timesSpecialStart)[0]
+            _scheduleTemplate.value.timesSpecialEnd = props.timetables.filter((t) => t.id === r.data.timesSpecialEnd)[0]
+        })
+}
+
 </script>
 
 <template>
@@ -94,8 +109,8 @@ function split(obj, start, end) {
                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Motorista
                             </label>
-                            <VueMultiselect v-model="driverUser" :options="props.drivers" :multiple="false"
-                                :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
+                            <VueMultiselect v-model="driverUser" @select="setDriver" :options="props.drivers"
+                                :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
                                 :custom-label="driverName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
 
                             <div v-if="$page.props.errors.driver"
@@ -108,7 +123,7 @@ function split(obj, start, end) {
 
                     </div>
                 </div>
-                <!-- {{ scheduleTemplate }} -->
+                <!-- {{ _scheduleTemplate }} -->
                 <div :class="$page.props.app.settingsStyles.main.innerSection"
                     class="my-2 px-0.5 py-0.5 rounded grid grid-cols-1 md:grid-cols-2 pb-72">
 
