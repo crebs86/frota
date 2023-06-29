@@ -3,6 +3,7 @@
 namespace App\Frota\Models;
 
 use App\Models\User;
+use App\Frota\Models\Driver;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,6 +21,6 @@ class ScheduleTemplate extends Model
 
     public function driver()
     {
-        return $this->belongsTo(User::class, 'driver')->select('id', 'name');
+        return $this->belongsTo(Driver::class, 'driver')->select('id', 'garagem_id')->with('user', 'garage');
     }
 }

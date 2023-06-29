@@ -11,7 +11,9 @@ import axios from 'axios';
 const props = defineProps({
     drivers: Object,
     timetables: Object,
-    errors: Object
+    errors: Object,
+    isEditMethod: Boolean
+    //_checker: String
 });
 
 const scheduleTemplate = useForm({
@@ -24,6 +26,7 @@ const scheduleTemplate = useForm({
     timesNightEnd: null,
     timesSpecialStart: null,
     timesSpecialEnd: null,
+    //_checker: props._checker
 });
 
 const _scheduleTemplate = ref({
@@ -96,7 +99,7 @@ function setDriver() {
 
         <template #currentPage>
             <BreadCrumbs
-                :breadCrumbs="[{ label: 'Agendas', link: route('schedules.index') }, { label: 'Configuração de Agenda', link: '' }]">
+                :breadCrumbs="[{ label: 'Agendas', link: route('schedules.index') }, { label: 'Configuração de Agenda de ' + props.drivers[0].user.name, link: '' }]">
             </BreadCrumbs>
         </template>
 
@@ -109,10 +112,16 @@ function setDriver() {
                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Motorista
                             </label>
-                            <VueMultiselect v-model="driverUser" @select="setDriver" :options="props.drivers"
-                                :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
-                                :custom-label="driverName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
-
+                            <template v-if="!props.isEditMethod">
+                                <VueMultiselect v-model="driverUser" @select="setDriver" :options="props.drivers"
+                                    :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
+                                    :custom-label="driverName" track-by="id" selectLabel="Selecionar"
+                                    deselectLabel="Remover" />
+                            </template>
+                            <template v-else>
+                                <input type="text" class="w-full rounded border-0 dark:text-gray-500" readonly
+                                    :value="props.drivers[0].id + ' - ' + props.drivers[0].user.name" />
+                            </template>
                             <div v-if="$page.props.errors.driver"
                                 class="text-xs text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                 {{ $page.props.errors.driver }}
@@ -123,7 +132,7 @@ function setDriver() {
 
                     </div>
                 </div>
-                <!-- {{ _scheduleTemplate }} -->
+                {{ scheduleTemplate }}
                 <div :class="$page.props.app.settingsStyles.main.innerSection"
                     class="my-2 px-0.5 py-0.5 rounded grid grid-cols-1 md:grid-cols-2 pb-72">
 

@@ -7,7 +7,6 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Traits\Helpers;
 use App\Frota\Models\Driver;
-use App\Frota\Models\Garage;
 use Illuminate\Http\Request;
 use App\Frota\Models\Timetable;
 use App\Http\Controllers\Controller;
@@ -39,7 +38,8 @@ class SchedulesController extends Controller
         if ($this->can('Agenda Modelo Criar', 'Agenda Modelo Editar')) {
             return Inertia::render('Frota/Schedules/Create', [
                 'drivers' => Driver::with('user')->select('id')->get(),
-                'timetables' => Timetable::all(['id', 'time'])
+                'timetables' => Timetable::all(['id', 'time']),
+                'isEditMethod' => false
             ]);
         }
         return Inertia::render('Admin/403');
@@ -70,5 +70,23 @@ class SchedulesController extends Controller
     public function getDriverTimeTable(Request $request): ScheduleTemplate|null
     {
         return ScheduleTemplate::where('driver', $request->driver)->get()->first();
+    }
+
+    /**
+     * @param Request $request
+     * 
+     * @return Response
+     */
+    public function edit(Request $request): Response
+    {
+        if ($this->can('Agenda Modelo Criar', 'Agenda Modelo Editar')) {
+            return Inertia::render('Frota/Schedules/Create', [
+                'drivers' => Driver::with('user')->where('id', $request->schedule)->select('id')->get(),
+                'timetables' => Timetable::all(['id', 'time']),
+                'isEditMethod' => true
+                //'_checker' => setGetKey($request->schedule, 'edit_schedule_template'),
+            ]);
+        }
+        return Inertia::render('Admin/403');
     }
 }
