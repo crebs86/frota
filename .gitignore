@@ -1,6 +1,8 @@
 /*
 
 !.gitignore
+!composer.json
+!package.json
 
 !/app
 /app/*
