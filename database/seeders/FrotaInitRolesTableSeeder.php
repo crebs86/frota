@@ -72,14 +72,6 @@ class FrotaInitRolesTableSeeder extends Seeder
                 'id' => 14,
                 'name' => 'Garagem Administrar',
                 'updated_at' => now(),
-            ),
-            7 =>
-            array(
-                'created_at' => now(),
-                'guard_name' => 'web',
-                'id' => 15,
-                'name' => 'Modelo Agenda Administrar',
-                'updated_at' => now(),
             )
         ));
     }

@@ -1,7 +1,6 @@
 /*
 
 !.gitignore
-!package.json
 
 !/app
 /app/*
@@ -14,10 +13,17 @@
 
 !/resources/js
 /resources/js/*
-!app.js
 
 !/resources/js/Components
 /resources/js/Components/*
+
+!/resources/js/Components/Admin
+/resources/js/Components/Admin/*
+!/resources/js/Components/Admin/Menus
+/resources/js/Components/Admin/Menus/*
+!/resources/js/Components/Admin/Menus/MainMenu.vue
+!/resources/js/Components/Admin/Menus/Frota
+!/resources/js/Components/Admin/Menus/Frota/*
 
 !/resources/js/Layouts
 /resources/js/Layouts/*

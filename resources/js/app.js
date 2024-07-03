@@ -6,11 +6,8 @@ import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 
-import VCalendar from 'v-calendar';
-import 'v-calendar/style.css';
-
 import 'vue-toast-notification/dist/theme-sugar.css';
-import "vue-multiselect/dist/vue-multiselect.css";
+import 'vue-multiselect/dist/vue-multiselect.css';
 
 import mdiVue from 'mdi-vue/v3';
 import * as mdijs from '@mdi/js';
@@ -27,7 +24,6 @@ createInertiaApp({
             .use(mdiVue, {
                 icons: mdijs
             })
-            .use(VCalendar, {})
             .mount(el);
     },
     progress: {

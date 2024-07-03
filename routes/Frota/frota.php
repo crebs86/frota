@@ -10,18 +10,14 @@ use App\Frota\Controllers\GaragesController;
 use App\Frota\Controllers\ReportsController;
 use App\Frota\Controllers\IncidentsController;
 
-Route::prefix('/')->middleware(
+Route::prefix('/frota')->middleware(
     getSettingMustVerifyEmail() ? ['auth', 'verified'] : ['auth']
-)->group(function () {
+)->name('frota.')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
     Route::resource('/tarefas', TasksController::class, ['names' => 'tasks'])->parameter('tarefas', 'task')->withTrashed(['show', 'edit', 'update', 'restore']);
 
     Route::resource('/agendas', SchedulesController::class, ['names' => 'schedules'])->parameter('agendas', 'schedule')->withTrashed(['show', 'edit', 'update', 'restore']);
-
-    Route::post('/agendas/modelo/{driver}', [SchedulesController::class, 'storeScheduleTemplate'])->name('schedules.template.save');
-
-    Route::get('/agendas/{driver}/modelo', [SchedulesController::class, 'getDriverTimeTable'])->name('schedules.template.get');
 
     Route::resource('/carros', CarsController::class, ['names' => 'cars'])->parameter('carros', 'car')->withTrashed(['show', 'edit', 'update', 'restore']);
 

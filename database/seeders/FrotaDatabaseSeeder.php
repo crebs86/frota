@@ -13,9 +13,11 @@ class FrotaDatabaseSeeder extends Seeder
      */
     public function run()
     {
+
         $this->call(FrotaInitTimetablesTableSeeder::class);
         $this->call(FrotaInitPermissionsTableSeeder::class);
         $this->call(FrotaInitRolesTableSeeder::class);
         $this->call(FrotaInitRoleHasPermissionsTableSeeder::class);
+        $this->call(FrotaInitDriversPermissionsSeeder::class);
     }
 }

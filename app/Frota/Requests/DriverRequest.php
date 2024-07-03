@@ -24,13 +24,18 @@ class DriverRequest extends FormRequest
      */
     public function rules()
     {
+        $req = $this;
         return [
             'id' => ['int', Rule::unique('drivers')->ignore($this->driver)],
             'garagem_id' => ['int', 'nullable', Rule::exists('garages', 'id')],
             'carro_favorito' => ['int', 'nullable', Rule::exists('cars', 'id')],
             'proprio' => 'boolean',
             'cnh' => 'boolean|nullable',
-            'matricula' => 'max:25|string|required|regex:/^[0-9]+$/',
+            'matricula' => [
+                'max:25', 'string', 'regex:/^[0-9]+$/', 'nullable', Rule::requiredIf(function () use ($req) {
+                    return $req->proprio === true;
+                })
+            ],
 
         ];
     }

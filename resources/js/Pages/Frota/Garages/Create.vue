@@ -1,8 +1,9 @@
 <script setup>
 
-import FrotaLayout from '@/Layouts/Frota/FrotaLayout.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
+import SubSection from '@/Components/Admin/SubSection.vue';
 import VueMultiselect from 'vue-multiselect';
-import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { toast } from '@/toast'
@@ -27,7 +28,7 @@ function saveDriver() {
     //fazer verificação de valores nulos
     garage.id = _branch.value?.id;
     if (garage.id) {
-        garage.post(route('garages.store'), {
+        garage.post(route('frota.garages.store'), {
             onSuccess: (a) => {
                 console.log(a)
             },
@@ -45,65 +46,68 @@ function saveDriver() {
 </script>
 
 <template>
-    <Head title="Frota Inteligente" />
 
-    <FrotaLayout>
+    <Head title="Gararagens" />
 
-        <template #currentPage>
-            <BreadCrumbs
-                :breadCrumbs="[{ label: 'Garagens', link: route('garages.index') }, { label: 'Nova Garagem', link: '' }]">
-            </BreadCrumbs>
+    <AuthenticatedLayout>
+
+        <template #inner_menu>
+            <FrotaMenu />
         </template>
+        <SubSection>
+            <template #header>
+                Garagens
+            </template>
+            <template #content>
+                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-max">
+                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded">
+                        <div class="relative mb-6 w-full z-auto h-[calc(100vh/1.33)]">
+                            <div class="mt-2">
+                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    Selecione uma unidade para cadastrar garagem
+                                </label>
+                                <VueMultiselect v-model="_branch" :options="branchesOptions" :multiple="false"
+                                    :close-on-select="true" selectedLabel="atual" placeholder="Unidades"
+                                    :custom-label="branchName" track-by="id" selectLabel="Selecionar"
+                                    deselectLabel="Remover" />
 
-        <template #contentMain>
-            <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-max">
-                <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded">
-                    <div class="relative mb-6 w-full z-auto h-[calc(100vh/1.33)]">
-                        <div class="mt-2">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                Selecione uma unidade para cadastrar garagem
-                            </label>
-                            <VueMultiselect v-model="_branch" :options="branchesOptions" :multiple="false"
-                                :close-on-select="true" selectedLabel="atual" placeholder="Unidades"
-                                :custom-label="branchName" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
-
-                            <div v-if="$page.props.errors.id"
-                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                {{ $page.props.errors.id }}
+                                <div v-if="$page.props.errors.id"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    {{ $page.props.errors.id }}
+                                </div>
                             </div>
+                            <div class="px-0.5 mt-1">
+                                <ul>
+                                    <li>
+                                        <span class="font-bold">Código:</span> {{ _branch?.id }}
+                                    </li>
+                                    <li>
+                                        <span class="font-bold">Nome:</span> {{ _branch?.name }}
+                                    </li>
+                                    <li>
+                                        <span class="font-bold">Email:</span> {{ _branch?.email }}
+                                    </li>
+                                    <li>
+                                        <span class="font-bold">Endereço:</span> {{ _branch?.address }}
+                                    </li>
+                                    <li>
+                                        <span class="font-bold">Contato:</span> {{ _branch?.phones }}
+                                    </li>
+                                    <li>
+                                        <span class="font-bold">Observações:</span> {{ _branch?.notes }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <button type="button" @click="saveDriver"
+                                class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                                Cadastrar Garagem
+                            </button>
                         </div>
-                        <div class="px-0.5 mt-1">
-                            <ul>
-                                <li>
-                                    <span class="font-bold">Código:</span> {{ _branch?.id }}
-                                </li>
-                                <li>
-                                    <span class="font-bold">Nome:</span> {{ _branch?.name }}
-                                </li>
-                                <li>
-                                    <span class="font-bold">Email:</span> {{ _branch?.email }}
-                                </li>
-                                <li>
-                                    <span class="font-bold">Endereço:</span> {{ _branch?.address }}
-                                </li>
-                                <li>
-                                    <span class="font-bold">Contato:</span> {{ _branch?.phones }}
-                                </li>
-                                <li>
-                                    <span class="font-bold">Observações:</span> {{ _branch?.notes }}
-                                </li>
-                            </ul>
-                        </div>
-                        <button type="button" @click="saveDriver"
-                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
-                            Cadastrar Garagem
-                        </button>
                     </div>
                 </div>
-            </div>
-        </template>
-
-    </FrotaLayout>
+            </template>
+        </SubSection>
+    </AuthenticatedLayout>
 </template>
 <style scoped>
 input:checked~.dot {
