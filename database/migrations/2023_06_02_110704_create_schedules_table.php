@@ -12,31 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('schedules', function (Blueprint $table) {
-            $table->id();
-
-            $table->unsignedBigInteger('driver');
+            $table->unsignedBigInteger('driver')->unique();
             $table->foreign('driver')
                 ->references('id')
                 ->on('drivers');
 
-            $table->unsignedBigInteger('car');
-            $table->foreign('car')
-                ->references('id')
-                ->on('cars');
-
-            $table->unsignedBigInteger('from');
-            $table->foreign('from')
-                ->references('id')
-                ->on('branches');
-
-            $table->unsignedBigInteger('to');
-            $table->foreign('to')
-                ->references('id')
-                ->on('branches');
-
-            $table->text('creators');
-
-            $table->string('obs')->nullable();
+            $table->time('morning_start')->nullable();
+            $table->time('morning_end')->nullable();
+            $table->time('afternoon_start')->nullable();
+            $table->time('afternoon_end')->nullable();
+            $table->time('night_start')->nullable();
+            $table->time('night_end')->nullable();
+            $table->time('special_start')->nullable();
+            $table->time('special_end')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

@@ -27,8 +27,8 @@ import has from '@/arrayHelpers'
         </div>
         <div v-if="has($page.props.auth.permissions, ['ACL Editar', 'ACL Ver', 'ACL Criar', 'ACL Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
             class="col-span-1 flex flex-col items-center">
-            <Link :href="route('admin.acl.permissions.index')" class="flex flex-col items-center max-w-fill"
-                :class="route().current('admin.acl.permissions.*') ? 'text-emerald-500 dark:text-lime-300' : 'text-gray-600 hover:text-emerald-600 dark:hover:text-lime-300'">
+            <Link :href="route('frota.cars.index')" class="flex flex-col items-center max-w-fill"
+                :class="route().current('frota.cars.*') ? 'text-emerald-500 dark:text-lime-300' : 'text-gray-600 hover:text-emerald-600 dark:hover:text-lime-300'">
             <mdicon name="car-multiple" title="Veículos" />
             <span class="text-[10px] font-bold text-center">
                 Veículos
@@ -37,8 +37,8 @@ import has from '@/arrayHelpers'
         </div>
         <div v-if="has($page.props.auth.permissions, ['ACL Editar', 'ACL Ver', 'ACL Criar', 'ACL Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
             class="col-span-1 flex flex-col items-center">
-            <Link :href="route('admin.acl.permissions.index')" class="flex flex-col items-center max-w-fill"
-                :class="route().current('admin.acl.permissions.*') ? 'text-emerald-500 dark:text-lime-300' : 'text-gray-600 hover:text-emerald-600 dark:hover:text-lime-300'">
+            <Link :href="route('frota.schedules.index')" class="flex flex-col items-center max-w-fill"
+                :class="route().current('frota.schedules.*') ? 'text-emerald-500 dark:text-lime-300' : 'text-gray-600 hover:text-emerald-600 dark:hover:text-lime-300'">
             <mdicon name="car-clock" title="Agendas" />
             <span class="text-[10px] font-bold text-center">
                 Agendas

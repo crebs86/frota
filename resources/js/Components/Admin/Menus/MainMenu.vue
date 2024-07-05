@@ -44,8 +44,6 @@ onMounted: {
         numberMenuItems.value++
     }
     classNumberMenuItems.value = numberMenuItems.value > 8 ? parseInt(numberMenuItems.value / 2) : numberMenuItems.value;
-
-    console.log(classNumberMenuItems.value)
 }
 const showMenuItems = 'grid grid-cols-' + classNumberMenuItems.value;
 

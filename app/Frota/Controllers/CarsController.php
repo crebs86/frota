@@ -54,7 +54,7 @@ class CarsController extends Controller
         if ($this->can('Carros Criar')) {
 
             if ($d = $car->create($carRequest->validated())) {
-                return redirect(route('cars.index'))->with('success', 'Carro adicionado!');
+                return redirect(route('frota.cars.index'))->with('success', 'Carro adicionado!');
             }
             return redirect()->back()->with('error', 'Ocorreu um erro ao adicionar garagem');
         }

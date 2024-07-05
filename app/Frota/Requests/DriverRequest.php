@@ -2,11 +2,13 @@
 
 namespace App\Frota\Requests;
 
+use App\Traits\ACL;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DriverRequest extends FormRequest
 {
+    use ACL;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,7 +16,7 @@ class DriverRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->can('Motorista Ver', 'Motorista Criar', 'Motorista Editar' ,'Motorista Apagar');
     }
 
     /**

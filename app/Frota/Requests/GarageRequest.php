@@ -2,11 +2,13 @@
 
 namespace App\Frota\Requests;
 
+use App\Traits\ACL;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GarageRequest extends FormRequest
 {
+    use ACL;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,7 +16,7 @@ class GarageRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->can('Garagem Ver', 'Garagem Criar', 'Garagem Editar' ,'Garagem Apagar');
     }
 
     /**

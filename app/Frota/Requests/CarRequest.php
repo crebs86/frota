@@ -2,11 +2,13 @@
 
 namespace App\Frota\Requests;
 
+use App\Traits\ACL;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CarRequest extends FormRequest
 {
+    use ACL;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,7 +16,7 @@ class CarRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->can('Carro Ver', 'Carro Criar', 'Carro Editar' ,'Carro Apagar');
     }
 
     /**
@@ -24,13 +26,16 @@ class CarRequest extends FormRequest
      */
     public function rules()
     {
+        $req = $this;
         return [
             'garagem_id' => ['int', 'nullable', Rule::exists('garages', 'id')],
             'marca' => 'max:25',
             'modelo' => 'max:55',
             'placa' => 'max:7',
             'patrimonio' => 'boolean|nullable',
-            'tombo' => 'max:55|nullable'
+            'tombo' => ['max:55', 'nullable', Rule::requiredIf(function () use ($req) {
+                return $req->patrimonio === true;
+            })]
         ];
     }
 
@@ -39,6 +44,7 @@ class CarRequest extends FormRequest
         return [
             'garagem_id.exists' => 'Garagem não existe.',
             'tombo.max' => 'Número de patrimônio muito grande.',
+            'tombo.required' => 'Informe o número de patrimônio.',
         ];
     }
 }

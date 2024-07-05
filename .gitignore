@@ -10,6 +10,15 @@
 !/app/Frota
 !/app/Frota/helpers.php
 
+!/app/Http
+/app/Http/*
+!/app/Http/Controllers
+/app/Http/Controllers/*
+!/app/Http/Controllers/Admin
+/app/Http/Controllers/Admin/*
+!/app/Http/Controllers/Admin/UserController.php
+
+
 !/resources
 /resources/*
 
@@ -41,6 +50,10 @@
 !/resources/js/Pages/Frota
 !/resources/views/Frota
 
+!/resources/js/Pages/Admin
+/resources/js/Pages/Admin/*
+!/resources/js/Pages/Admin/UserEdit.vue
+
 !/routes
 /routes/*
 
@@ -53,6 +66,7 @@
 /database/migrations/*
 
 !/database/migrations/2023_06_02_*
+!/database/migrations/2014_10_12_000000_create_users_table.php
 
 !/database/seeders
 /database/seeders/*

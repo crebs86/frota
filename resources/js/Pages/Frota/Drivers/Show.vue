@@ -37,7 +37,7 @@ function saveDriver() {
     driverForm.garagem_id = driverForm.garagem_id ? driverForm.garagem_id.id : null;
     driverForm.carro_favorito = driverForm.carro_favorito ? driverForm.carro_favorito.id : null;
 
-    driverForm.put(route('drivers.update', props.driver[0].id), {
+    driverForm.put(route('frota.drivers.update', props.driver[0].id), {
         onSuccess: () => {
             driverForm.garagem_id = props.driver[0].garage;
             driverForm.carro_favorito = props.driver[0].car;
