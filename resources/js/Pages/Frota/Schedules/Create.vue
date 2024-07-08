@@ -3,8 +3,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import VueMultiselect from 'vue-multiselect';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, router } from '@inertiajs/vue3';
 import { toast } from '@/toast';
+import axios from 'axios';
 
 const props = defineProps({
     drivers: Object,
@@ -48,6 +49,27 @@ function split(obj, start, end) {
     return obj.filter((o) => o.id >= start && o.id <= end);
 }
 
+function verifyDriverSchedule() {
+
+    setTimeout(
+        () => {
+            axios.post(route('frota.schedules.driver', schedule.driver.id))
+                .then((r) => {
+                    if (r.data.length >= 1) {
+                        toast.warning('Já existe agenda para o motorista selecionado. Entrando em modo de edição.', {
+                            duration: 3000
+                        });
+                        router.visit(route('frota.schedules.edit', schedule.driver.id))
+                    }
+                })
+                .catch((e) => {
+                    console.log(e)
+                    toast.error('Foram encontrado erros ao processar sua solicitação');
+                })
+        }, 150
+    )
+}
+
 </script>
 
 <template>
@@ -64,7 +86,6 @@ function split(obj, start, end) {
                 Configurar Agenda
             </template>
             <template #content>
-                
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded">
                         <div class="relative mb-6 w-full z-auto min-h-fit">
@@ -76,7 +97,7 @@ function split(obj, start, end) {
                                 <VueMultiselect v-model="schedule.driver" :options="props.drivers" :multiple="false"
                                     :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
                                     :custom-label="driverName" track-by="id" selectLabel="Selecionar"
-                                    deselectLabel="Remover" />
+                                    @select="verifyDriverSchedule" deselectLabel="Remover" />
 
                                 <div v-if="$page.props.errors.driver_id"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">

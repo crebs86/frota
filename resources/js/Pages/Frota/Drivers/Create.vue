@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import VueMultiselect from 'vue-multiselect';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { toast } from '@/toast'
 
@@ -85,8 +85,11 @@ function saveDriver() {
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded">
                         <div class="relative mb-6 w-full z-auto h-[calc(100vh/1.33)]">
                             <div>
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                     Selecione um usuário*
+                                    <Link :href="route('admin.acl.users.create')" class="ml-1.5 -mt-1">
+                                    <mdicon name="account-plus" title="Criar Usuário" />
+                                    </Link>
                                 </label>
                                 <VueMultiselect v-model="_id" :options="userOptions" :multiple="false"
                                     :close-on-select="true" selectedLabel="atual" placeholder="Usuários ativos"
@@ -98,8 +101,11 @@ function saveDriver() {
                                 </div>
                             </div>
                             <div class="mt-2">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                     Selecione uma garagem (opcional)
+                                    <Link :href="route('branches.create')" class="ml-1.5 -mt-1">
+                                    <mdicon name="source-branch-plus" title="Nova Unidade" />
+                                    </Link>
                                 </label>
                                 <VueMultiselect v-model="_garagem" :options="garageOptions" :multiple="false"
                                     :close-on-select="true" selectedLabel="atual" placeholder="Garagens"
@@ -112,8 +118,11 @@ function saveDriver() {
                                 </div>
                             </div>
                             <div class="mt-2">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                     Selecione um carro favorito (opcional)
+                                    <Link :href="route('frota.cars.create')">
+                                        <mdicon name="plus" title="Novo Carro"/>
+                                    </Link>
                                 </label>
                                 <VueMultiselect v-model="_carro_favorito" :options="carOptions" :multiple="false"
                                     :close-on-select="true" selectedLabel="atual" placeholder="Carro favorito"
@@ -125,7 +134,7 @@ function saveDriver() {
                                     {{ $page.props.errors.carro_favorito }}
                                 </div>
                             </div>
-                            <div class="mt-2">
+                            <div class="mt-3 ml-1.5">
                                 <div class="flex w-full mb-5">
                                     <label for="proprio" class="flex items-center cursor-pointer">
                                         <div class="relative">
@@ -149,7 +158,7 @@ function saveDriver() {
                                     {{ $page.props.errors.proprio }}
                                 </div>
                             </div>
-                            <div class="mt-2">
+                            <div class="mt-2 ml-1.5">
                                 <div class="flex w-full mb-5">
                                     <label for="cnh" class="flex items-center cursor-pointer">
                                         <div class="relative">

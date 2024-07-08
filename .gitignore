@@ -72,3 +72,8 @@
 /database/seeders/*
 
 !/database/seeders/Frota*
+!/database/seeders/UsersSeeder.php
+!/database/seeders/BranchesSeed.php
+!/database/seeders/ClientsSeed.php
+!/database/seeders/DatabaseSeeder.php
+!/database/seeders/InitUsersTableSeeder.php

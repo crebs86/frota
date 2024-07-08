@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import VueMultiselect from 'vue-multiselect';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { toast } from '@/toast'
 
@@ -63,8 +63,11 @@ function saveDriver() {
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded">
                         <div class="relative mb-6 w-full z-auto h-[calc(100vh/1.33)]">
                             <div class="mt-2">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                     Selecione uma unidade para cadastrar garagem
+                                    <Link :href="route('branches.create')" class="ml-1.5">
+                                    <mdicon name="source-branch-plus" title="Nova Unidade" />
+                                    </Link>
                                 </label>
                                 <VueMultiselect v-model="_branch" :options="branchesOptions" :multiple="false"
                                     :close-on-select="true" selectedLabel="atual" placeholder="Unidades"

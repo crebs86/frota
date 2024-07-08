@@ -13,7 +13,10 @@ class Schedule extends Model
 
     protected $fillable = ['driver', 'morning_start', 'morning_end', 'afternoon_start', 'afternoon_end', 'night_start', 'night_end', 'special_start', 'special_end'];
 
-    public function driverName(){
+    public $primaryKey = 'driver';
+
+    public function driverName()
+    {
         return $this->hasOne(Driver::class, 'id', 'driver')->select('id')->with('user');
     }
 }

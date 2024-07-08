@@ -3,8 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import VueMultiselect from 'vue-multiselect';
-import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
 import { toast } from '@/toast'
 import { ref } from 'vue';
 
@@ -142,8 +141,11 @@ function saveCar() {
                             </div>
 
                             <div class="mt-2">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                     Selecione uma garagem (opcional)
+                                    <Link :href="route('branches.create')" class="ml-1.5">
+                                    <mdicon name="source-branch-plus" title="Nova Unidade" />
+                                    </Link>
                                 </label>
                                 <VueMultiselect v-model="_garagem" :options="garageOptions" :multiple="false"
                                     :close-on-select="true" selectedLabel="atual" placeholder="Garagens"

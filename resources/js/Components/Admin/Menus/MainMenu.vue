@@ -72,7 +72,7 @@ const showMenuItems = 'grid grid-cols-' + classNumberMenuItems.value;
                     :class="route().current('frota.*') ? $page.props.app.settingsStyles.mainMenu.iconsActive : $page.props.app.settingsStyles.mainMenu.icons">
                 <mdicon name="garage-variant" title="Controle de Acesso" class="h-6 w-6" />
                 <span class="text-[9px] md:text-[14px] font-medium text-center">
-                    Garagem
+                    Frota
                 </span>
                 </Link>
             </div>
