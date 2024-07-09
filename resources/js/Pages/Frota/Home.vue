@@ -8,7 +8,7 @@ import { Head, Link } from '@inertiajs/vue3';
 
 <template>
 
-    <Head title="Frota Inteligente" />
+    <Head title="Rotas" />
 
     <AuthenticatedLayout>
         <template #inner_menu>
@@ -16,7 +16,7 @@ import { Head, Link } from '@inertiajs/vue3';
         </template>
         <SubSection>
             <template #header>
-                Sobre o Recurso
+                Rotas
             </template>
             <template #content>
                 <div class="flex flex-wrap my-5 -mx-2">
@@ -34,14 +34,16 @@ import { Head, Link } from '@inertiajs/vue3';
                             </div>
                             <div class="flex flex-col justify-around flex-grow ml-5 text-white">
                                 <div class="text-xs whitespace-nowrap">
-                                    Motoristas Disponíveis
+                                    Motoristas Ativos
                                 </div>
                                 <div class="">
-                                    100
+                                    {{ $page.props.drivers_count }}
                                 </div>
                             </div>
                             <div class=" flex items-center flex-none text-white">
+                                <Link :href="route('frota.drivers.index')">
                                 <mdicon name="chevron-right" />
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -59,14 +61,16 @@ import { Head, Link } from '@inertiajs/vue3';
                             </div>
                             <div class="flex flex-col justify-around flex-grow ml-5 text-white">
                                 <div class="text-xs whitespace-nowrap">
-                                    Carros Disponíveis
+                                    Carros Cadastrados
                                 </div>
                                 <div class="">
-                                    100
+                                    {{ $page.props.cars_count }}
                                 </div>
                             </div>
                             <div class=" flex items-center flex-none text-white">
+                                <Link :href="route('frota.cars.index')">
                                 <mdicon name="chevron-right" />
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -84,20 +88,22 @@ import { Head, Link } from '@inertiajs/vue3';
                             </div>
                             <div class="flex flex-col justify-around flex-grow ml-5 text-white">
                                 <div class="text-xs whitespace-nowrap">
-                                    Agendas Previstas
+                                    Tarefas Previstas
                                 </div>
                                 <div class="">
                                     500
                                 </div>
                             </div>
                             <div class=" flex items-center flex-none text-white">
-                                <mdicon name="chevron-right" />
+                                <!--mdicon name="chevron-right" /-->
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800"
+
+
+                <!--div class="p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800"
                     role="alert">
                     <span class="font-medium">Info alert!</span> Change a few things up and try submitting again.
                 </div>
@@ -108,7 +114,7 @@ import { Head, Link } from '@inertiajs/vue3';
                 <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
                     role="alert">
                     <span class="font-medium">Success alert!</span> Change a few things up and try submitting again.
-                </div>
+                </div-->
             </template>
         </SubSection>
     </AuthenticatedLayout>

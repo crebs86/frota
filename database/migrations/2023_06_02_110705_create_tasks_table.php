@@ -12,6 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tasks', function (Blueprint $table) {
+            $table->unsignedBigInteger('user');
+            $table->foreign('user')
+                ->references('id')
+                ->on('users');
+
             $table->unsignedBigInteger('driver');
             $table->foreign('driver')
                 ->references('id')
@@ -32,11 +37,16 @@ return new class extends Migration
                 ->references('id')
                 ->on('branches');
 
-            $table->text('creators');
+            $table->int('vacancy')->nullable();
+
+            $table->int('order');
 
             $table->string('obs')->nullable();
 
-            $table->softDeletes();
+            $table->date('date');
+
+            $table->time('time');
+
             $table->timestamps();
         });
     }

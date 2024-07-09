@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import hasPermission from '@/permissions'
+import hasPermission from '@/permissions';
 
 </script>
 
@@ -50,8 +50,15 @@ import hasPermission from '@/permissions'
                                     <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
                                         {{ s.driver_name.user.name }}
                                     </td>
-                                    <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                        <div class="flex justify-center gap-1">
+                                    <td
+                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-left">
+                                        <div class="flex gap-1">
+
+                                            <Link :href="route('frota.schedules.show', s.driver)" title="Ver"
+                                                v-if="hasPermission(
+                                                    $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar', 'Carros Ver']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                                            <mdicon name="car-search" />
+                                            </Link>
 
                                             <Link :href="route('frota.schedules.edit', s.driver)" title="Editar"
                                                 v-if="hasPermission(

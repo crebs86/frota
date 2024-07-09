@@ -1,30 +1,29 @@
 <script setup>
-import SimpleTable from '@/Components/Frota/SimpleTable.vue';
-import FrotaLayout from '@/Layouts/Frota/FrotaLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import BreadCrumbs from '@/Components/Frota/BreadCrumbs.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import SubSection from '@/Components/Admin/SubSection.vue';
+import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
+import { Head } from '@inertiajs/vue3';
 
 </script>
 
 <template>
-    <Head title="Frota Inteligente" />
 
-    <FrotaLayout>
+    <Head title="Tarefas" />
 
-        <template #currentPage>
-            <BreadCrumbs
-                :breadCrumbs="[{ label: 'Minhas Tarefas', link: route('tasks.index') }]">
-            </BreadCrumbs>
+    <AuthenticatedLayout>
+
+        <template #inner_menu>
+            <FrotaMenu />
         </template>
-
-        <template #contentMain>
-            <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
-                <SimpleTable 
-                :titles="['Início', 'Fim', 'Local', 'Responsável', 'Ações']" 
-                
-                />
-            </div>
-        </template>
-
-    </FrotaLayout>
+        <SubSection>
+            <template #header>
+                Tarefas
+            </template>
+            <template #content>
+                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
+                    Tarefas
+                </div>
+            </template>
+        </SubSection>
+    </AuthenticatedLayout>
 </template>

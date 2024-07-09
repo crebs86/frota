@@ -63,7 +63,6 @@ function verifyDriverSchedule() {
                     }
                 })
                 .catch((e) => {
-                    console.log(e)
                     toast.error('Foram encontrado erros ao processar sua solicitação');
                 })
         }, 150
