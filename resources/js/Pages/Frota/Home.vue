@@ -61,7 +61,7 @@ import { Head, Link } from '@inertiajs/vue3';
                             </div>
                             <div class="flex flex-col justify-around flex-grow ml-5 text-white">
                                 <div class="text-xs whitespace-nowrap">
-                                    Carros Cadastrados
+                                    Veículos Cadastrados
                                 </div>
                                 <div class="">
                                     {{ $page.props.cars_count }}

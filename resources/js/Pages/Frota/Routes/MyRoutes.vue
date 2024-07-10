@@ -9,7 +9,7 @@ import hasPermission from '@/permissions';
 
 <template>
 
-    <Head title="Agendas" />
+    <Head title="Minhas Rotas" />
 
     <AuthenticatedLayout>
 
@@ -18,23 +18,16 @@ import hasPermission from '@/permissions';
         </template>
         <SubSection>
             <template #header>
-                Garagens
+                Minhas Rotas
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
-                    <Link
-                        v-if="hasPermission(
-                            $page.props.auth.permissions, ['Agenda Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
-                        class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
-                        :href="route('frota.schedules.create')" title="Nova Agenda">
-                    <mdicon name="car-arrow-right" />
-                    <div>
-                        Nova Agenda
-                    </div>
-                    </Link>
 
                     <div class="p-2 rounded-lg overflow-y-auto"
                         :class="$page.props.app.settingsStyles.main.innerSection">
+
+                        
+
                         <table class="min-w-full">
                             <thead>
                                 <tr>

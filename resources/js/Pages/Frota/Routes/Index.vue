@@ -2,14 +2,25 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import VueMultiselect from 'vue-multiselect';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import hasPermission from '@/permissions';
+
+const filter = useForm({
+    date: '',
+    branch: '',
+    driver: ''
+});
+
+function drivers(id) {
+    return id.user.name
+}
 
 </script>
 
 <template>
 
-    <Head title="Agendas" />
+    <Head title="Rotas" />
 
     <AuthenticatedLayout>
 
@@ -18,20 +29,45 @@ import hasPermission from '@/permissions';
         </template>
         <SubSection>
             <template #header>
-                Garagens
+                Rotas
             </template>
             <template #content>
-                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
-                    <Link
-                        v-if="hasPermission(
-                            $page.props.auth.permissions, ['Agenda Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
-                        class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
-                        :href="route('frota.schedules.create')" title="Nova Agenda">
-                    <mdicon name="car-arrow-right" />
-                    <div>
-                        Nova Agenda
+                {{ filter }}
+                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 h-[calc(100vh/1.66)]">
+                    <p class="text-lg mb-1.5">Filtrar Rotas</p>
+                    <div class="p-2 rounded-lg grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="relative z-0 mb-6 w-full group">
+                            <div>&nbsp;</div>
+                            <input type="date" name="name" id="name" v-model="filter.date"
+                                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                placeholder=" " />
+                            <label for="name"
+                                class="absolute text-lg duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                Data
+                            </label>
+                            <div v-if="$page.props.errors.date" class="text-sm text-red-500">
+                                {{ $page.props.errors.date }}
+                            </div>
+                        </div>
+                        <div class="relative z-10 mb-6 w-full md:col-span-2">
+                            <div>Unidade</div>
+                            <VueMultiselect v-model="filter.branch" :options="$page.props.branches" :multiple="false"
+                                :close-on-select="true" placeholder="Unidade" label="name" track-by="id"
+                                selectLabel="Selecionar" deselectLabel="Remover" />
+                        </div>
+                        <div class="relative z-10 mb-6 w-full md:col-span-2">
+                            <div>Motorista</div>
+                            <VueMultiselect v-model="filter.driver" :options="$page.props.drivers" :multiple="false"
+                                :close-on-select="true" placeholder="Motorista" :custom-label="drivers" track-by="id"
+                                selectLabel="Selecionar" deselectLabel="Remover" />
+                        </div>
+                        <div>
+                            <button type="button" 
+                                class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                                Filtrar
+                            </button>
+                        </div>
                     </div>
-                    </Link>
 
                     <div class="p-2 rounded-lg overflow-y-auto"
                         :class="$page.props.app.settingsStyles.main.innerSection">

@@ -22,7 +22,7 @@ class FrotaInitRolesTableSeeder extends Seeder
                 'created_at' => now(),
                 'guard_name' => 'web',
                 'id' => 8,
-                'name' => 'Morotista',
+                'name' => 'Motorista',
                 'updated_at' => now(),
             ),
             1 =>

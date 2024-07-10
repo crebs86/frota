@@ -349,14 +349,6 @@ class UserController extends Controller
 
                 $branches = Branch::orderBy('name')->select(['id', 'name'])->get();
 
-                $user->branch_id = [$user->branch_id];
-
-                $user->branch_id = array_values(
-                    array_filter($branches->toArray(), function ($k) use ($user) {
-                        return in_array($k['id'], $user->branch_id ?? []);
-                    })
-                );
-
                 return Inertia::render(
                     'Admin/UserEdit',
                     [
@@ -384,7 +376,6 @@ class UserController extends Controller
 
                 $user = User::withTrashed()
                     ->find($request->user);
-                $user->branch_id = json_decode($user->branch_id);
                 $u = collect($user)->all();
 
                 $updated = $user->update(

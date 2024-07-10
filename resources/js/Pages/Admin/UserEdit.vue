@@ -31,8 +31,8 @@ const user = useForm({
 const _branch = ref(props.user.branch_id);
 
 function saveUser() {
-    const pluck = (arr, key) => arr.map(i => i[key]);
-    user.branch_id = pluck(_branch.value, 'id');
+    //const pluck = (arr, key) => arr.map(i => i[key]);
+    //user.branch_id = pluck(_branch.value, 'id');
     user.put(route('admin.acl.users.update', props.user.id), {
         onSuccess: () => {
             if (usePage().props.flash.success) {

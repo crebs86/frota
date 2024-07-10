@@ -65,7 +65,7 @@ const showMenuItems = 'grid grid-cols-' + classNumberMenuItems.value;
                 </span>
                 </Link>
             </div>
-            <div v-if="has(usePage().props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar', 'Usuario Editar', 'Usuario Ver', 'Usuario Criar', 'Usuario Apagar'])
+            <div v-if="has(usePage().props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar', 'Ocorrência Editar', 'Ocorrência Ver', 'Ocorrência Criar', 'Ocorrência Apagar', 'Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar'])
                 || has(usePage().props.auth.roles, ['Super Admin'])" class="flex flex-col items-center">
                 <Link :href="route('frota.home')" :active="route().current('frota.*')"
                     class="col-span-1 flex flex-col items-center max-w-max"

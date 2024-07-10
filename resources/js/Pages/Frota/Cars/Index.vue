@@ -26,7 +26,7 @@ import hasPermission from '@/permissions'
                     <Link
                         v-if="hasPermission(
                             $page.props.auth.permissions, ['Carro Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
-                        class="flex gap-1 max-w-max hover:text-gray-700 dark:hover:text-green-100 p-1.5 border m-0.5 mb-1 rounded"
+                        class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
                         :href="route('frota.cars.create')" title="Novo Carro">
                     <mdicon name="car-arrow-right" />
                     <div>
