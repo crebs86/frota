@@ -17,6 +17,7 @@ Route::prefix('/frota')->middleware(
 
     Route::resource('/rotas', RoutesController::class, ['names' => 'routes'])->parameter('rotas', 'route')->withTrashed(['show', 'edit', 'update', 'restore']);
     Route::get('/tarefas/minhas', [RoutesController::class, 'myRoutes'])->name('my-routes');
+    Route::post('/tarefas', [RoutesController::class, 'filter'])->name('tasks.filter');
 
     Route::resource('/agendas', SchedulesController::class, ['names' => 'schedules'])->parameter('agendas', 'schedule')->withTrashed(['show', 'edit', 'update', 'restore']);
     Route::post('/agendas/motorista/{driver}', [SchedulesController::class, 'verifyDriverSchedule'])->name('schedules.driver');

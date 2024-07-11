@@ -82,7 +82,7 @@ function verifyDriverSchedule() {
         </template>
         <SubSection>
             <template #header>
-                Configurar Agenda
+                Criar Rotas
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
