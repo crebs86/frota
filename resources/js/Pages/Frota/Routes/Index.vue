@@ -20,12 +20,14 @@ function drivers(id) {
 }
 
 function filtering() {
-    if (!filter.date) {
-        page.props.errors.date = 'Informe um data para prosseguir.'
+    if (!filter.date || (!filter.branch && !filter.driver)) {
+        page.props.errors.date = 'Informe uma data e, uma unidade ou motorista para prosseguir.'
     } else {
         filter.post(route('frota.tasks.filter'), {
-            onSuccess: (r) => {
-                console.log(r)
+            onSuccess: () => {
+                if(page.props.flash.error){
+                    toast.warning(page.props.flash.error)
+                }
             },
             onError: () => {
                 toast.error('Erro ao processar solicitação.');
@@ -57,7 +59,7 @@ function clean(model) {
             <template #header>
                 Rotas
                 <Link :href="route('frota.routes.create')" class="mt-0.5">
-                    <mdicon name="plus" />
+                <mdicon name="plus" />
                 </Link>
             </template>
             <template #content>
@@ -73,9 +75,6 @@ function clean(model) {
                                 class="absolute text-lg duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                 Data*
                             </label>
-                            <div v-if="$page.props.errors.date" class="text-sm text-red-500">
-                                {{ $page.props.errors.date }}
-                            </div>
                         </div>
                         <div class="relative z-10 mb-6 w-full md:col-span-2">
                             <div>Unidade</div>
@@ -88,6 +87,10 @@ function clean(model) {
                             <VueMultiselect v-model="filter.driver" :options="$page.props.drivers" :multiple="false"
                                 :close-on-select="true" placeholder="Motorista" :custom-label="drivers" track-by="id"
                                 selectLabel="Selecionar" deselectLabel="Remover" @select="clean('driver')" />
+                        </div>
+
+                        <div v-if="$page.props.errors.date" class="text-sm text-red-500 md:col-span-5">
+                            {{ $page.props.errors.date }}
                         </div>
                         <div>
                             <button type="button" @click="filtering" :disabled="filter.processing"

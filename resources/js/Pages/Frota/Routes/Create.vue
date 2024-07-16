@@ -3,70 +3,76 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import VueMultiselect from 'vue-multiselect';
-import { Head, useForm, router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { toast } from '@/toast';
 import axios from 'axios';
+import { ref } from 'vue';
 
 const props = defineProps({
     drivers: Object,
+    branches: Object,
     timetables: Object,
     errors: Object
 });
 
 
-const schedule = useForm({
-    driver: { id: '', name: '' },
-    driver_id: '',
-    timeMorningStart: '',
-    timeMorningEnd: '',
-    timeAfternoonStart: '',
-    timeAfternoonEnd: '',
-    timeNightStart: '',
-    timeNightEnd: '',
-    timeSpecialStart: '',
-    timeSpecialEnd: '',
+const routeForm = ref({
+    driver: '',
+    date: '',
+    time: '',
+    branch: ''
 });
 
 function driverName({ id, user }) {
     return `${id ? id : ''} - ${user?.name ? user.name : ''}`
 }
 
-function saveSchedule() {
-    schedule.driver_id = schedule.driver.id;
-    schedule.post(route('frota.schedules.store'), {
-        onSuccess: (a) => {
-            toast.success('Agenda atualizada com sucesso.');
-        },
-        onError: () => {
-            if (props.errors) {
-                toast.error('Foram encontrado erros ao processar sua solicitação');
-            }
-        },
+function branchName({ id, name }) {
+    return `${id ? id : ''} - ${name ? name : ''}`
+}
+
+function saveRoute() {
+    axios.post(route('frota.tasks.route.store'), {
+        driver: routeForm.value.driver.id,
+        date: routeForm.value.date,
+        time: routeForm.value.time.time,
+        branch: routeForm.value.branch.id
     })
+        .then((r) => {
+            toast.success(r.data.message)
+            resetForm()
+        })
 }
 
-function split(obj, start, end) {
-    return obj.filter((o) => o.id >= start && o.id <= end);
+function resetForm() {
+    routeForm = {
+        time: '',
+        branch: ''
+    };
 }
 
-function verifyDriverSchedule() {
+function verifyDriverRoute() {
 
-    setTimeout(
-        () => {
-            axios.post(route('frota.schedules.driver', schedule.driver.id))
-                .then((r) => {
-                    if (r.data.length >= 1) {
-                        toast.warning('Já existe agenda para o motorista selecionado. Entrando em modo de edição.', {
-                            duration: 3000
-                        });
-                        router.visit(route('frota.schedules.edit', schedule.driver.id))
-                    }
-                })
-                .catch((e) => {
-                    toast.error('Foram encontrado erros ao processar sua solicitação');
-                })
-        }, 150
-    )
+    if (routeForm.value.date && routeForm.value.driver) {
+        console.log('if')
+        axios.post(route('frota.tasks.filter-routes'), {
+            driver: routeForm.value.driver.id,
+            date: routeForm.value.date
+        })
+            .then((r) => {
+                if (r.data.length >= 1) {
+                    toast.warning('Já existe agenda para o motorista selecionado. Entrando em modo de edição.', {
+                        duration: 3000
+                    });
+                    router.visit(route('frota.schedules.edit', schedule.driver.id))
+                }
+            })
+            .catch(() => {
+                toast.error('Foram encontrado erros ao processar sua solicitação');
+            })/**/
+    } else {
+        console.log('else')
+    }
 }
 
 </script>
@@ -82,21 +88,23 @@ function verifyDriverSchedule() {
         </template>
         <SubSection>
             <template #header>
-                Criar Rotas
+                Adicionar Rota
             </template>
             <template #content>
+                {{ routeForm }}
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
-                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded">
+                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded"
+                        v-if="routeForm.date">
                         <div class="relative mb-6 w-full z-auto min-h-fit">
 
                             <div class="mt-2">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
                                     Selecione um motorista
                                 </label>
-                                <VueMultiselect v-model="schedule.driver" :options="props.drivers" :multiple="false"
+                                <VueMultiselect v-model="routeForm.driver" :options="props.drivers" :multiple="false"
                                     :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
                                     :custom-label="driverName" track-by="id" selectLabel="Selecionar"
-                                    @select="verifyDriverSchedule" deselectLabel="Remover" />
+                                    @select="verifyDriverRoute" deselectLabel="Remover" />
 
                                 <div v-if="$page.props.errors.driver_id"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -107,95 +115,57 @@ function verifyDriverSchedule() {
                         </div>
                     </div>
 
-                    <div :class="$page.props.app.settingsStyles.main.innerSection"
-                        class="my-2 px-0.5 py-0.5 rounded grid grid-cols-1 md:grid-cols-2">
+                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
+                        <div class="mb-6 w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-4">
 
-                        <div class="rounded m-1 p-1.5 pb-2 grid grid-cols-2 gap-x-1 gap-y-5"
-                            :class="$page.props.app.settingsStyles.main.body">
-                            <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Manhã</h3>
-                            <VueMultiselect v-model="schedule.timeMorningStart"
-                                :options="split(props.timetables, 1, 24)" :multiple="false" :close-on-select="true"
-                                selectedLabel="atual" placeholder="Início" track-by="id" label="time"
-                                selectLabel="Selecionar" deselectLabel="Remover" />
-                            <VueMultiselect v-model="schedule.timeMorningEnd" :options="split(props.timetables, 1, 24)"
-                                :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Término"
-                                track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
+                            <div class="mx-2 grid grid-cols-1">
+                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    Data
+                                </label>
+                                <input type="date" v-model="routeForm.date" @change="verifyDriverRoute"
+                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
 
-                            <div v-if="$page.props.errors.timeMorningStart"
-                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-3">
-                                {{ $page.props.errors.timeMorningStart }}
+                                <div v-if="$page.props.errors.driver_id"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    {{ $page.props.errors.driver_id }}
+                                </div>
                             </div>
-                            <div v-if="$page.props.errors.timeMorningEnd"
-                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-3">
-                                {{ $page.props.errors.timeMorningEnd }}
+
+                            <div class="mx-2 col-span-2 md:col-span-1" v-if="routeForm.date">
+                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    Hora
+                                </label>
+                                <VueMultiselect v-model="routeForm.time" :options="props.timetables" :multiple="false"
+                                    :close-on-select="true" selectedLabel="atual" placeholder="Hora" track-by="id"
+                                    label="time" selectLabel="Selecionar" deselectLabel="Remover" />
+
+                                <div v-if="$page.props.errors.driver_id"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    {{ $page.props.errors.driver_id }}
+                                </div>
                             </div>
+
+                            <div class="mx-2 col-span-2" v-if="routeForm.date">
+                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    Unidade
+                                </label>
+                                <VueMultiselect v-model="routeForm.branch" :options="props.branches" :multiple="false"
+                                    :close-on-select="true" selectedLabel="atual" placeholder="Unidade"
+                                    :custom-label="branchName" track-by="id" label="time" selectLabel="Selecionar"
+                                    deselectLabel="Remover" />
+
+                                <div v-if="$page.props.errors.driver_id"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    {{ $page.props.errors.driver_id }}
+                                </div>
+                            </div>
+
                         </div>
-
-                        <div class="rounded m-1 p-1.5 pb-2 grid grid-cols-2 gap-x-1 gap-y-5"
-                            :class="$page.props.app.settingsStyles.main.body">
-                            <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Tarde</h3>
-                            <VueMultiselect v-model="schedule.timeAfternoonStart"
-                                :options="split(props.timetables, 25, 48)" :multiple="false" :close-on-select="true"
-                                selectedLabel="atual" placeholder="Início" track-by="id" label="time"
-                                selectLabel="Selecionar" deselectLabel="Remover" />
-                            <VueMultiselect v-model="schedule.timeAfternoonEnd"
-                                :options="split(props.timetables, 25, 48)" :multiple="false" :close-on-select="true"
-                                selectedLabel="atual" placeholder="Término" track-by="id" label="time"
-                                selectLabel="Selecionar" deselectLabel="Remover" />
-                            <div v-if="$page.props.errors.timeAfternoonStart"
-                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-3">
-                                {{ $page.props.errors.timeAfternoonStart }}
-                            </div>
-                            <div v-if="$page.props.errors.timeAfternoonEnd"
-                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-3">
-                                {{ $page.props.errors.timeAfternoonEnd }}
-                            </div>
-                        </div>
-
-                        <div class="rounded m-1 p-1.5 pb-2 grid grid-cols-2 gap-x-1 gap-y-5"
-                            :class="$page.props.app.settingsStyles.main.body">
-                            <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Noite</h3>
-                            <VueMultiselect v-model="schedule.timeNightStart" :options="split(props.timetables, 49, 72)"
-                                :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Início"
-                                track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
-                            <VueMultiselect v-model="schedule.timeNightEnd" :options="split(props.timetables, 49, 72)"
-                                :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Término"
-                                track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
-                            <div v-if="$page.props.errors.timeNightStart"
-                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-3">
-                                {{ $page.props.errors.timeNightStart }}
-                            </div>
-                            <div v-if="$page.props.errors.timeNightEnd"
-                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-3">
-                                {{ $page.props.errors.timeNightEnd }}
-                            </div>
-                        </div>
-
-                        <div class="rounded m-1 p-1.5 pb-2 grid grid-cols-2 gap-x-1 gap-y-5"
-                            :class="$page.props.app.settingsStyles.main.body">
-                            <h3 class="text-lg col-span-3 md:col-span-4 text-center border-b">Especial</h3>
-                            <VueMultiselect v-model="schedule.timeSpecialStart"
-                                :options="split(props.timetables, 73, 96)" :multiple="false" :close-on-select="true"
-                                selectedLabel="atual" placeholder="Início" track-by="id" label="time"
-                                selectLabel="Selecionar" deselectLabel="Remover" />
-                            <VueMultiselect v-model="schedule.timeSpecialEnd" :options="split(props.timetables, 73, 96)"
-                                :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Término"
-                                track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
-                            <div v-if="$page.props.errors.timeSpecialStart"
-                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-3">
-                                {{ $page.props.errors.timeSpecialStart }}
-                            </div>
-                            <div v-if="$page.props.errors.timeSpecialEnd"
-                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-3">
-                                {{ $page.props.errors.timeSpecialEnd }}
-                            </div>
-                        </div>
-
                     </div>
 
-                    <button type="button" @click="saveSchedule"
+                    <button type="button" @click="saveRoute"
                         class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
-                        Salvar
+                        Criar
                     </button>
                 </div>
             </template>

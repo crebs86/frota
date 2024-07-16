@@ -24,11 +24,6 @@ return new class extends Migration
                 ->references('id')
                 ->on('users');
 
-            $table->unsignedBigInteger('from');
-            $table->foreign('from')
-                ->references('id')
-                ->on('branches');
-
             $table->unsignedBigInteger('to');
             $table->foreign('to')
                 ->references('id')
@@ -38,7 +33,8 @@ return new class extends Migration
             $table->integer('order');
             $table->date('date');
             $table->time('time');
-            $table->timestamp('checked_at')->nullable();
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('ended_at')->nullable();
         });
     }
 
