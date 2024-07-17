@@ -91,7 +91,7 @@ function verifyDriverRoute() {
 
 <template>
 
-    <Head title="Configuração de Agenda" />
+    <Head title="Rotas" />
 
     <AuthenticatedLayout>
 

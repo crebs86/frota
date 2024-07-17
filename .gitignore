@@ -77,3 +77,9 @@
 !/database/seeders/ClientsSeed.php
 !/database/seeders/DatabaseSeeder.php
 !/database/seeders/InitUsersTableSeeder.php
+
+!/public
+/public/*
+!/public/favicons
+/public/favicons/*
+!/public/favicons/verde
