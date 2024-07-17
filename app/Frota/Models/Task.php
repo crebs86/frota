@@ -15,6 +15,11 @@ class Task extends Model
 
     public function routes()
     {
-        return $this->hasMany(Route::class, 'task', 'id');
+        return $this->hasMany(Route::class, 'task', 'id')->select('id', 'task', 'to', 'time', 'started_at', 'ended_at')->orderBy('time')->with('branch');
+    }
+
+    public function driver()
+    {
+        return $this->hasOne(Driver::class, 'id', 'driver')->select('id')->with('user');
     }
 }

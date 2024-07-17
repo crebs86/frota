@@ -7,6 +7,7 @@ import { Head, router } from '@inertiajs/vue3';
 import { toast } from '@/toast';
 import axios from 'axios';
 import { ref } from 'vue';
+import moment from 'moment';
 
 const props = defineProps({
     drivers: Object,
@@ -15,12 +16,14 @@ const props = defineProps({
     errors: Object
 });
 
+const routes = ref({});
 
 const routeForm = ref({
     driver: '',
     date: '',
     time: '',
-    branch: ''
+    branch: '',
+    error: ''
 });
 
 function driverName({ id, user }) {
@@ -32,6 +35,7 @@ function branchName({ id, name }) {
 }
 
 function saveRoute() {
+    routeForm.value.error = ''
     axios.post(route('frota.tasks.route.store'), {
         driver: routeForm.value.driver.id,
         date: routeForm.value.date,
@@ -40,38 +44,46 @@ function saveRoute() {
     })
         .then((r) => {
             toast.success(r.data.message)
+            verifyDriverRoute()
             resetForm()
+        })
+        .catch((e) => {
+            if (e.response?.status === 500) {
+                toast.error(e.response.data)
+                routeForm.value.error = e.response.data
+            }
+            if (e.response?.status === 403) {
+                toast.error(e.response.data.error)
+                routeForm.value.error = e.response.data.error
+            }
         })
 }
 
 function resetForm() {
-    routeForm = {
-        time: '',
-        branch: ''
-    };
+    routeForm.value.time = ''
+    routeForm.value.branch = ''
 }
 
 function verifyDriverRoute() {
-
+    routeForm.value.error = ''
+    routes.value = {};
     if (routeForm.value.date && routeForm.value.driver) {
-        console.log('if')
         axios.post(route('frota.tasks.filter-routes'), {
             driver: routeForm.value.driver.id,
             date: routeForm.value.date
         })
             .then((r) => {
                 if (r.data.length >= 1) {
-                    toast.warning('Já existe agenda para o motorista selecionado. Entrando em modo de edição.', {
-                        duration: 3000
-                    });
-                    router.visit(route('frota.schedules.edit', schedule.driver.id))
+                    routes.value = r.data[0]
                 }
             })
-            .catch(() => {
-                toast.error('Foram encontrado erros ao processar sua solicitação');
+            .catch((e) => {
+                if (e.response?.status === 403) {
+                    toast.error(e.response.data.error)
+                } else {
+                    toast.error('Foram encontrados erros ao processar sua solicitação');
+                }
             })/**/
-    } else {
-        console.log('else')
     }
 }
 
@@ -91,8 +103,10 @@ function verifyDriverRoute() {
                 Adicionar Rota
             </template>
             <template #content>
-                {{ routeForm }}
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
+                    <div v-if="routeForm.error"
+                        class="p-2 mx-2 text-red-700 bg-red-400 rounded-md border border-red-700">{{ routeForm.error }}
+                    </div>
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded"
                         v-if="routeForm.date">
                         <div class="relative mb-6 w-full z-auto min-h-fit">
@@ -161,12 +175,78 @@ function verifyDriverRoute() {
                             </div>
 
                         </div>
-                    </div>
 
-                    <button type="button" @click="saveRoute"
-                        class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
-                        Criar
-                    </button>
+                        <button type="button" @click="saveRoute"
+                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                            Criar/Adicionar
+                        </button>
+                    </div>
+                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2"
+                        v-if="routeForm?.driver.id === routes?.driver && routes?.driver">
+                        <p><span class="font-bold">Motorista:</span>
+                            {{ routeForm.driver.id === routes.driver ? routeForm.driver.user.name : '' }}
+                        </p>
+                        <p><span class="font-bold">Data:</span>
+                            {{ moment(routes.date).format('DD/MM/YYYY') }}
+                        </p>
+                        <div class="p-2 rounded-lg overflow-y-auto"
+                            :class="$page.props.app.settingsStyles.main.innerSection">
+                            <button @click="verifyDriverRoute"
+                                class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right">
+                                Recarregar Rotas
+                                <mdicon name="refresh" />
+                            </button>
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Hora
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Unidade</th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Saída
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Chegada
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(r, i) in routes.routes" :key="'route-' + i">
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            {{ r.time }}
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            {{ r.branch.name }}
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                                :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                                {{ r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') :
+                                                    'pendente' }}
+                                            </p>
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                                :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                                {{ r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
+                                                    'pendente' }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </template>
         </SubSection>

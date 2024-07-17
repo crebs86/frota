@@ -83,7 +83,7 @@ function saveDriver() {
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-max">
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded">
-                        <div class="relative mb-6 w-full z-auto h-[calc(100vh/1.33)]">
+                        <div class="relative mb-6 w-full z-auto min-h-[calc(100vh/1.33)]">
                             <div>
                                 <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                     Selecione um usuário*

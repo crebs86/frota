@@ -59,7 +59,7 @@ function saveGarage(status) {
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
-                    <div class="p-2 rounded-lg h-[calc(100vh/1.33)]"
+                    <div class="p-2 rounded-lg min-h-[calc(100vh/1.33)]"
                         :class="$page.props.app.settingsStyles.main.innerSection">
 
                         <div class="relative">

@@ -8,7 +8,6 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Traits\Helpers;
 use App\Frota\Models\Driver;
-use App\Frota\Models\Garage;
 use Illuminate\Http\Request;
 use App\Frota\Models\Schedule;
 use App\Frota\Models\Timetable;

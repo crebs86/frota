@@ -2,8 +2,10 @@
 
 namespace App\Frota\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Models\Branch;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Route extends Model
 {
@@ -12,4 +14,14 @@ class Route extends Model
     protected $fillable = ['task', 'date', 'user', 'to', 'vacancy', 'order', 'time', 'started_at', 'endend_at'];
 
     public $timestamps = false;
+
+    public function branch()
+    {
+        return $this->hasOne(Branch::class, 'id', 'to')->select('id', 'name');
+    }
+
+    public function taskData()
+    {
+        return $this->hasOne(Task::class, 'id', 'task')->select('id', 'driver')->with('driver');
+    }
 }

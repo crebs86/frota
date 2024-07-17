@@ -13,6 +13,7 @@ use App\Frota\Models\Route;
 use Illuminate\Http\Request;
 use App\Frota\Models\Timetable;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
 class RoutesController extends Controller
 {
@@ -40,24 +41,36 @@ class RoutesController extends Controller
         return Inertia::render('Frota/Routes/MyRoutes');
     }
 
-    public function filterRoutes(Request $request): array
+    public function filterRoutes(Request $request): array|JsonResponse
     {
-        return $this->getTaskByDriver($request);
+        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
+            return $this->getTaskByDriver($request);
+        }
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
     }
 
-    public function filter(Request $request)
+    public function filter(Request $request): JsonResponse
     {
-        $res = [];
-        if ($request->branch) {
-            $res = Task::select('id', 'driver', 'date')
-                ->where('date', $request->date)->get()->toArray();
-        } elseif ($request->driver) {
-            $res = $this->getTaskByDriver($request);
+        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
+            $res = [];
+            if ($request->branch) {
+                $res = Route::where('to', $request->branch)
+                    ->where('date', $request->date)
+                    ->select('id', 'task', 'to', 'started_at', 'ended_at', 'time')
+                    ->with('taskData')
+                    ->get()
+                    ->toArray();
+            } elseif ($request->driver) {
+                $res = $this->getTaskByDriver($request);
+            }
+
+            if (count($res) < 1) {
+                return response()->json(['error' => 'Nenhuma rota foi encontrada com os dados informados.'], 404);
+            } else {
+                return response()->json(['data' => $res]);
+            }
         }
-        if (count($res) < 1) {
-            $request->session()->flash('error', 'Nenhuma rota foi encontrada com os dados informados.');
-            return redirect()->back();
-        }
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
     }
 
     private function getTaskByDriver(Request $request): array
@@ -69,27 +82,30 @@ class RoutesController extends Controller
             ->get()->toArray();
     }
 
-    public function routeStore(Request $request)
+    public function routeStore(Request $request): JsonResponse
     {
-        $task = $this->getTaskByDriver($request);
-        if (count($task) === 0) {
-            $createTask = Task::create([
-                'driver' => $request->driver,
-                'date' => $request->date
-            ])->toArray();
-            return $this->routePersist($createTask, $request);
-        } else {
-            dd('else');
+        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
+            $task = $this->getTaskByDriver($request);
+            if (count($task) === 0) {
+                $createTask = Task::create([
+                    'driver' => $request->driver,
+                    'date' => $request->date
+                ])->toArray();
+                return $this->routePersist($createTask, $request);
+            } else {
+                return $this->routePersist($task[0], $request);
+            }
         }
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
     }
 
-    public function routePersist($task, Request $request)
+    public function routePersist($task, Request $request, $order = null): JsonResponse
     {
         $route = Route::create([
             'task' => $task['id'],
             'user' => auth()->id(),
             'to' => $request->branch,
-            'order' => 1,
+            'order' => $order,
             'date' => $task['date'],
             'time' => $request->time
         ]);
@@ -98,6 +114,8 @@ class RoutesController extends Controller
             return response()->json([
                 'message' => 'Rota criada.'
             ]);
+        } else {
+            return response()->json('Erro ao criar rota', 500);
         }
     }
 }
