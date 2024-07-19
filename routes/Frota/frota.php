@@ -14,12 +14,14 @@ Route::prefix('/frota')->middleware(
     getSettingMustVerifyEmail() ? ['auth', 'verified'] : ['auth']
 )->name('frota.')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/loadData', [HomeController::class, 'loadData'])->name('load-data');
 
     Route::resource('/rotas', RoutesController::class, ['names' => 'routes'])->parameter('rotas', 'route')->withTrashed(['show', 'edit', 'update', 'restore']);
     Route::get('/tarefas/minhas', [RoutesController::class, 'myRoutes'])->name('my-routes');
     Route::post('/tarefas/filtrar', [RoutesController::class, 'filter'])->name('tasks.filter');
     Route::post('/tarefas', [RoutesController::class, 'filterRoutes'])->name('tasks.filter-routes');
     Route::post('/tarefas/criarRota', [RoutesController::class, 'routeStore'])->name('tasks.route.store');
+    Route::get('rotas/{date}/{driver}/edit', [RoutesController::class, 'edit'])->name('routes.driver.edit');
 
     Route::resource('/agendas', SchedulesController::class, ['names' => 'schedules'])->parameter('agendas', 'schedule')->withTrashed(['show', 'edit', 'update', 'restore']);
     Route::post('/agendas/motorista/{driver}', [SchedulesController::class, 'verifyDriverSchedule'])->name('schedules.driver');

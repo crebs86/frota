@@ -4,7 +4,7 @@ import has from '@/arrayHelpers'
 </script>
 <template>
     <div
-        class="grid rounded-2xl justify-evenly bg-teal-50 drop-shadow-md m-1 mt-0.5 grid-cols-6 py-1 dark:drop-shadow-xl dark:bg-gray-500 min-w-full md:min-w-[50%] lg:min-w-[35%] mx-auto">
+        class="grid rounded-2xl justify-evenly bg-teal-50 drop-shadow-md m-1 mt-0.5 grid-cols-5 py-1 dark:drop-shadow-xl dark:bg-gray-500 min-w-full md:min-w-[50%] lg:min-w-[35%] mx-auto">
         <div v-if="has($page.props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
             class="col-span-1 flex flex-col items-center">
             <Link :href="route('frota.drivers.index')" class="flex flex-col items-center max-w-fill"
@@ -35,7 +35,7 @@ import has from '@/arrayHelpers'
             </span>
             </Link>
         </div>
-        <div v-if="has($page.props.auth.permissions, ['Agenda Editar', 'Agenda Ver', 'Agenda Criar', 'Agenda Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
+        <!--div v-if="has($page.props.auth.permissions, ['Agenda Editar', 'Agenda Ver', 'Agenda Criar', 'Agenda Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
             class="col-span-1 flex flex-col items-center">
             <Link :href="route('frota.schedules.index')" class="flex flex-col items-center max-w-fill"
                 :class="route().current('frota.schedules.*') ? 'text-emerald-500 dark:text-lime-300' : 'text-gray-600 hover:text-emerald-600 dark:hover:text-lime-300'">
@@ -44,7 +44,7 @@ import has from '@/arrayHelpers'
                 Agendas
             </span>
             </Link>
-        </div>
+        </div-->
         <div v-if="has($page.props.auth.permissions, ['Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
             class="col-span-1 flex flex-col items-center">
             <Link :href="route('frota.routes.index')" class="flex flex-col items-center max-w-fill"

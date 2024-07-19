@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Frota\Models\Timetable;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 
 class RoutesController extends Controller
 {
@@ -33,6 +34,30 @@ class RoutesController extends Controller
             'drivers' => Driver::with('user')->select('id')->get(),
             'branches' => Branch::select('id', 'name')->get(),
             'timetables' => Timetable::all(['id', 'time'])
+        ]);
+    }
+
+    public function edit(Request $request): Response|RedirectResponse
+    {
+        if (!$request->driver || !$request->date) {
+            return redirect()->to(route('frota.routes.create'));
+        }
+
+        $driverRoutes = Task::select('id', 'driver', 'date')
+            ->where('date', $request->date)
+            ->where('driver', $request->driver)
+            ->with('driver')
+            ->with('routes')
+            ->get()->toArray();
+
+        if (count($driverRoutes) < 1) {
+            return redirect()->to(route('frota.routes.create'));
+        }
+
+        return Inertia::render('Frota/Routes/Edit', [
+            'branches' => Branch::select('id', 'name')->get(),
+            'timetables' => Timetable::all(['id', 'time']),
+            'driverRoutes' => $driverRoutes
         ]);
     }
 
