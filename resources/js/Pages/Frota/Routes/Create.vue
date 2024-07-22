@@ -91,7 +91,7 @@ function verifyDriverRoute() {
 
 <template>
 
-    <Head title="Rotas" />
+    <Head title="Criar Rota" />
 
     <AuthenticatedLayout>
 

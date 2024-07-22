@@ -10,6 +10,7 @@ use App\Traits\Helpers;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -30,7 +31,7 @@ class HomeController extends Controller
     {
         return response()->json([
             'branches' => Branch::select('id', 'name')->get(),
-            'timetables' => Timetable::get()
+            'timetables' => Arr::pluck(Timetable::select('time')->get()->toArray(), 'time')
         ]);
     }
 }

@@ -143,4 +143,9 @@ class RoutesController extends Controller
             return response()->json('Erro ao criar rota', 500);
         }
     }
+
+    public function routeUpdate(Request $request)
+    {
+        
+    }
 }

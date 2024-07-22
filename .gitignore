@@ -18,6 +18,16 @@
 /app/Http/Controllers/Admin/*
 !/app/Http/Controllers/Admin/UserController.php
 
+!/app/Http/Requests
+/app/Http/Requests/*
+!/app/Http/Requests/Admin
+/app/Http/Requests/Admin/*
+!/app/Http/Requests/Admin/UserRequest.php
+!/app/Http/Requests/Admin/BranchRequest.php
+
+!/app/Models
+/app/Models/*
+!/app/Models/User.php
 
 !/resources
 /resources/*
@@ -53,6 +63,7 @@
 !/resources/js/Pages/Admin
 /resources/js/Pages/Admin/*
 !/resources/js/Pages/Admin/UserEdit.vue
+!/resources/js/Pages/Admin/UserCreate.vue
 
 !/routes
 /routes/*

@@ -59,8 +59,11 @@ class DriversController extends Controller
     public function store(DriverRequest $driverRequest, Driver $driver): Response|RedirectResponse
     {
         if ($this->can('Motorista Criar')) {
-
             if ($d = $driver->create($driverRequest->validated())) {
+
+                $user = User::find($driverRequest->id);
+                $user->assignRole('Motorista');
+
                 return redirect(route('frota.drivers.index'))->with('success', 'Motorista adicionado!' . $d);
             }
             return redirect()->back()->with('error', 'Ocorreu um erro ao adicionar motorista.');

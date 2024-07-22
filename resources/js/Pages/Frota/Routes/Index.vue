@@ -18,13 +18,22 @@ const filter = ref({
     error: ''
 });
 
+const routeForEdition = ref({
+    id: '',
+    branch: '',
+    time: ''
+});
+
 const results = ref({});
+
+const loading = ref(false);
 
 const page = usePage();
 
 const modal = ref({
     byDriver: false,
-    byBranch: false
+    byBranch: false,
+    editRoute: false
 })
 
 function drivers(id) {
@@ -78,15 +87,16 @@ function openModal() {
 function loadData() {
     axios.get(route('frota.load-data'))
         .then((r) => {
-            data.value = r.data
+            data.value = r.data;
         })
         .catch(() => {
-            toast.error('Ocorreu um erro ao solicitar dados ao servidor.')
+            toast.error('Ocorreu um erro ao solicitar dados ao servidor.');
         })
 }
 
 function verifyDriverRoute() {
-    filter.value.error = ''
+    loading.value = true;
+    filter.value.error = '';
     results.value = {};
     if (filter.value.date && filter.value.driver) {
         openModal()
@@ -96,11 +106,13 @@ function verifyDriverRoute() {
             date: filter.value.date
         })
             .then((r) => {
+                loading.value = false;
                 if (r.data.length >= 1) {
                     results.value = r.data[0]
                 }
             })
             .catch((e) => {
+                loading.value = false;
                 if (e.response?.status === 403) {
                     toast.error(e.response.data.error)
                 } else {
@@ -111,11 +123,11 @@ function verifyDriverRoute() {
 }
 
 function saveRoute() {
-    filter.value.error = ''
+    filter.value.error = '';
     axios.post(route('frota.tasks.route.store'), {
         driver: filter.value.driver.id,
         date: filter.value.date,
-        time: filter.value.time.time,
+        time: filter.value.time,
         branch: filter.value.branch.id
     })
         .then((r) => {
@@ -135,10 +147,23 @@ function saveRoute() {
         })
 }
 
-function resetForm() {
-    filter.value.time = ''
-    filter.value.branch = ''
+function updateRoute() {
+    //todo
+    console.log('todo')
 }
+
+function resetForm() {
+    filter.value.time = '';
+    filter.value.branch = '';
+}
+
+function setRouteToEdit(route) {
+    modal.value.editRoute = true
+    routeForEdition.value.id = route.id
+    routeForEdition.value.branch = route.branch
+    routeForEdition.value.time = route.time
+}
+
 </script>
 
 <template>
@@ -166,7 +191,7 @@ function resetForm() {
                             <input type="date" name="name" id="name" v-model="filter.date"
                                 class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 :class="page.props.errors.date ? 'border-red-600' : ''" required placeholder=" "
-                                @change="results = {}" />
+                                @change="results = {}, $page.props.errors.date = null" />
                             <label for="name"
                                 class="absolute text-lg duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                 Data*
@@ -176,13 +201,15 @@ function resetForm() {
                             <div>Unidade</div>
                             <VueMultiselect v-model="filter.branch" :options="$page.props.branches" :multiple="false"
                                 :close-on-select="true" placeholder="Unidade" label="name" track-by="id"
-                                selectLabel="Selecionar" deselectLabel="Remover" @select="clean('branch')" />
+                                selectLabel="Selecionar" deselectLabel="Remover"
+                                @select="clean('branch'), $page.props.errors.date = null" />
                         </div>
                         <div class="relative z-10 mb-6 w-full md:col-span-2">
                             <div>Motorista</div>
                             <VueMultiselect v-model="filter.driver" :options="$page.props.drivers" :multiple="false"
                                 :close-on-select="true" placeholder="Motorista" :custom-label="drivers" track-by="id"
-                                selectLabel="Selecionar" deselectLabel="Remover" @select="clean('driver')" />
+                                selectLabel="Selecionar" deselectLabel="Remover"
+                                @select="clean('driver'), $page.props.errors.date = null" />
                         </div>
 
                         <div v-if="$page.props.errors.date" class="text-sm text-red-500 md:col-span-5">
@@ -350,7 +377,7 @@ function resetForm() {
                                     {{ filter.driver?.user?.name ?? '' }}
                                 </span>
                             </h3>
-                            <div class="mt-2">
+                            <div class="mt-2 overflow-auto">
                                 <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
                                     <div class="mb-6 w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-4">
 
@@ -373,8 +400,7 @@ function resetForm() {
                                             </label>
                                             <VueMultiselect v-model="filter.time" :options="data?.timetables"
                                                 :multiple="false" :close-on-select="true" selectedLabel="atual"
-                                                placeholder="Hora" track-by="id" label="time" selectLabel="Selecionar"
-                                                deselectLabel="Remover" />
+                                                placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
 
                                             <div v-if="$page.props.errors.driver_id"
                                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -423,10 +449,36 @@ function resetForm() {
                                                 class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
                                                 Chegada
                                             </th>
+                                            <th
+                                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                                Ações
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(r, i) in results.routes" :key="'route-' + i">
+                                        <tr v-if="loading">
+                                            <td colspan="4">
+                                                <div class="shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                                                    <div class="animate-pulse flex space-x-4">
+                                                        <div class="rounded-full bg-slate-700 h-10 w-10"></div>
+                                                        <div class="flex-1 space-y-6 py-1">
+                                                            <div class="h-2 bg-slate-700 rounded"></div>
+                                                            <div class="space-y-3">
+                                                                <div class="grid grid-cols-3 gap-4">
+                                                                    <div class="h-2 bg-slate-700 rounded col-span-2">
+                                                                    </div>
+                                                                    <div class="h-2 bg-slate-700 rounded col-span-1">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="h-2 bg-slate-700 rounded"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr v-for="(r, i) in results.routes" :key="'route-' + i"
+                                            v-if="results?.routes?.length > 0">
                                             <td
                                                 class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                                 {{ r.time }}
@@ -451,6 +503,13 @@ function resetForm() {
                                                         'pendente' }}
                                                 </p>
                                             </td>
+                                            <td
+                                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                                <button @click="setRouteToEdit(r)">
+                                                    <mdicon name="pencil"
+                                                        class="hover:text-green-500 dark:hover:text-gray-400" />
+                                                </button>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -464,7 +523,59 @@ function resetForm() {
                             </button>
                         </div>
                     </div>
+
+                    <div class="fixed inset-0 flex items-center justify-center overflow-hidden mx-1"
+                        :class="modal.editRoute ? 'block' : 'hidden'">
+                        <div class="fixed inset-0 transition-opacity">
+                            <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
+                        </div>
+                        <div v-if="routeForEdition"
+                            class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
+                            <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+                                    Editando Rota de:
+                                    <span class="font-bold underline">
+                                        {{ filter.driver?.user?.name ?? '' }}
+                                    </span> em {{ moment(filter.date).format('DD/MM/YYYY') }}
+                                </h3>
+                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2">
+                                    <div class="z-10 mb-6 w-full">
+                                        <div>Unidade</div>
+                                        <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
+                                            :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
+                                            track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
+                                            @select="clean('branch'), $page.props.errors.date = null" />
+                                    </div>
+
+
+                                    <div class="mx-2 col-span-2 md:col-span-1 mb-52 md:mb-20"
+                                        v-if="data?.timetables !== ''">
+                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                            Hora
+                                        </label>
+                                        <VueMultiselect v-model="routeForEdition.time" :options="data?.timetables"
+                                            :multiple="false" :close-on-select="true" selectedLabel="atual"
+                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 sm:flex">
+                                <button type="button"
+                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    @click="updateRoute()">
+                                    Salvar
+                                </button>
+                                <button type="button"
+                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    @click="modal.editRoute = false, routeForEdition = {}">
+                                    Fechar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
+
             </template>
         </SubSection>
     </AuthenticatedLayout>

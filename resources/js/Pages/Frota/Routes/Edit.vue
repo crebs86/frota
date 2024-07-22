@@ -112,7 +112,7 @@ onMounted(()=>{
                         class="p-2 mx-2 text-red-700 bg-red-400 rounded-md border border-red-700">{{ routeForm.error }}
                     </div>
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
-{{ route().current() }}
+
                         <div class="w-full z-auto grid grid-cols-1 md:grid-cols-2">
 
                             <div class="mx-2 mb-3 pr-3 w-full z-auto col-span-2 md:col-span-1">
@@ -120,7 +120,7 @@ onMounted(()=>{
                                     Motorista
                                 </label>
                                 <input type="text"
-                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-700 w-full"
+                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-200 w-full bg-gray-400"
                                     :value="props.driverRoutes[0]?.driver?.user?.name" readonly />
                             </div>
 
@@ -129,7 +129,7 @@ onMounted(()=>{
                                     Data
                                 </label>
                                 <input type="date" :value="props.driverRoutes[0]?.date"
-                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-700 w-full" readonly>
+                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-200 w-full bg-gray-400" readonly>
                             </div>
 
                             <div class="mx-2 mb-3 col-span-2 md:col-span-1">

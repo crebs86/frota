@@ -12,6 +12,7 @@ use App\Frota\Models\Garage;
 use App\Http\Controllers\Controller;
 use App\Frota\Requests\GarageRequest;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\Admin\BranchRequest;
 
 class GaragesController extends Controller
 {
@@ -56,8 +57,8 @@ class GaragesController extends Controller
     {
         if ($this->can('Garagem Criar')) {
 
-            if ($d = $garage->create($garageRequest->validated())) {
-                return redirect(route('frota.garages.index'))->with('success', 'Garagem adicionada: ' . $d);
+            if ($garage->create($garageRequest->validated())) {
+                return redirect()->back();
             }
             return redirect()->back()->with('error', 'Ocorreu um erro ao adicionar garagem');
         }
@@ -139,5 +140,13 @@ class GaragesController extends Controller
             }
         }
         return Inertia::render('Admin/403');
+    }
+
+    public function simpleBranch(BranchRequest $request, Branch $branch)
+    {
+        $b = $branch->create($request->validated());
+        if ($b) {
+            return response()->json('Nova Unidade criada.');
+        }
     }
 }

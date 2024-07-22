@@ -345,7 +345,10 @@ class UserController extends Controller
     public function edit(Request $request): Response
     {
         if ($this->can('Usuario Ver', 'Usuario Editar', 'Usuario Apagar')) {
-            if ($user = User::select('id', 'name', 'cpf', 'email', 'notes', 'branch_id', 'deleted_at', 'email_verified_at')->withTrashed()->find($request->user) ?? []) {
+            if ($user = User::select('id', 'name', 'cpf', 'email', 'notes', 'branch_id', 'deleted_at', 'email_verified_at')
+            ->with('branch')
+                ->withTrashed()->find($request->user) ?? []
+            ) {
 
                 $branches = Branch::orderBy('name')->select(['id', 'name'])->get();
 
