@@ -115,12 +115,14 @@ class DriversController extends Controller
      */
     public function update(DriverRequest $request, Driver $driver): Response|RedirectResponse
     {
-        if ((int) getKeyValue($request->_checker, 'edit_driver') === (int) $request->driver->id) {
-            if ($this->can('Motorista Editar')) {
-                if ($driver->update($request->validated())) {
-                    return redirect()->back()->with(['driver' => Driver::where('id', request('driver'))->with('user', 'garage', 'car')->get()]);
+        if ($this->can('Motorista Editar')) {
+            if ((int) getKeyValue($request->_checker, 'edit_driver') === (int) $request->driver->id) {
+                if ($this->can('Motorista Editar')) {
+                    if ($driver->update($request->validated())) {
+                        return redirect()->back()->with(['driver' => Driver::where('id', request('driver'))->with('user', 'garage', 'car')->get()]);
+                    }
+                    return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do motorista.');
                 }
-                return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do motorista.');
             }
         }
         return Inertia::render('Admin/403');

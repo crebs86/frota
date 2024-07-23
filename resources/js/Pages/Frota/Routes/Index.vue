@@ -58,7 +58,11 @@ function filtering() {
                 }
             })
             .catch((e) => {
-                toast.error(e.response.data.error);
+                if (e.response?.status === 403 || e.response?.status === 404) {
+                    toast.error(e.response?.data?.error);
+                }else{
+                    toast.error('Ocorreu um erro ao processa a solicitação.')
+                }
             })
     }
 }
@@ -139,17 +143,40 @@ function saveRoute() {
             if (e.response?.status === 500) {
                 toast.error(e.response.data)
                 filter.value.error = e.response.data
-            }
-            if (e.response?.status === 403) {
+            } else if (e.response?.status === 403) {
                 toast.error(e.response.data.error)
                 filter.value.error = e.response.data.error
+            } else {
+                toast.error('Ocorreu um erro ao processar solicitação.')
             }
         })
 }
 
 function updateRoute() {
-    //todo
-    console.log('todo')
+    if (routeForEdition.value.branch && routeForEdition.value.time) {
+        axios.put(route('frota.routes.route.update', routeForEdition.value.id), {
+            id: routeForEdition.value.id,
+            branch: routeForEdition.value.branch,
+            time: routeForEdition.value.time
+        })
+            .then((r) => {
+                verifyDriverRoute();
+                modal.value.editRoute = false;
+                routeForEdition.value = {};
+            })
+            .catch((e) => {
+                if (e.response?.status === 403) {
+                    toast.error(e.response.data.error)
+                    filter.value.error = e.response.data.error
+                }
+                if (e.response?.status === 503) {
+                    toast.error(e.response.data)
+                    filter.value.error = e.response.data
+                }
+            })
+    } else {
+        toast.error('Preencha todos os campos para atualizar a rota');
+    }
 }
 
 function resetForm() {
@@ -538,7 +565,7 @@ function setRouteToEdit(route) {
                                         {{ filter.driver?.user?.name ?? '' }}
                                     </span> em {{ moment(filter.date).format('DD/MM/YYYY') }}
                                 </h3>
-                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2">
+                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2 h-[375px]">
                                     <div class="z-10 mb-6 w-full">
                                         <div>Unidade</div>
                                         <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
@@ -559,7 +586,7 @@ function setRouteToEdit(route) {
                                     </div>
                                 </div>
                             </div>
-                            <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 sm:flex">
+                            <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1">
                                 <button type="button"
                                     class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
                                     @click="updateRoute()">

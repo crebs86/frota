@@ -16,7 +16,6 @@ const props = defineProps({
     driverRoutes: Object
 });
 
-
 const routes = ref({});
 
 const routeForm = ref({
@@ -25,19 +24,29 @@ const routeForm = ref({
     error: ''
 });
 
+const modal = ref({
+    editRoute: false
+});
+
+const routeForEdition = ref({
+    id: '',
+    branch: '',
+    time: ''
+});
+
 function branchName({ id, name }) {
     return `${id ? id : ''} - ${name ? name : ''}`
 }
 
 function saveRoute() {
     routeForm.value.error = ''
-    if (!routeForm.value.time.time || !routeForm.value.branch.id) {
+    if (!routeForm.value.time || !routeForm.value.branch.id) {
         routeForm.value.error = 'Preencha todos os campos.'
     } else {
         axios.post(route('frota.tasks.route.store'), {
             driver: props.driverRoutes[0].driver.id,
             date: props.driverRoutes[0].date,
-            time: routeForm.value.time.time,
+            time: routeForm.value.time,
             branch: routeForm.value.branch.id
         })
             .then((r) => {
@@ -58,13 +67,39 @@ function saveRoute() {
     }
 }
 
+function updateRoute() {
+    if (routeForEdition.value.branch && routeForEdition.value.time) {
+        axios.put(route('frota.routes.route.update', routeForEdition.value.id), {
+            id: routeForEdition.value.id,
+            branch: routeForEdition.value.branch,
+            time: routeForEdition.value.time
+        })
+            .then(() => {
+                verifyDriverRoute();
+                modal.value.editRoute = false;
+                routeForEdition.value = {};
+            })
+            .catch((e) => {
+                if (e.response?.status === 403) {
+                    toast.error(e.response.data.error)
+                    filter.value.error = e.response.data.error
+                }
+                if (e.response?.status === 503) {
+                    toast.error(e.response.data)
+                    filter.value.error = e.response.data
+                }
+            })
+    } else {
+        toast.error('Preencha todos os campos para atualizar a rota');
+    }
+}
+
 function resetForm() {
     routeForm.value.time = ''
     routeForm.value.branch = ''
 }
 
 function verifyDriverRoute() {
-    console.log(props.driverRoutes[0].driver.id)
     routeForm.value.error = ''
     routes.value = {};
     if (props.driverRoutes[0].date && props.driverRoutes[0].driver.id) {
@@ -87,7 +122,14 @@ function verifyDriverRoute() {
     }
 }
 
-onMounted(()=>{
+function setRouteToEdit(route) {
+    modal.value.editRoute = true
+    routeForEdition.value.id = route.id
+    routeForEdition.value.branch = route.branch
+    routeForEdition.value.time = route.time
+}
+
+onMounted(() => {
     routes.value = props.driverRoutes[0]
 })
 
@@ -104,7 +146,7 @@ onMounted(()=>{
         </template>
         <SubSection>
             <template #header>
-                Adicionar Rota para: {{ driverRoutes[0]?.driver?.user?.name }}
+                Editar Rotas para: {{ driverRoutes[0]?.driver?.user?.name }}
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
@@ -129,7 +171,8 @@ onMounted(()=>{
                                     Data
                                 </label>
                                 <input type="date" :value="props.driverRoutes[0]?.date"
-                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-200 w-full bg-gray-400" readonly>
+                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-200 w-full bg-gray-400"
+                                    readonly>
                             </div>
 
                             <div class="mx-2 mb-3 col-span-2 md:col-span-1">
@@ -137,8 +180,8 @@ onMounted(()=>{
                                     Hora
                                 </label>
                                 <VueMultiselect v-model="routeForm.time" :options="props.timetables" :multiple="false"
-                                    :close-on-select="true" selectedLabel="atual" placeholder="Hora" track-by="id"
-                                    label="time" selectLabel="Selecionar" deselectLabel="Remover" />
+                                    :close-on-select="true" selectedLabel="atual" placeholder="Hora"
+                                    selectLabel="Selecionar" deselectLabel="Remover" />
 
                             </div>
 
@@ -186,6 +229,10 @@ onMounted(()=>{
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
                                             Chegada
                                         </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Ações
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -214,9 +261,64 @@ onMounted(()=>{
                                                     'pendente' }}
                                             </p>
                                         </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            <button @click="setRouteToEdit(r)">
+                                                <mdicon name="pencil"
+                                                    class="hover:text-green-500 dark:hover:text-gray-400" />
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                    <!--Modal editar rota-->
+                    <div class="fixed inset-0 flex items-center justify-center overflow-hidden mx-1"
+                        :class="modal.editRoute ? 'block' : 'hidden'">
+                        <div class="fixed inset-0 transition-opacity">
+                            <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
+                        </div>
+                        <div v-if="routeForEdition"
+                            class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
+                            <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+                                    Editando Rota de:
+                                    <span class="font-bold underline">
+                                        {{ props.driverRoutes[0]?.driver?.user?.name }}
+                                    </span> em {{ moment(props.driverRoutes[0]?.date).format('DD/MM/YYYY') }}
+                                </h3>
+                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2 h-[375px]">
+                                    <div class="mb-6 w-full">
+                                        <div>Unidade</div>
+                                        <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
+                                            :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
+                                            track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
+                                            @select="$page.props.errors.date = null" />
+                                    </div>
+
+                                    <div class="mx-2 col-span-2 md:col-span-1 mb-52 md:mb-20">
+                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                            Hora
+                                        </label>
+                                        <VueMultiselect v-model="routeForEdition.time" :options="$page.props.timetables"
+                                            :multiple="false" :close-on-select="true" selectedLabel="atual"
+                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1">
+                                <button type="button"
+                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    @click="updateRoute()">
+                                    Salvar
+                                </button>
+                                <button type="button"
+                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    @click="modal.editRoute = false, routeForEdition = {}">
+                                    Fechar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

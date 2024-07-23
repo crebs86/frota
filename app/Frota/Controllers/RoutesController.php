@@ -15,6 +15,7 @@ use App\Frota\Models\Timetable;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Arr;
 
 class RoutesController extends Controller
 {
@@ -33,7 +34,7 @@ class RoutesController extends Controller
         return Inertia::render('Frota/Routes/Create', [
             'drivers' => Driver::with('user')->select('id')->get(),
             'branches' => Branch::select('id', 'name')->get(),
-            'timetables' => Timetable::all(['id', 'time'])
+            'timetables' => Arr::pluck(Timetable::all(['time']), 'time')
         ]);
     }
 
@@ -56,7 +57,7 @@ class RoutesController extends Controller
 
         return Inertia::render('Frota/Routes/Edit', [
             'branches' => Branch::select('id', 'name')->get(),
-            'timetables' => Timetable::all(['id', 'time']),
+            'timetables' => Arr::pluck(Timetable::all(['time']), 'time'),
             'driverRoutes' => $driverRoutes
         ]);
     }
@@ -111,6 +112,19 @@ class RoutesController extends Controller
     {
         if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
             $task = $this->getTaskByDriver($request);
+
+            $request->validate([
+                'branch' => 'required|integer|exists:branches,id',
+                'time' => 'required',
+                'date' => 'required|date',
+                'driver' => 'required|integer|exists:drivers,id'
+            ], [
+                'branch.*' => 'Informe uma unidade para a rota.',
+                'time.required' => 'Selecione um horário para a rota.',
+                'date.*' => 'A data não foi informada.',
+                'driver.*' => 'Selecione um motorista para fazer a rota.'
+            ]);
+
             if (count($task) === 0) {
                 $createTask = Task::create([
                     'driver' => $request->driver,
@@ -124,7 +138,7 @@ class RoutesController extends Controller
         return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
     }
 
-    public function routePersist($task, Request $request, $order = null): JsonResponse
+    private function routePersist($task, Request $request, $order = null): JsonResponse
     {
         $route = Route::create([
             'task' => $task['id'],
@@ -137,15 +151,25 @@ class RoutesController extends Controller
 
         if ($route) {
             return response()->json([
-                'message' => 'Rota criada.'
+                'message' => 'A rota foi adicionada.'
             ]);
         } else {
-            return response()->json('Erro ao criar rota', 500);
+            return response()->json('Erro ao criar rota', 503);
         }
     }
 
-    public function routeUpdate(Request $request)
+    public function routeUpdate(Request $request, Route $route)
     {
-        
+        if ($this->can('Tarefa Editar')) {
+            if ($route->update([
+                'time' => $request->time,
+                'to' => $request->branch['id']
+            ])) {
+                return response()->json('A rota foi atualizada.');
+            } else {
+                return response()->json('Ocorreu um erro ao processar solicitação.', 503);
+            }
+        }
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
     }
 }
