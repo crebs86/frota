@@ -53,7 +53,7 @@ function saveDriver() {
 
 <template>
 
-    <Head title="Editar Motorista" />
+    <Head title="Ver Motorista" />
 
     <AuthenticatedLayout>
         <template #inner_menu>
@@ -146,7 +146,7 @@ function saveDriver() {
                         <div class="relative -mt-0.5" v-else>
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                 Carro Favorito
-                                <Link v-if="props.driver[0].car" :href="route('cars.show', props.driver[0].car)">
+                                <Link v-if="props.driver[0].car" :href="route('frota.cars.show', props.driver[0].car)">
                                 <mdicon name="open-in-new" size="20" />
                                 </Link>
                             </label>
@@ -174,7 +174,7 @@ function saveDriver() {
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                 Garagem (local)
                                 <Link v-if="props.driver[0].garage"
-                                    :href="route('garages.show', props.driver[0].garage)">
+                                    :href="route('frota.garages.show', props.driver[0].garage)">
                                 <mdicon name="open-in-new" size="20" />
                                 </Link>
                             </label>

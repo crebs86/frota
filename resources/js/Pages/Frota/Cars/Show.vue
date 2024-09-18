@@ -57,7 +57,7 @@ function setNumber() {
 
 <template>
 
-    <Head title="Frota Inteligente" />
+    <Head title="Carros" />
 
 
     <AuthenticatedLayout>
@@ -168,7 +168,7 @@ function setNumber() {
                         <div class="relative -mt-1" v-else>
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                 Garagem (local)
-                                <Link v-if="props.car[0].garage" :href="route('garages.show', props.car[0].garage)">
+                                <Link v-if="props.car[0].garage" :href="route('frota.garages.show', props.car[0].garage)">
                                 <mdicon name="open-in-new" size="20" />
                                 </Link>
                             </label>

@@ -62,9 +62,20 @@ class RoutesController extends Controller
         ]);
     }
 
-    public function myRoutes(): Response
+    public function myRoutes(Request $request): Response
     {
-        return Inertia::render('Frota/Routes/MyRoutes');
+        $request->merge(['driver' => auth()->id()]);
+        $request->date ?? $request->merge(['date' => date('Y-m-d')]);
+
+        return Inertia::render('Frota/Routes/MyRoutes', [
+            'myRoutesByDate' => $this->getTaskByDriver($request)
+        ]);
+    }
+
+    public function myRoutesByDate(Request $request): array
+    {
+        $request->merge(['driver' => auth()->id()]);
+        return $this->getTaskByDriver($request);
     }
 
     public function filterRoutes(Request $request): array|JsonResponse

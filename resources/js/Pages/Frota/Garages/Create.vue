@@ -50,7 +50,7 @@ function createBranch() {
         })
         .catch((e) => {
             branch.value.processing = false;
-            toast.error('Foram encontrado erros ao processar sua solicitação');
+            toast.error('Foram encontrado erros ao processar sua solicitação.');
             if (e.response.status === 422) {
                 branch.value.errors = e.response?.data?.errors
             }
@@ -72,19 +72,19 @@ const modal = ref({
     newBranch: false
 });
 
-function saveDriver() {
-    //fazer verificação de valores nulos
+function saveGarage() {
     garage.id = _branch.value?.id;
     if (garage.id) {
         garage.post(route('frota.garages.store'), {
             onSuccess: () => {
+                toast.success('A garagem foi vinculada a unidade criada com sucesso.');
                 router.visit(route('frota.garages.create'), {
                     only: ['branches']
                 })
             },
             onError: () => {
                 if (props.errors) {
-                    toast.error('Foram encontrado erros ao processar sua solicitação');
+                    toast.error('Foram encontrado erros ao processar sua solicitação.');
                 }
             },
         })
@@ -152,7 +152,7 @@ function saveDriver() {
                                     </li>
                                 </ul>
                             </div>
-                            <button type="button" @click="saveDriver"
+                            <button type="button" @click="saveGarage"
                                 class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
                                 Cadastrar Garagem
                             </button>
