@@ -18,12 +18,15 @@ Route::prefix('/frota')->middleware(
 
     Route::resource('/rotas', RoutesController::class, ['names' => 'routes'])->parameter('rotas', 'route')->withTrashed(['show', 'edit', 'update', 'restore']);
     Route::get('/tarefas/minhas', [RoutesController::class, 'myRoutes'])->name('my-routes');
+    Route::post('/tarefas/minhas/startRoute/{id}', [RoutesController::class, 'startRoute'])->name('tasks.start-route');
+    Route::post('/tarefas/minhas/finishRoute/{id}', [RoutesController::class, 'finishRoute'])->name('tasks.finish-route');
+    Route::post('/tarefas/minhas/eraseRoute/{id}', [RoutesController::class, 'eraseRoute'])->name('tasks.erase-route');
     Route::post('/tarefas/minhas/filtrar', [RoutesController::class, 'myRoutesByDate'])->name('my-routes-bydate');
     Route::post('/tarefas/filtrar', [RoutesController::class, 'filter'])->name('tasks.filter');
     Route::post('/tarefas', [RoutesController::class, 'filterRoutes'])->name('tasks.filter-routes');
     Route::post('/tarefas/criarRota', [RoutesController::class, 'routeStore'])->name('tasks.route.store');
     Route::get('rotas/{date}/{driver}/edit', [RoutesController::class, 'edit'])->name('routes.driver.edit');
-    Route::PUt('rotas/{route}/update', [RoutesController::class, 'routeUpdate'])->name('routes.route.update');
+    Route::put('rotas/{route}/update', [RoutesController::class, 'routeUpdate'])->name('routes.route.update');
 
     Route::resource('/agendas', SchedulesController::class, ['names' => 'schedules'])->parameter('agendas', 'schedule')->withTrashed(['show', 'edit', 'update', 'restore']);
     Route::post('/agendas/motorista/{driver}', [SchedulesController::class, 'verifyDriverSchedule'])->name('schedules.driver');

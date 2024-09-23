@@ -13,6 +13,7 @@ use App\Frota\Models\Route;
 use Illuminate\Http\Request;
 use App\Frota\Models\Timetable;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
@@ -182,5 +183,61 @@ class RoutesController extends Controller
             }
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
+    }
+
+    public function startRoute(Request $request)
+    {
+        $route = Route::where('id', $request->id)->select('id', 'date', 'started_at', 'task')->with('taskData')->first();
+        $routeArray = $route->toArray();
+        if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
+            $route->started_at = $route->started_at ?? now();
+
+            if ($route->save()) {
+                $request->merge(['driver' => auth()->id()]);
+                $request->merge(['date' => date('Y-m-d')]);
+
+                $myRoutesByDate = $this->getTaskByDriver($request);
+                return response()->json($myRoutesByDate);
+            }
+        } else {
+            return response()->json('Você não possui permissão para editar esta rota.', 403);
+        }
+    }
+    public function finishRoute(Request $request)
+    {
+        $route = Route::where('id', $request->id)->select('id', 'date', 'ended_at', 'task')->with('taskData')->first();
+        $routeArray = $route->toArray();
+        if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
+            $route->ended_at = $route->ended_at ?? now();
+
+            if ($route->save()) {
+                $request->merge(['driver' => auth()->id()]);
+                $request->merge(['date' => date('Y-m-d')]);
+
+                $myRoutesByDate = $this->getTaskByDriver($request);
+                return response()->json($myRoutesByDate);
+            }
+        } else {
+            return response()->json('Você não possui permissão para editar esta rota.', 403);
+        }
+    }
+    public function eraseRoute(Request $request)
+    {
+        $route = Route::where('id', $request->id)->select('id', 'date', 'ended_at', 'started_at', 'task')->with('taskData')->first();
+        $routeArray = $route->toArray();
+        if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
+            $route->started_at = null;
+            $route->ended_at = null;
+
+            if ($route->save()) {
+                $request->merge(['driver' => auth()->id()]);
+                $request->merge(['date' => date('Y-m-d')]);
+
+                $myRoutesByDate = $this->getTaskByDriver($request);
+                return response()->json($myRoutesByDate);
+            }
+        } else {
+            return response()->json('Você não possui permissão para editar esta rota.', 403);
+        }
     }
 }
