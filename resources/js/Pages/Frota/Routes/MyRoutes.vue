@@ -7,9 +7,12 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { toast } from '@/toast';
 import moment from 'moment';
+import VueMultiselect from 'vue-multiselect';
 
 const props = defineProps({
-    myRoutesByDate: Object
+    myRoutesByDate: Object,
+    cars: Object,
+    driver: Object
 })
 
 const date = ref({
@@ -19,9 +22,27 @@ const date = ref({
 
 const myRoutes = ref({})
 
-const modal = ref(false)
+const car = ref({});
 
-const idToErase = ref(null)
+const routeModel = ref({
+    km: '',
+    obs: ''
+})
+
+function resetModel() {
+    routeModel.value.km = ''
+    routeModel.value.obs = ''
+}
+
+const modal = ref(false)
+const modalStart = ref(false)
+const modalEnd = ref(false)
+
+const currentRoute = ref({})
+
+function cars({ id, modelo, placa }) {
+    return `${id ?? ''} - ${modelo ?? ''} ${placa ?? ''}`
+}
 
 function myRoutesByDate() {
     myRoutes.value = {};
@@ -39,17 +60,19 @@ function myRoutesByDate() {
         })
 }
 
-onMounted(() => {
-    myRoutes.value = props.myRoutesByDate[0]
-})
-
-function startRoute(id, started_at) {
-    if (started_at === null) {
+function startRoute() {
+    if (currentRoute.value.started_at === null) {
         axios.post(route('frota.tasks.start-route', {
-            id: id
-        }))
+            id: currentRoute.value.id,
+        }), {
+            km: routeModel.value.km,
+            obs: routeModel.value.obs,
+            car: car.value.placa
+        })
             .then((r) => {
                 myRoutes.value = r.data[0]
+                modalStart.value = false
+                resetModel()
             })
             .catch((e) => {
                 if (e?.response?.status === 403) {
@@ -63,13 +86,19 @@ function startRoute(id, started_at) {
     }
 }
 
-function finishRoute(id, ended_at) {
-    if (ended_at === null) {
+function finishRoute() {
+    if (currentRoute.value.ended_at === null) {
         axios.post(route('frota.tasks.finish-route', {
-            id: id
-        }))
+            id: currentRoute.value.id
+        }), {
+            km: routeModel.value.km,
+            obs: routeModel.value.obs,
+            car: car.value.placa
+        })
             .then((r) => {
                 myRoutes.value = r.data[0]
+                modalEnd.value = false
+                resetModel()
             })
             .catch((e) => {
                 if (e?.response?.status === 403) {
@@ -83,20 +112,30 @@ function finishRoute(id, ended_at) {
     }
 }
 
-function eraseRouteModal(id) {
+function eraseRouteModal(route) {
     modal.value = true
-    idToErase.value = id
+    currentRoute.value = route
+}
+
+function startRouteModal(route) {
+    modalStart.value = true
+    currentRoute.value = route
+}
+
+function endRouteModal(route) {
+    modalEnd.value = true
+    currentRoute.value = route
 }
 
 function eraseRoute() {
-    if (idToErase.value) {
+    if (currentRoute.value.id) {
         axios.post(route('frota.tasks.erase-route', {
-            id: idToErase.value
+            id: currentRoute.value.id
         }))
             .then((r) => {
                 myRoutes.value = r.data[0]
                 modal.value = false
-                idToErase.value = null
+                currentRoute.value = {}
             })
             .catch((e) => {
                 if (e?.response?.status === 403) {
@@ -109,6 +148,11 @@ function eraseRoute() {
         toast.warning('Rota já finalizada.')
     }
 }
+
+onMounted(() => {
+    myRoutes.value = props.myRoutesByDate[0]
+    car.value = props.driver?.car
+})
 
 </script>
 
@@ -131,7 +175,7 @@ function eraseRoute() {
                     <div class="p-2 rounded-lg overflow-y-auto"
                         :class="$page.props.app.settingsStyles.main.innerSection">
 
-                        <div class="m-2 grid grid-cols-1 max-w-[200px]">
+                        <div class="my-2 grid grid-cols-1 max-w-[200px]">
                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Data
                             </label>
@@ -143,11 +187,20 @@ function eraseRoute() {
                                 <small>{{ date.error }}</small>
                             </div>
                         </div>
-                        
+
+                        <div class="my-2" v-if="moment().isSame(myRoutes?.date, 'day')">
+                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                Carro utilizado
+                            </label>
+                            <VueMultiselect v-model="car" :options="props.cars" :multiple="false"
+                                :close-on-select="true" selectedLabel="atual" placeholder="Carro atual"
+                                :custom-label="cars" track-by="id" selectLabel="Selecionar" deselectLabel="Remover" />
+                        </div>
+
                         <table class="min-w-full">
                             <thead>
                                 <tr>
-                                    <th v-for=" (value, index) in ['Local', 'Hora', 'Iniciada', 'Finalizada', 'Ações']"
+                                    <th v-for=" (value, index) in ['Local Destino', 'Hora Agendada', 'Iniciada', 'Finalizada', 'Ações']"
                                         :key="index + '' + value"
                                         class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider"
                                         :class="$page.props.app.settingsStyles.main.container">
@@ -177,17 +230,17 @@ function eraseRoute() {
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                         <div class="flex gap-3 justify-center"
                                             v-if="moment().isSame(myRoutes?.date, 'day')">
-                                            <button @click="startRoute(m.id, m.started_at)" :disabled="m.started_at">
+                                            <button @click="startRouteModal(m)" :disabled="m.started_at">
                                                 <mdicon :class="m.started_at ? 'text-gray-400' : 'text-green-600'"
                                                     name="play" title="Iniciar percurso" />
                                             </button>
-                                            <button @click="finishRoute(m.id, m.ended_at)"
+                                            <button @click="endRouteModal(m)"
                                                 :disabled="m.ended_at || m.started_at === null">
                                                 <mdicon
                                                     :class="m.ended_at || m.started_at === null ? 'text-gray-400' : 'text-red-600'"
                                                     name="stop" title="Finalizar" />
                                             </button>
-                                            <button @click="eraseRouteModal(m.id)"
+                                            <button @click="eraseRouteModal(m)"
                                                 :disabled="m.started_at === null && m.ended_at === null">
                                                 <mdicon
                                                     :class="m.started_at === null && m.ended_at === null ? 'text-gray-400' : 'text-yellow-600'"
@@ -200,6 +253,103 @@ function eraseRoute() {
                         </table>
                     </div>
                 </div>
+                <!-- modal start route-->
+                <div class="fixed z-50 inset-0 flex items-center justify-center overflow-hidden mx-1"
+                    :class="modalStart ? 'block' : 'hidden'">
+                    <div class="fixed inset-0 transition-opacity">
+                        <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
+                    </div>
+                    <div
+                        class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[768px] dark:bg-gray-600">
+                        <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+                                Confirmação
+                            </h3>
+                            <div class="mt-2">
+                                <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
+                                    <div class="mb-6 p-3 w-full z-auto min-h-fit grid grid-cols-1 gap-1">
+
+                                        <div class="my-2 grid grid-cols-1 place-items-center">
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                KM
+                                            </label>
+                                            <input type="number" maxlength="7" v-model="routeModel.km"
+                                                class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
+
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                Observações
+                                            </label>
+                                            <textarea v-model="routeModel.obs"
+                                                class="rounded border border-black mt-0.5 text-gray-700 w-full max-w-[450px]"
+                                                rows="4">
+                                            </textarea>
+                                        </div>
+
+                                    </div>
+
+                                    <button type="button" @click="startRoute"
+                                        class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                                        Iniciar
+                                    </button>
+
+                                    <button type="button"
+                                        @click="modalStart = false, currentRoute = {}, routeModel = {}, resetModel()"
+                                        class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-gray-600 focus:outline-none focus:shadow-outline">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- modal end route-->
+                <div class="fixed z-50 inset-0 flex items-center justify-center overflow-hidden mx-1"
+                    :class="modalEnd ? 'block' : 'hidden'">
+                    <div class="fixed inset-0 transition-opacity">
+                        <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
+                    </div>
+                    <div
+                        class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[768px] dark:bg-gray-600">
+                        <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+                                Confirmação
+                            </h3>
+                            <div class="mt-2">
+                                <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
+                                    <div class="mb-6 p-3 w-full z-auto min-h-fit grid grid-cols-1 gap-1">
+
+                                        <div class="my-2 grid grid-cols-1 place-items-center">
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                KM
+                                            </label>
+                                            <input type="number" maxlength="7" v-model="routeModel.km"
+                                                class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
+
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                Observações
+                                            </label>
+                                            <textarea v-model="routeModel.obs"
+                                                class="rounded border border-black mt-0.5 text-gray-700 w-full max-w-[450px]"
+                                                rows="4">
+                                            </textarea>
+                                        </div>
+
+                                    </div>
+
+                                    <button type="button" @click="finishRoute"
+                                        class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                                        Encerrar
+                                    </button>
+
+                                    <button type="button" @click="modalEnd = false, currentRoute = {}, routeModel = {}, resetModel()"
+                                        class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-gray-600 focus:outline-none focus:shadow-outline">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- modal-->
                 <div class="fixed z-50 inset-0 flex items-center justify-center overflow-hidden mx-1"
                     :class="modal ? 'block' : 'hidden'">
@@ -207,7 +357,7 @@ function eraseRoute() {
                         <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
                     </div>
                     <div
-                        class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
+                        class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[768px] dark:bg-gray-600">
                         <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                                 Confirmação
@@ -227,7 +377,7 @@ function eraseRoute() {
                                         Limpar
                                     </button>
 
-                                    <button type="button" @click="modal = false, idToErase = null"
+                                    <button type="button" @click="modal = false, currentRoute = {}"
                                         class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-gray-600 focus:outline-none focus:shadow-outline">
                                         Cancelar
                                     </button>

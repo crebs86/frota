@@ -51,16 +51,12 @@ function filtering() {
             driver: filter.value.driver.id
         })
             .then((r) => {
-                if (r.data.data.length === 1) {
-                    results.value = r.data.data[0];
-                } else if (r.data.data.length > 1) {
-                    results.value = r.data.data;
-                }
+                results.value = r.data.data;
             })
             .catch((e) => {
                 if (e.response?.status === 403 || e.response?.status === 404) {
                     toast.error(e.response?.data?.error);
-                }else{
+                } else {
                     toast.error('Ocorreu um erro ao processa a solicitação.')
                 }
             })

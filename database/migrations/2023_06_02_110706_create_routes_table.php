@@ -30,7 +30,8 @@ return new class extends Migration
                 ->on('branches');
 
             $table->integer('vacancy')->nullable();
-            //$table->integer('order');
+            $table->text('obs_start')->nullable();
+            $table->text('obs_end')->nullable();
             $table->date('date');
             $table->time('time');
             $table->timestamp('started_at')->nullable();

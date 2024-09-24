@@ -2,21 +2,23 @@
 
 namespace App\Frota\Controllers;
 
+use Carbon\Carbon;
 use App\Traits\ACL;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Branch;
 use App\Traits\Helpers;
+use App\Frota\Models\Car;
+use App\Frota\Models\CarsLog;
 use App\Frota\Models\Task;
-use App\Frota\Models\Driver;
 use App\Frota\Models\Route;
+use Illuminate\Support\Arr;
+use App\Frota\Models\Driver;
 use Illuminate\Http\Request;
 use App\Frota\Models\Timetable;
-use App\Http\Controllers\Controller;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Arr;
 
 class RoutesController extends Controller
 {
@@ -69,7 +71,9 @@ class RoutesController extends Controller
         $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
         return Inertia::render('Frota/Routes/MyRoutes', [
-            'myRoutesByDate' => $this->getTaskByDriver($request)
+            'myRoutesByDate' => $this->getTaskByDriver($request),
+            'driver' => Driver::where('id', auth()->id())->select('id', 'carro_favorito')->with('user')->with('car')->first(),
+            'cars' => Car::all(['id', 'modelo', 'placa'])
         ]);
     }
 
@@ -170,7 +174,7 @@ class RoutesController extends Controller
         }
     }
 
-    public function routeUpdate(Request $request, Route $route)
+    public function routeUpdate(Request $request, Route $route): JsonResponse
     {
         if ($this->can('Tarefa Editar')) {
             if ($route->update([
@@ -185,14 +189,17 @@ class RoutesController extends Controller
         return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
     }
 
-    public function startRoute(Request $request)
+    public function startRoute(Request $request): JsonResponse
     {
         $route = Route::where('id', $request->id)->select('id', 'date', 'started_at', 'task')->with('taskData')->first();
         $routeArray = $route->toArray();
         if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
             $route->started_at = $route->started_at ?? now();
+            $route->obs_start = $request->obs;
 
             if ($route->save()) {
+                $this->saveCarLog($request->id, Car::where('placa', $request->car)->select('id')->first(), $request->km, 'start');//salva informações do início da rota
+
                 $request->merge(['driver' => auth()->id()]);
                 $request->merge(['date' => date('Y-m-d')]);
 
@@ -203,14 +210,31 @@ class RoutesController extends Controller
             return response()->json('Você não possui permissão para editar esta rota.', 403);
         }
     }
-    public function finishRoute(Request $request)
+
+    public function saveCarLog($routeId, Car $car, int $km, string $type): void
+    {
+        $cl = CarsLog::where('route', $routeId)->where('type', $type)->get();
+        if ($cl->count() === 0) {
+            CarsLog::create([
+                'route' => $routeId,
+                'car' => $car->id,
+                'km' => $km,
+                'type' => $type
+            ]);
+        }
+    }
+
+    public function finishRoute(Request $request): JsonResponse
     {
         $route = Route::where('id', $request->id)->select('id', 'date', 'ended_at', 'task')->with('taskData')->first();
         $routeArray = $route->toArray();
         if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
             $route->ended_at = $route->ended_at ?? now();
+            $route->obs_end = $request->obs;
 
             if ($route->save()) {
+                $this->saveCarLog($request->id, Car::where('placa', $request->car)->select('id')->first(), $request->km, 'end');//salva informações da finalização da rota
+
                 $request->merge(['driver' => auth()->id()]);
                 $request->merge(['date' => date('Y-m-d')]);
 
@@ -221,15 +245,19 @@ class RoutesController extends Controller
             return response()->json('Você não possui permissão para editar esta rota.', 403);
         }
     }
-    public function eraseRoute(Request $request)
+    public function eraseRoute(Request $request): JsonResponse
     {
         $route = Route::where('id', $request->id)->select('id', 'date', 'ended_at', 'started_at', 'task')->with('taskData')->first();
         $routeArray = $route->toArray();
         if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
             $route->started_at = null;
             $route->ended_at = null;
+            $route->obs_start = null;
+            $route->obs_end = null;
 
             if ($route->save()) {
+                CarsLog::where('route', $request->id)->delete();//limpar dados do log
+
                 $request->merge(['driver' => auth()->id()]);
                 $request->merge(['date' => date('Y-m-d')]);
 
