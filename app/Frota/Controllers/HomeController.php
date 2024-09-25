@@ -34,4 +34,9 @@ class HomeController extends Controller
             'timetables' => Arr::pluck(Timetable::select('time')->get()->toArray(), 'time')
         ]);
     }
+
+    public function loadBranches(): JsonResponse
+    {
+        return response()->json(Branch::select('id', 'name')->get());
+    }
 }

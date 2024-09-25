@@ -19,11 +19,6 @@ return new class extends Migration
                 ->references('id')
                 ->on('drivers');
 
-            $table->unsignedBigInteger('car')->nullable();
-            $table->foreign('car')
-                ->references('id')
-                ->on('cars');
-
             $table->string('obs')->nullable();
             $table->date('date');
         });

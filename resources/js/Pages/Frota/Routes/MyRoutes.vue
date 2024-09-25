@@ -29,6 +29,14 @@ const routeModel = ref({
     obs: ''
 })
 
+const singleRouteModel = ref({
+    branch: '',
+    km: '',
+    obs: ''
+})
+
+const branches = ref({})
+
 function resetModel() {
     routeModel.value.km = ''
     routeModel.value.obs = ''
@@ -37,8 +45,13 @@ function resetModel() {
 const modal = ref(false)
 const modalStart = ref(false)
 const modalEnd = ref(false)
+const modalSingleRoute = ref(false)
 
 const currentRoute = ref({})
+
+function branchName({ id, name }) {
+    return `${id ? id : ''} - ${name ? name : ''}`
+}
 
 function cars({ id, modelo, placa }) {
     return `${id ?? ''} - ${modelo ?? ''} ${placa ?? ''}`
@@ -127,6 +140,22 @@ function endRouteModal(route) {
     currentRoute.value = route
 }
 
+function singleRouteModal() {
+    if (branches.value.length > 0) {
+        console.log('Unidades Carregadas...')
+        modalSingleRoute.value = true
+    } else {
+        axios.get(route('frota.load-branches'))
+            .then((r) => {
+                branches.value = r.data
+                modalSingleRoute.value = true
+            })
+            .catch(() => {
+                toast.error('Erro ao carregar unidades.')
+            })
+    }
+}
+
 function eraseRoute() {
     if (currentRoute.value.id) {
         axios.post(route('frota.tasks.erase-route', {
@@ -146,6 +175,26 @@ function eraseRoute() {
             })
     } else {
         toast.warning('Rota já finalizada.')
+    }
+}
+
+function saveSingleRoute() {
+    if (car.value?.placa && singleRouteModel.value?.branch?.id && singleRouteModel.value?.km) {
+        axios.post(route('frota.tasks.set-sigle-route'), {
+            car: car.value.placa,
+            branch: singleRouteModel.value.branch.id,
+            km: singleRouteModel.value.km,
+            obs: singleRouteModel.value?.obs
+        })
+            .then((r) => {
+                myRoutes.value = r.data[0]
+                modalSingleRoute.value = false
+            })
+            .catch((e) => {
+                toast.error(e?.response?.data ?? 'Erro.')
+            })
+    } else {
+        toast.error('Preencha todos os campos.')
     }
 }
 
@@ -175,16 +224,24 @@ onMounted(() => {
                     <div class="p-2 rounded-lg overflow-y-auto"
                         :class="$page.props.app.settingsStyles.main.innerSection">
 
-                        <div class="my-2 grid grid-cols-1 max-w-[200px]">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                Data
-                            </label>
-                            <input type="date" v-model="date.date" @change="myRoutesByDate()"
-                                class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
+                        <div class="my-2 grid grid-cols-1">
+                            <div class="grid grid-cols-1 max-w-[200px]">
+                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    Data
+                                </label>
+                                <input type="date" v-model="date.date" @change="myRoutesByDate()"
+                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
 
-                            <div v-if="date.error"
-                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                <small>{{ date.error }}</small>
+                                <div v-if="date.error"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small>{{ date.error }}</small>
+                                </div>
+                            </div>
+                            <div class="my-2">
+                                <button @click="singleRouteModal()"
+                                    class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
+                                    Rota Avulsa
+                                </button>
                             </div>
                         </div>
 
@@ -341,7 +398,8 @@ onMounted(() => {
                                         Encerrar
                                     </button>
 
-                                    <button type="button" @click="modalEnd = false, currentRoute = {}, routeModel = {}, resetModel()"
+                                    <button type="button"
+                                        @click="modalEnd = false, currentRoute = {}, routeModel = {}, resetModel()"
                                         class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-gray-600 focus:outline-none focus:shadow-outline">
                                         Cancelar
                                     </button>
@@ -378,6 +436,67 @@ onMounted(() => {
                                     </button>
 
                                     <button type="button" @click="modal = false, currentRoute = {}"
+                                        class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-gray-600 focus:outline-none focus:shadow-outline">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- modal single route -->
+                <div class="fixed z-50 inset-0 flex items-center justify-center overflow-hidden mx-1"
+                    :class="modalSingleRoute ? 'block' : 'hidden'">
+                    <div class="fixed inset-0 transition-opacity">
+                        <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
+                    </div>
+                    <div
+                        class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[768px] dark:bg-gray-600">
+                        <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+                                Adicionar Nova Rota Avulsa
+                            </h3>
+                            <div class="mt-2">
+                                <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
+                                    <div class="mb-6 p-3 w-full z-auto min-h-fit grid grid-cols-1 gap-1">
+
+                                        <div class="my-2 grid grid-cols-1 place-items-center">
+                                            <div>
+                                                Carro: {{ `${car?.id} - ${car?.modelo} - ${car?.placa}` }}
+                                            </div>
+
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                Unidade de Destino
+                                            </label>
+                                            <VueMultiselect v-model="singleRouteModel.branch" :options="branches"
+                                                :multiple="false" :close-on-select="true" selectedLabel="atual"
+                                                placeholder="Unidade" :custom-label="branchName" track-by="id"
+                                                label="time" selectLabel="Selecionar" deselectLabel="Remover"
+                                                class="max-w-[450px]" v-if="branches.length > 0" />
+
+                                            <label class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                                                KM
+                                            </label>
+                                            <input type="number" maxlength="7" v-model="singleRouteModel.km"
+                                                class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
+
+                                            <label class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                                                Observações
+                                            </label>
+                                            <textarea v-model="singleRouteModel.obs"
+                                                class="rounded border border-black mt-0.5 text-gray-700 w-full max-w-[450px]"
+                                                rows="4">
+                                            </textarea>
+                                        </div>
+
+                                    </div>
+
+                                    <button type="button" @click="saveSingleRoute()"
+                                        class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                                        Criar e Iniciar Rota
+                                    </button>
+
+                                    <button type="button" @click="modalSingleRoute = false, currentRoute = {}"
                                         class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-gray-600 focus:outline-none focus:shadow-outline">
                                         Cancelar
                                     </button>

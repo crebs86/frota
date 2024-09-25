@@ -9,14 +9,15 @@ use Inertia\Response;
 use App\Models\Branch;
 use App\Traits\Helpers;
 use App\Frota\Models\Car;
-use App\Frota\Models\CarsLog;
 use App\Frota\Models\Task;
 use App\Frota\Models\Route;
 use Illuminate\Support\Arr;
 use App\Frota\Models\Driver;
 use Illuminate\Http\Request;
+use App\Frota\Models\CarsLog;
 use App\Frota\Models\Timetable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 
@@ -154,13 +155,12 @@ class RoutesController extends Controller
         return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
     }
 
-    private function routePersist($task, Request $request, $order = null): JsonResponse
+    private function routePersist($task, Request $request): JsonResponse
     {
         $route = Route::create([
             'task' => $task['id'],
             'user' => auth()->id(),
             'to' => $request->branch,
-            'order' => $order,
             'date' => $task['date'],
             'time' => $request->time
         ]);
@@ -198,7 +198,7 @@ class RoutesController extends Controller
             $route->obs_start = $request->obs;
 
             if ($route->save()) {
-                $this->saveCarLog($request->id, Car::where('placa', $request->car)->select('id')->first(), $request->km, 'start');//salva informações do início da rota
+                $this->saveCarLog($request->id, Car::where('placa', $request->car)->select('id')->first(), $request->km, 'start'); //salva informações do início da rota
 
                 $request->merge(['driver' => auth()->id()]);
                 $request->merge(['date' => date('Y-m-d')]);
@@ -213,6 +213,15 @@ class RoutesController extends Controller
 
     public function saveCarLog($routeId, Car $car, int $km, string $type): void
     {
+        $carDrive = DB::table('routes')
+            ->where('routes.id', $routeId)
+            ->join('tasks', 'routes.task', '=', 'tasks.id')
+            ->join('drivers', 'drivers.id', '=', 'tasks.driver')
+            ->select('routes.task', 'tasks.id as taskId', 'tasks.driver', 'drivers.carro_favorito')
+            ->first();
+
+        //dd($carDrive->carro_favorito);
+
         $cl = CarsLog::where('route', $routeId)->where('type', $type)->get();
         if ($cl->count() === 0) {
             CarsLog::create([
@@ -221,6 +230,10 @@ class RoutesController extends Controller
                 'km' => $km,
                 'type' => $type
             ]);
+        }
+
+        if ($carDrive->carro_favorito != $car->id) {
+            $this->setNewFavoriteCar($carDrive->driver, $car->id);
         }
     }
 
@@ -233,7 +246,7 @@ class RoutesController extends Controller
             $route->obs_end = $request->obs;
 
             if ($route->save()) {
-                $this->saveCarLog($request->id, Car::where('placa', $request->car)->select('id')->first(), $request->km, 'end');//salva informações da finalização da rota
+                $this->saveCarLog($request->id, Car::where('placa', $request->car)->select('id')->first(), $request->km, 'end'); //salva informações da finalização da rota
 
                 $request->merge(['driver' => auth()->id()]);
                 $request->merge(['date' => date('Y-m-d')]);
@@ -245,6 +258,7 @@ class RoutesController extends Controller
             return response()->json('Você não possui permissão para editar esta rota.', 403);
         }
     }
+
     public function eraseRoute(Request $request): JsonResponse
     {
         $route = Route::where('id', $request->id)->select('id', 'date', 'ended_at', 'started_at', 'task')->with('taskData')->first();
@@ -256,7 +270,7 @@ class RoutesController extends Controller
             $route->obs_end = null;
 
             if ($route->save()) {
-                CarsLog::where('route', $request->id)->delete();//limpar dados do log
+                CarsLog::where('route', $request->id)->delete(); //limpar dados do log
 
                 $request->merge(['driver' => auth()->id()]);
                 $request->merge(['date' => date('Y-m-d')]);
@@ -267,5 +281,57 @@ class RoutesController extends Controller
         } else {
             return response()->json('Você não possui permissão para editar esta rota.', 403);
         }
+    }
+
+    public function setSingleRoute(Request $request)
+    {
+        $request->merge(['date' => date('Y-m-d'), 'driver' => auth()->id()]);
+
+        $task = $this->getTaskByDriver($request);
+
+        $request->validate([
+            'branch' => 'required|integer|exists:branches,id',
+            'car' => 'required|exists:cars,placa',
+            'km' => 'required|integer|max:999999'
+        ], [
+            'branch.*' => 'Informe uma unidade para a rota.',
+            'car.*' => 'Informe um carro para a rota.',
+            'km.required' => 'Informe a quilometragem atual do carro.',
+            'km.max' => 'Quilometragem deve ter no máximo 6 caracteres.'
+        ]);
+
+        if (count($task) === 0) {
+            $createTask = Task::create([
+                'driver' => $request->driver,
+                'date' => $request->date
+            ])->toArray();
+            $route = $this->persistSingleRoute($createTask, $request);
+        } else {
+            $route = $this->persistSingleRoute($task[0], $request);
+        }
+
+        if ($route) {
+            $request->merge(['id' => $route->id]);
+            return $this->startRoute($request);
+        }
+        return response()->json('Não foi possível validar inicio da rota. Atualize a página para verificar sua criação e início manual.', 404);
+    }
+
+    private function persistSingleRoute($task, Request $request): Route
+    {
+        return Route::create([
+            'task' => $task['id'],
+            'user' => auth()->id(),
+            'to' => $request->branch,
+            'date' => $task['date'],
+            'time' => date('H:i:s')
+        ]);
+    }
+
+    private function setNewFavoriteCar($driver, $car)
+    {
+        Driver::find($driver)->update([
+            'carro_favorito' => $car
+        ]);
     }
 }
