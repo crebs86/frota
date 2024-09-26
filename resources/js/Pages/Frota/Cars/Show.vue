@@ -57,7 +57,7 @@ function setNumber() {
 
 <template>
 
-    <Head title="Carros" />
+    <Head title="Veículo" />
 
 
     <AuthenticatedLayout>
@@ -67,7 +67,7 @@ function setNumber() {
         </template>
         <SubSection>
             <template #header>
-                Garagens
+                Veículo
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">

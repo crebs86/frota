@@ -9,7 +9,7 @@ import hasPermission from '@/permissions'
 
 <template>
 
-    <Head title="Carros" />
+    <Head title="Veículo" />
 
 
     <AuthenticatedLayout>
@@ -19,7 +19,7 @@ import hasPermission from '@/permissions'
         </template>
         <SubSection>
             <template #header>
-                Garagens
+                Veículos
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
