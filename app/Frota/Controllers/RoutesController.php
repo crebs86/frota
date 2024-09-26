@@ -285,36 +285,39 @@ class RoutesController extends Controller
 
     public function setSingleRoute(Request $request)
     {
-        $request->merge(['date' => date('Y-m-d'), 'driver' => auth()->id()]);
+        if (Driver::find(auth()->id())) {
+            $request->merge(['date' => date('Y-m-d'), 'driver' => auth()->id()]);
 
-        $task = $this->getTaskByDriver($request);
+            $task = $this->getTaskByDriver($request);
 
-        $request->validate([
-            'branch' => 'required|integer|exists:branches,id',
-            'car' => 'required|exists:cars,placa',
-            'km' => 'required|integer|max:999999'
-        ], [
-            'branch.*' => 'Informe uma unidade para a rota.',
-            'car.*' => 'Informe um carro para a rota.',
-            'km.required' => 'Informe a quilometragem atual do carro.',
-            'km.max' => 'Quilometragem deve ter no máximo 6 caracteres.'
-        ]);
+            $request->validate([
+                'branch' => 'required|integer|exists:branches,id',
+                'car' => 'required|exists:cars,placa',
+                'km' => 'required|integer|max:999999'
+            ], [
+                'branch.*' => 'Informe uma unidade para a rota.',
+                'car.*' => 'Informe um carro para a rota.',
+                'km.required' => 'Informe a quilometragem atual do carro.',
+                'km.max' => 'Quilometragem deve ter no máximo 6 caracteres.'
+            ]);
 
-        if (count($task) === 0) {
-            $createTask = Task::create([
-                'driver' => $request->driver,
-                'date' => $request->date
-            ])->toArray();
-            $route = $this->persistSingleRoute($createTask, $request);
-        } else {
-            $route = $this->persistSingleRoute($task[0], $request);
+            if (count($task) === 0) {
+                $createTask = Task::create([
+                    'driver' => $request->driver,
+                    'date' => $request->date
+                ])->toArray();
+                $route = $this->persistSingleRoute($createTask, $request);
+            } else {
+                $route = $this->persistSingleRoute($task[0], $request);
+            }
+
+            if ($route) {
+                $request->merge(['id' => $route->id]);
+                return $this->startRoute($request);
+            }
+            return response()->json('Não foi possível validar inicio da rota. Atualize a página para verificar sua criação e início manual.', 404);
         }
-
-        if ($route) {
-            $request->merge(['id' => $route->id]);
-            return $this->startRoute($request);
-        }
-        return response()->json('Não foi possível validar inicio da rota. Atualize a página para verificar sua criação e início manual.', 404);
+        return response()->json('Você não possui permissão para editar esta rota.', 403);
     }
 
     private function persistSingleRoute($task, Request $request): Route
