@@ -22,6 +22,6 @@ class Route extends Model
 
     public function taskData()
     {
-        return $this->hasOne(Task::class, 'id', 'task')->select('id', 'driver')->with('driver');
+        return $this->hasOne(Task::class, 'id', 'task')->select('id', 'date','driver')->with('driver');
     }
 }

@@ -302,7 +302,9 @@ function setRouteToEdit(route) {
                                         </td>
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                            <button @click="setRouteToEdit(r)">
+                                            <button @click="setRouteToEdit(r)"
+                                                v-if="moment(moment(routeForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
+                                                    moment(moment(routeForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))">
                                                 <mdicon name="pencil"
                                                     class="hover:text-green-500 dark:hover:text-gray-400" />
                                             </button>
@@ -321,7 +323,7 @@ function setRouteToEdit(route) {
                         <div v-if="routeForEdition"
                             class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
                             <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                
+
                                 <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2 h-[375px]">
                                     <div class="z-10 mb-6 w-full">
                                         <div>Unidade</div>
