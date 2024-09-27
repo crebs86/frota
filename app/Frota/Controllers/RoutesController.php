@@ -127,7 +127,7 @@ class RoutesController extends Controller
 
     public function routeStore(Request $request): JsonResponse
     {
-        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
+        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver') && $this->validateDate($request->date)) {
             $task = $this->getTaskByDriver($request);
 
             $request->validate([
@@ -336,5 +336,12 @@ class RoutesController extends Controller
         Driver::find($driver)->update([
             'carro_favorito' => $car
         ]);
+    }
+
+    private function validateDate($date)
+    {
+        $date1 = Carbon::createFromFormat('Y-m-d H:i:s', $date . ' 00:00:00');
+        $date2 = Carbon::createFromFormat('Y-m-d H:i:s', now()->format('Y-m-d') . ' 00:00:00');
+        return $date1->gte($date2);
     }
 }

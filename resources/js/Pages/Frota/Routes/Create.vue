@@ -36,6 +36,10 @@ const routeForEdition = ref({
     time: ''
 });
 
+function validateDate(date) {
+    return moment(date).isSame(moment(), 'day') || moment(date).isAfter(moment(), 'day')
+}
+
 function driverName({ id, user }) {
     return `${id ? id : ''} - ${user?.name ? user.name : ''}`
 }
@@ -49,7 +53,9 @@ function saveRoute() {
     if (routeForm.value.driver?.id &&
         routeForm.value.date &&
         routeForm.value.time &&
-        routeForm.value.branch?.id) {
+        routeForm.value.branch?.id &&
+        validateDate(routeForm.value.date)
+    ) {
         axios.post(route('frota.tasks.route.store'), {
             driver: routeForm.value.driver?.id,
             date: routeForm.value.date,
@@ -76,7 +82,11 @@ function saveRoute() {
                 }
             })
     } else {
-        toast.error('Preencha todos os campos para prosseguir.')
+        if (!validateDate(routeForm.value.date)) {
+            toast.error('Não é possível criar/adicionar a agenda para datas passadas.')
+        } else {
+            toast.error('Preencha todos os campos para prosseguir.')
+        }
     }
 }
 
@@ -230,7 +240,7 @@ function setRouteToEdit(route) {
 
                         </div>
 
-                        <button type="button" @click="saveRoute"
+                        <button type="button" @click="saveRoute" v-if="validateDate(routes.date)"
                             class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
                             Criar/Adicionar
                         </button>
