@@ -26,7 +26,8 @@ const car = ref({});
 
 const routeModel = ref({
     km: '',
-    obs: ''
+    obs: '',
+    time: ''
 })
 
 const singleRouteModel = ref({
@@ -40,6 +41,7 @@ const branches = ref({})
 function resetModel() {
     routeModel.value.km = ''
     routeModel.value.obs = ''
+    routeModel.value.time = ''
 }
 
 const modal = ref(false)
@@ -48,6 +50,12 @@ const modalEnd = ref(false)
 const modalSingleRoute = ref(false)
 
 const currentRoute = ref({})
+
+function km(car_log, type) {
+    return car_log.filter((c) => {
+        return c.type === type
+    })
+}
 
 function branchName({ id, name }) {
     return `${id ? id : ''} - ${name ? name : ''}`
@@ -80,7 +88,8 @@ function startRoute() {
         }), {
             km: routeModel.value.km,
             obs: routeModel.value.obs,
-            car: car.value.placa
+            car: car.value.placa,
+            started_at: routeModel.value.time
         })
             .then((r) => {
                 myRoutes.value = r.data[0]
@@ -106,7 +115,8 @@ function finishRoute() {
         }), {
             km: routeModel.value.km,
             obs: routeModel.value.obs,
-            car: car.value.placa
+            car: car.value.placa,
+            ended_at: routeModel.value.time
         })
             .then((r) => {
                 myRoutes.value = r.data[0]
@@ -277,11 +287,19 @@ onMounted(() => {
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        {{ m.started_at ? moment(m.started_at).format('DD/MM/YY HH:mm') : 'não' }}
+                                        <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                            :class="m.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                            {{ m.started_at ? moment(m.started_at).format('DD/MM/YY HH:mm') : '-' }}
+                                        </p>
+                                        <small>Km: {{ km(m.cars_log, 'start')[0]?.km }}</small>
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        {{ m.ended_at ? moment(m.ended_at).format('DD/MM/YY HH:mm') : 'não' }}
+                                        <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                            :class="m.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                            {{ m.ended_at ? moment(m.ended_at).format('DD/MM/YY HH:mm') : '-' }}
+                                        </p>
+                                        <small>Km: {{ km(m.cars_log, 'end')[0]?.km }}</small>
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
@@ -327,6 +345,13 @@ onMounted(() => {
                                     <div class="mb-6 p-3 w-full z-auto min-h-fit grid grid-cols-1 gap-1">
 
                                         <div class="my-2 grid grid-cols-1 place-items-center">
+
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                Hora
+                                            </label>
+                                            <input type="time" v-model="routeModel.time"
+                                                class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
+
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                                 KM
                                             </label>
@@ -376,6 +401,12 @@ onMounted(() => {
                                     <div class="mb-6 p-3 w-full z-auto min-h-fit grid grid-cols-1 gap-1">
 
                                         <div class="my-2 grid grid-cols-1 place-items-center">
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                Hora
+                                            </label>
+                                            <input type="time" v-model="routeModel.time"
+                                                class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
+
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                                 KM
                                             </label>

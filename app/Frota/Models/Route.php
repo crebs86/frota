@@ -22,6 +22,10 @@ class Route extends Model
 
     public function taskData()
     {
-        return $this->hasOne(Task::class, 'id', 'task')->select('id', 'date','driver')->with('driver');
+        return $this->hasOne(Task::class, 'id', 'task')->select('id', 'date', 'driver')->with('driver');
+    }
+
+    public function carsLog() {
+        return $this->hasMany(CarsLog::class, 'route', 'id');
     }
 }

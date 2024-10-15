@@ -194,7 +194,7 @@ class RoutesController extends Controller
         $route = Route::where('id', $request->id)->select('id', 'date', 'started_at', 'task')->with('taskData')->first();
         $routeArray = $route->toArray();
         if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
-            $route->started_at = $route->started_at ?? now();
+            $route->started_at = $request->started_at ? date('Y-m-d') . ' ' . $request->started_at : now();
             $route->obs_start = $request->obs;
 
             if ($route->save()) {
@@ -242,7 +242,7 @@ class RoutesController extends Controller
         $route = Route::where('id', $request->id)->select('id', 'date', 'ended_at', 'task')->with('taskData')->first();
         $routeArray = $route->toArray();
         if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
-            $route->ended_at = $route->ended_at ?? now();
+            $route->ended_at = $request->ended_at ? date('Y-m-d') . ' ' . $request->ended_at : now();
             $route->obs_end = $request->obs;
 
             if ($route->save()) {
