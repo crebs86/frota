@@ -4,7 +4,6 @@ import VueMultiselect from 'vue-multiselect';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import hasPermission from '@/permissions';
 import { toast } from '@/toast';
 import { ref } from 'vue';
 
@@ -17,11 +16,12 @@ const props = defineProps({
 const canEdit = ref(props.canEdit);
 
 const driverForm = useForm({
-    cnh: props.driver[0].cnh === 1,
-    proprio: props.driver[0].proprio === 1,
-    matricula: props.driver[0].matricula,
-    garagem_id: props.driver[0].garage,
-    carro_favorito: props.driver[0].car,
+    cnh: props.driver.cnh === 1,
+    proprio: props.driver.proprio === 1,
+    matricula: props.driver.matricula,
+    garagem_id: props.driver.garage,
+    carro_favorito: props.driver.car,
+    deleted_at: props.driver.deleted_at !== null,
     _checker: props._checker,
 });
 
@@ -37,10 +37,10 @@ function saveDriver() {
     driverForm.garagem_id = driverForm.garagem_id ? driverForm.garagem_id.id : null;
     driverForm.carro_favorito = driverForm.carro_favorito ? driverForm.carro_favorito.id : null;
 
-    driverForm.put(route('frota.drivers.update', props.driver[0].id), {
+    driverForm.put(route('frota.drivers.update', props.driver.id), {
         onSuccess: () => {
-            driverForm.garagem_id = props.driver[0].garage;
-            driverForm.carro_favorito = props.driver[0].car;
+            driverForm.garagem_id = props.driver.garage;
+            driverForm.carro_favorito = props.driver.car;
             toast.success('Motorista atualizado com sucesso.');
         },
         onError: () => {
@@ -61,7 +61,7 @@ function saveDriver() {
         </template>
         <SubSection>
             <template #header>
-                Motorista: {{ props.driver[0].user.name }}
+                Motorista: {{ props.driver.user.name }}
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
@@ -71,11 +71,11 @@ function saveDriver() {
                         <div class="relative">
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                 Nome
-                                <Link :href="route('admin.acl.users.show', props.driver[0].id)">
+                                <Link :href="route('admin.acl.users.show', props.driver.id)">
                                 <mdicon name="open-in-new" size="20" />
                                 </Link>
                             </label>
-                            <input readonly type="text" :value="props.driver[0].user.name" placeholder="Nome"
+                            <input readonly type="text" :value="props.driver.user.name" placeholder="Nome"
                                 maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300"
                                 :class="canEdit ? 'bg-slate-400' : ''" />
@@ -146,12 +146,12 @@ function saveDriver() {
                         <div class="relative -mt-0.5" v-else>
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                 Carro Favorito
-                                <Link v-if="props.driver[0].car" :href="route('frota.cars.show', props.driver[0].car)">
+                                <Link v-if="props.driver.car" :href="route('frota.cars.show', props.driver.car)">
                                 <mdicon name="open-in-new" size="20" />
                                 </Link>
                             </label>
                             <input readonly type="text"
-                                :value="props.driver[0].car ? props.driver[0].car?.modelo + ' - ' + props.driver[0].car?.placa : ''"
+                                :value="props.driver.car ? props.driver.car?.modelo + ' - ' + props.driver.car?.placa : ''"
                                 placeholder="Carro" maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
                         </div>
@@ -173,14 +173,33 @@ function saveDriver() {
                         <div class="relative -mt-1" v-else>
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                 Garagem (local)
-                                <Link v-if="props.driver[0].garage"
-                                    :href="route('frota.garages.show', props.driver[0].garage)">
+                                <Link v-if="props.driver.garage"
+                                    :href="route('frota.garages.show', props.driver.garage)">
                                 <mdicon name="open-in-new" size="20" />
                                 </Link>
                             </label>
-                            <input readonly type="text" :value="props.driver[0].garage?.branch.name"
+                            <input readonly type="text" :value="props.driver.garage?.branch.name"
                                 placeholder="Garagem" maxlength="25"
                                 class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
+                        </div>
+                        
+                        <div class="mt-1 pl-1.5">
+                            <div class="flex w-full mb-5">
+                                <label for="deleted_at" class="flex items-center cursor-pointer">
+                                    <div class="relative">
+                                        <input type="checkbox" id="deleted_at" class="sr-only" v-model="driverForm.deleted_at"
+                                            :disabled="!canEdit" />
+                                        <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
+                                        </div>
+                                        <div class="dot absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition"
+                                            :class="!canEdit ? 'dot-dis' : ''">
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
+                                        Inativar?
+                                    </div>
+                                </label>
+                            </div>
                         </div>
 
                         <template v-if="!canEdit">

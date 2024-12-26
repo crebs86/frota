@@ -25,8 +25,9 @@ class DriversController extends Controller
     public function index(): Response
     {
         if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar', 'Motorista Criar')) {
+            $drivers = Driver::with('user', 'garage', 'car')->select('id', 'garagem_id', 'carro_favorito', 'proprio', 'matricula', 'cnh', 'deleted_at')->withTrashed()->get();
             return Inertia::render('Frota/Drivers/Index', [
-                'drivers' => Driver::with('user', 'garage', 'car')->select('id', 'garagem_id', 'carro_favorito', 'proprio', 'matricula', 'cnh', 'deleted_at')->withTrashed()->get()->toArray()
+                'drivers' => $drivers->where('user', '<>', null)->toArray()
             ]);
         }
         return Inertia::render('Admin/403');
@@ -40,7 +41,9 @@ class DriversController extends Controller
         if ($this->can('Motorista Criar')) {
             return Inertia::render('Frota/Drivers/Create', [
                 'users' => User::select('id', 'name')
-                    ->whereKeyNot(Arr::pluck(Driver::all('id')
+                    ->whereKeyNot(
+                        Arr::pluck(
+                            Driver::withTrashed()->get(['id'])
                         ->toArray(), 'id'))
                     ->get(),
                 'garages' => Garage::with('branch')->select('id')->get(),
@@ -97,14 +100,21 @@ class DriversController extends Controller
     public function showUserPage($canEdit = false): Response
     {
         if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar', 'Motorista Criar')) {
-            return Inertia::render('Frota/Drivers/Show', [
-                'driver' => Driver::where('id', request('driver'))->with('user', 'garage', 'car')->get(),
-                'garages' => Garage::with('branch')->select('id')->get(),
-                'cars' => Car::select('id', 'placa', 'modelo')->get(),
-                '_checker' => setGetKey(request('driver'), 'edit_driver'),
-                'canEdit' => $canEdit
+            $driver = Driver::where('id', request('driver'))->with('user', 'garage', 'car')->withTrashed()->first();
+            if ($driver?->user) {
+                return Inertia::render('Frota/Drivers/Show', [
+                    'driver' => $driver,
+                    'garages' => Garage::with('branch')->select('id')->get(),
+                    'cars' => Car::select('id', 'placa', 'modelo')->get(),
+                    '_checker' => setGetKey(request('driver'), 'edit_driver'),
+                    'canEdit' => $canEdit
+                ]);
+            }
+            return Inertia::render('Admin/403', [
+                'message' => 'Usuário base do motorista está inativo. <a href ="' . route('admin.acl.users.show', $driver->id) . '" style="text-decoration:underline;">Ver</a>'
             ]);
         }
+        return Inertia::render('Admin/403');
     }
 
     /**
@@ -119,7 +129,16 @@ class DriversController extends Controller
             if ((int) getKeyValue($request->_checker, 'edit_driver') === (int) $request->driver->id) {
                 if ($this->can('Motorista Editar')) {
                     if ($driver->update($request->validated())) {
-                        return redirect()->back()->with(['driver' => Driver::where('id', request('driver'))->with('user', 'garage', 'car')->get()]);
+                        if ($request->deleted_at) {
+                            $driver->delete();
+                            User::find($driver->id)->removeRole('Motorista');
+                        } else {
+                            $u = User::find($driver->id);
+                            if (!$u->hasRole('Motorista')) {
+                                $u->assignRole('Motorista');
+                            }
+                        }
+                        return redirect()->back()->with(['driver' => Driver::where('id', request('driver'))->with('user', 'garage', 'car')->withTrashed()->get()]);
                     }
                     return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do motorista.');
                 }

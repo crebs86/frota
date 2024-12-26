@@ -63,7 +63,7 @@ import SubSection from '@/Components/Admin/SubSection.vue';
                                         {{ d.matricula }}
                                     </td>
                                     <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                        {{ d.deleted_at ? 'Não' : 'Sim' }}
+                                        <div class="text-center rounded-md border" :class="d.deleted_at ? 'border-red-600 bg-red-500' : 'border-green-700 bg-green-500'">{{ d.deleted_at ? 'Não' : 'Sim' }}</div>
                                     </td>
                                     <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
                                         <div class="flex justify-center gap-1">

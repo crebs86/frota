@@ -299,7 +299,7 @@ class UserController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'cpf' => $request->cpf,
+                'cpf' =>  preg_replace("/[^0-9]/", "", $request->cpf),
                 'branch_id' => $request->branch_id,
                 'notes' => $request->notes,
                 'password' => Hash::make($pass),
@@ -346,7 +346,7 @@ class UserController extends Controller
     {
         if ($this->can('Usuario Ver', 'Usuario Editar', 'Usuario Apagar')) {
             if ($user = User::select('id', 'name', 'cpf', 'email', 'notes', 'branch_id', 'deleted_at', 'email_verified_at')
-            ->with('branch')
+                ->with('branch')
                 ->withTrashed()->find($request->user) ?? []
             ) {
 
@@ -385,7 +385,7 @@ class UserController extends Controller
                     [
                         'email' => $request->email,
                         'name' => $request->name,
-                        'cpf' => $request->cpf ? str_replace(['-', '.'], '', $request->cpf) : null,
+                        'cpf' => $request->cpf ? preg_replace("/[^0-9]/", "", $request->cpf) : null,
                         'deleted_at' => $request->active ? null : now(),
                         'branch_id' => $request->branch_id,
                         'notes' => $request->notes

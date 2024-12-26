@@ -23,7 +23,8 @@ const routeForm = ref({
     date: '',
     time: '',
     branch: '',
-    error: ''
+    error: '',
+    local: ''
 });
 
 const modal = ref({
@@ -237,7 +238,18 @@ function setRouteToEdit(route) {
                                     <small v-for="error in routeForm.error?.errors.branch">{{ error }}</small>
                                 </div>
                             </div>
+                            <div class="mx-2 col-span-4 mt-6" v-if="routeForm.date && routeForm.branch?.id === 1">
+                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    Local
+                                </label>
+                                <input type="text" v-model="routeForm.local"
+                                    class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700">
 
+                                <div v-if="routeForm.error?.errors?.local"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small v-for="error in routeForm.error?.errors.local">{{ error }}</small>
+                                </div>
+                            </div>
                         </div>
 
                         <button type="button" @click="saveRoute" v-if="validateDate(routes.date)"

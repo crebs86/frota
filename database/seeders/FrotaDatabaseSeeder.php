@@ -19,5 +19,6 @@ class FrotaDatabaseSeeder extends Seeder
         $this->call(FrotaInitRolesTableSeeder::class);
         $this->call(FrotaInitRoleHasPermissionsTableSeeder::class);
         $this->call(FrotaInitDriversPermissionsSeeder::class);
+        $this->call(FrotaInitBranchesTableSeeder::class);
     }
 }
