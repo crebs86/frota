@@ -15,6 +15,7 @@ use Illuminate\Support\Arr;
 use App\Frota\Models\Driver;
 use Illuminate\Http\Request;
 use App\Frota\Models\CarsLog;
+use App\Frota\Models\RealBranch;
 use App\Frota\Models\Timetable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -53,16 +54,17 @@ class RoutesController extends Controller
             ->where('driver', $request->driver)
             ->with('driver')
             ->with('routes')
-            ->get()->toArray();
+            ->first();
 
-        if (count($driverRoutes) < 1) {
+        if (!$driverRoutes) {
             return redirect()->to(route('frota.routes.create'));
         }
 
         return Inertia::render('Frota/Routes/Edit', [
             'branches' => Branch::select('id', 'name')->get(),
             'timetables' => Arr::pluck(Timetable::all(['time']), 'time'),
-            'driverRoutes' => $driverRoutes
+            'driverRoutes' => $this->setRealBranch($driverRoutes->toArray()),
+            '_checker' => setGetKey($driverRoutes->id, 'route_edit')
         ]);
     }
 
@@ -84,10 +86,11 @@ class RoutesController extends Controller
         return $this->getTaskByDriver($request);
     }
 
-    public function filterRoutes(Request $request): array|JsonResponse
+    public function filterRoutes(Request $request): array
     {
         if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
-            return $this->getTaskByDriver($request);
+            $a = $this->getTaskByDriver($request);
+            return [$a, $a ? setGetKey($a[0]['routes'][0]['id'], 'route_edit') : null];
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
     }
@@ -118,29 +121,37 @@ class RoutesController extends Controller
 
     private function getTaskByDriver(Request $request): array
     {
-        return Task::select('id', 'driver', 'date')
+        $task = Task::select('id', 'driver', 'date')
             ->where('date', $request->date)
             ->where('driver', $request->driver)
             ->with('routes')
-            ->get()->toArray();
+            ->first();
+
+        if ($task) {
+            return [$this->setRealBranch($task?->toArray())];
+        }
+        return [];
     }
 
     public function routeStore(Request $request): JsonResponse
     {
-        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver') && $this->validateDate($request->date)) {
-            $task = $this->getTaskByDriver($request);
+        $request->validate([
+            'branch' => 'required|integer|exists:branches,id',
+            'time' => 'required',
+            'date' => 'required|date',
+            'driver' => 'required|integer|exists:drivers,id',
+            'local' => 'required_if:branch,==,1|string|nullable|max:255'
+        ], [
+            'branch.*' => 'Informe uma unidade para a rota.',
+            'time.required' => 'Selecione um horário para a rota.',
+            'date.*' => 'A data não foi informada.',
+            'driver.*' => 'Selecione um motorista para fazer a rota.',
+            'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
+        ]);
 
-            $request->validate([
-                'branch' => 'required|integer|exists:branches,id',
-                'time' => 'required',
-                'date' => 'required|date',
-                'driver' => 'required|integer|exists:drivers,id'
-            ], [
-                'branch.*' => 'Informe uma unidade para a rota.',
-                'time.required' => 'Selecione um horário para a rota.',
-                'date.*' => 'A data não foi informada.',
-                'driver.*' => 'Selecione um motorista para fazer a rota.'
-            ]);
+        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar') && $this->validateDate($request->date)) {
+
+            $task = $this->getTaskByDriver($request);
 
             if (count($task) === 0) {
                 $createTask = Task::create([
@@ -149,7 +160,13 @@ class RoutesController extends Controller
                 ])->toArray();
                 return $this->routePersist($createTask, $request);
             } else {
-                return $this->routePersist($task[0], $request);
+                /**
+                 * Verificar payload em edição de rota
+                 */
+                if ((int) getKeyValue($request->_checker, 'route_edit') === (int) $task[0]['routes'][0]['id']) {
+                    return $this->routePersist($task[0], $request);
+                }
+                return response()->json(['error' => 'Erro na utilização da aplicação.'], 403);
             }
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
@@ -166,6 +183,12 @@ class RoutesController extends Controller
         ]);
 
         if ($route) {
+            if ($route->to === 1) {
+                RealBranch::create([
+                    'route' => $route->id,
+                    'name' => $request->local
+                ]);
+            }
             return response()->json([
                 'message' => 'A rota foi adicionada.'
             ]);
@@ -177,10 +200,37 @@ class RoutesController extends Controller
     public function routeUpdate(Request $request, Route $route): JsonResponse
     {
         if ($this->can('Tarefa Editar')) {
+
+            $request->merge(['to' => $request->branch['id']]);
+
+            $request->validate([
+                'to' => 'required|integer|exists:branches,id',
+                'time' => 'required',
+                'local' => 'required_if:to,==,1|string|nullable|max:255'
+            ], [
+                'to.*' => 'Informe uma unidade para a rota.',
+                'time.required' => 'Selecione um horário para a rota.',
+                'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
+            ]);
+
             if ($route->update([
                 'time' => $request->time,
                 'to' => $request->branch['id']
             ])) {
+
+                if ($request->currentBranch['id'] === 1 && $request->branch['id'] === 1) {
+                    RealBranch::find($route->id)->update([
+                        'name' => $request->local
+                    ]);
+                } elseif ($request->currentBranch['id'] === 1 && $request->branch['id'] !== 1) {
+                    RealBranch::find($route->id)?->delete();
+                } elseif ($request->currentBranch['id'] !== 1 && $request->branch['id'] === 1) {
+                    RealBranch::create([
+                        'route' => $route->id,
+                        'name' => $request->local
+                    ]);
+                }
+
                 return response()->json('A rota foi atualizada.');
             } else {
                 return response()->json('Ocorreu um erro ao processar solicitação.', 503);
@@ -343,5 +393,32 @@ class RoutesController extends Controller
         $date1 = Carbon::createFromFormat('Y-m-d H:i:s', $date . ' 00:00:00');
         $date2 = Carbon::createFromFormat('Y-m-d H:i:s', now()->format('Y-m-d') . ' 00:00:00');
         return $date1->gte($date2);
+    }
+
+    private function setRealBranch(array $task)
+    {
+        $t = [];
+
+        /**
+         * Renomeia o nome da branch para local não cadastrado
+         */
+        foreach ($task as $key => $value) {
+            if ($key === 'routes') {
+                foreach ($value as $k => $v) {
+                    $t[$key][$k] = $v;
+                    if ($v['to'] === 1) {
+                        $t[$key][$k]['branch']['name'] = $this->getRealBranch($v['id']);
+                    }
+                }
+            } else {
+                $t[$key] = $value;
+            }
+        }
+        return $t;
+    }
+
+    private function getRealBranch(int $loose): string
+    {
+        return RealBranch::find($loose)?->name;
     }
 }

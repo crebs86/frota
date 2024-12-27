@@ -24,7 +24,8 @@ const routeForm = ref({
     time: '',
     branch: '',
     error: '',
-    local: ''
+    local: '',
+    _checker: ''
 });
 
 const modal = ref({
@@ -61,7 +62,9 @@ function saveRoute() {
             driver: routeForm.value.driver?.id,
             date: routeForm.value.date,
             time: routeForm.value.time,
-            branch: routeForm.value.branch?.id
+            branch: routeForm.value.branch?.id,
+            local: routeForm.value.local,
+            _checker: routeForm.value._checker
         })
             .then((r) => {
                 toast.success(r.data.message)
@@ -106,7 +109,8 @@ function verifyDriverRoute() {
         })
             .then((r) => {
                 if (r.data.length >= 1) {
-                    routes.value = r.data[0]
+                    routes.value = r.data[0][0]
+                    routeForm.value._checker = r.data[1]
                 }
             })
             .catch((e) => {
@@ -252,7 +256,7 @@ function setRouteToEdit(route) {
                             </div>
                         </div>
 
-                        <button type="button" @click="saveRoute" v-if="validateDate(routes.date)"
+                        <button type="button" @click="saveRoute" v-if="validateDate(routes?.date)"
                             class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
                             Criar/Adicionar
                         </button>

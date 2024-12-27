@@ -19,9 +19,9 @@ class FrotaInitBranchesTableSeeder extends Seeder
         DB::table('branches')->insert(array(
             0 =>
             array(
-                'name' => 'Não Cadastrado',
+                'name' => 'Não Cadastrada',
                 'notes' => 'Unidade pra locais não cadastrados.',
-                'address' => 'Não Cadastrado',
+                'address' => 'Não Cadastrada',
                 'created_at	' => now(),
                 'updated_at' => now(),
             )

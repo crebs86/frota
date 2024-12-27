@@ -62,7 +62,7 @@ class FrotaInitRolesTableSeeder extends Seeder
                 'created_at' => now(),
                 'guard_name' => 'web',
                 'id' => 13,
-                'name' => 'Ocorrência Administrar',
+                'name' => 'Ocorrencia Administrar',
                 'updated_at' => now(),
             ),
             6 =>
@@ -72,7 +72,15 @@ class FrotaInitRolesTableSeeder extends Seeder
                 'id' => 14,
                 'name' => 'Garagem Administrar',
                 'updated_at' => now(),
-            )
+            ),
+            7 =>
+            array(
+                'created_at' => now(),
+                'guard_name' => 'web',
+                'id' => 15,
+                'name' => 'Combustivel Administrar',
+                'updated_at' => now(),
+            ),
         ));
     }
 }

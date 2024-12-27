@@ -210,6 +210,38 @@ class FrotaInitPermissionsTableSeeder extends Seeder
                 'name' => 'Garagem Editar',
                 'updated_at' => now(),
             ),
+            24 =>
+            array(
+                'created_at' => now(),
+                'guard_name' => 'web',
+                'id' => 47,
+                'name' => 'Combustivel Criar',
+                'updated_at' => now(),
+            ),
+            25 =>
+            array(
+                'created_at' => now(),
+                'guard_name' => 'web',
+                'id' => 48,
+                'name' => 'Combustivel Ver',
+                'updated_at' => now(),
+            ),
+            26 =>
+            array(
+                'created_at' => now(),
+                'guard_name' => 'web',
+                'id' => 49,
+                'name' => 'Combustivel Apagar',
+                'updated_at' => now(),
+            ),
+            27 =>
+            array(
+                'created_at' => now(),
+                'guard_name' => 'web',
+                'id' => 50,
+                'name' => 'Combustivel Editar',
+                'updated_at' => now(),
+            ),
         ));
     }
 }
