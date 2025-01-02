@@ -89,8 +89,8 @@ class RoutesController extends Controller
     public function filterRoutes(Request $request): array
     {
         if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
-            $a = $this->getTaskByDriver($request);
-            return [$a, $a ? setGetKey($a[0]['routes'][0]['id'], 'route_edit') : null];
+            $a = $this->getTaskByDriver($request)[0];
+            return [$a, $a ? setGetKey($a['id'], 'route_edit') : null];
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
     }
@@ -163,7 +163,8 @@ class RoutesController extends Controller
                 /**
                  * Verificar payload em edição de rota
                  */
-                if ((int) getKeyValue($request->_checker, 'route_edit') === (int) $task[0]['routes'][0]['id']) {
+
+                if ((int) getKeyValue($request->_checker, 'route_edit') === (int) $task[0]['id']) {
                     return $this->routePersist($task[0], $request);
                 }
                 return response()->json(['error' => 'Erro na utilização da aplicação.'], 403);

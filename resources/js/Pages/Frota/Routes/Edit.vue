@@ -45,7 +45,6 @@ function branchName({ id, name }) {
     } else {
         return `${id ? id : ''} - ${name ? name : ''}`
     }
-
 }
 
 function saveRoute() {
@@ -134,6 +133,7 @@ function verifyDriverRoute() {
         })
             .then((r) => {
                 if (r.data.length >= 1) {
+                    console.log(r.data[0])
                     routes.value = r.data[0]
                 }
             })
@@ -160,6 +160,7 @@ function setRouteToEdit(route) {
 
 onMounted(() => {
     routes.value = props.driverRoutes
+    console.log(props.driverRoutes)
 })
 
 </script>

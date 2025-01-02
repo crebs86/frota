@@ -35,7 +35,8 @@ const modal = ref({
 const routeForEdition = ref({
     id: '',
     branch: '',
-    time: ''
+    time: '',
+    local: ''
 });
 
 function validateDate(date) {
@@ -47,7 +48,11 @@ function driverName({ id, user }) {
 }
 
 function branchName({ id, name }) {
-    return `${id ? id : ''} - ${name ? name : ''}`
+    if (id === 1) {
+        return `${id ? id : ''} - Não Cadastrado`
+    } else {
+        return `${id ? id : ''} - ${name ? name : ''}`
+    }
 }
 
 function saveRoute() {
@@ -109,7 +114,7 @@ function verifyDriverRoute() {
         })
             .then((r) => {
                 if (r.data.length >= 1) {
-                    routes.value = r.data[0][0]
+                    routes.value = r.data[0]
                     routeForm.value._checker = r.data[1]
                 }
             })
@@ -340,6 +345,7 @@ function setRouteToEdit(route) {
                             </table>
                         </div>
                     </div>
+
                     <!--Modal editar rota-->
                     <div class="fixed inset-0 flex items-center justify-center overflow-hidden mx-1"
                         :class="modal.editRoute ? 'block' : 'hidden'">
@@ -365,7 +371,21 @@ function setRouteToEdit(route) {
                                         </label>
                                         <VueMultiselect v-model="routeForEdition.time" :options="$page.props.timetables"
                                             :multiple="false" :close-on-select="true" selectedLabel="atual"
-                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
+                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover"
+                                            :custom-label="branchName" />
+                                    </div>
+
+                                    <div class="mx-2 col-span-2 mt-2" v-if="routeForEdition.branch?.id === 1">
+                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                            Local*
+                                        </label>
+                                        <input type="text" v-model="routeForEdition.local"
+                                            class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
+
+                                        <div v-if="routeForEdition.error?.local"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            <small v-for="error in routeForEdition.error?.local">{{ error }}</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -9,19 +9,23 @@ import { toast } from '@/toast'
 import { ref } from 'vue';
 import moment from 'moment';
 import axios from 'axios';
+import validate from '@/validates/indexSaveRoute'
 
 const filter = ref({
     date: '',
     branch: '',
     driver: '',
     time: '',
-    error: ''
+    errors: '',
+    local: '',
+    _checker: ''
 });
 
 const routeForEdition = ref({
     id: '',
     branch: '',
-    time: ''
+    time: '',
+    local: ''
 });
 
 const results = ref({});
@@ -84,7 +88,11 @@ const data = ref({
 });
 
 function branchName({ id, name }) {
-    return `${id ? id : ''} - ${name ? name : ''}`
+    if (id === 1) {
+        return `${id ? id : ''} - Não Cadastrado`
+    } else {
+        return `${id ? id : ''} - ${name ? name : ''}`
+    }
 }
 
 function openModal() {
@@ -103,7 +111,7 @@ function loadData() {
 
 function verifyDriverRoute() {
     loading.value = true;
-    filter.value.error = '';
+    filter.value.errors = '';
     results.value = {};
     if (filter.value.date && filter.value.driver) {
         openModal()
@@ -115,7 +123,8 @@ function verifyDriverRoute() {
             .then((r) => {
                 loading.value = false;
                 if (r.data.length >= 1) {
-                    results.value = r.data[0]
+                    results.value = r.data[0],
+                        filter.value._checker = r.data[1]
                 }
             })
             .catch((e) => {
@@ -130,29 +139,42 @@ function verifyDriverRoute() {
 }
 
 function saveRoute() {
-    filter.value.error = '';
-    axios.post(route('frota.tasks.route.store'), {
-        driver: filter.value.driver.id,
-        date: filter.value.date,
-        time: filter.value.time,
-        branch: filter.value.branch.id
-    })
-        .then((r) => {
-            toast.success(r.data.message)
-            verifyDriverRoute()
-            resetForm()
+    filter.value.errors = '';
+    let val = validate(filter.value)
+
+    console.log(val._run, val)
+    if (val._run) {
+        axios.post(route('frota.tasks.route.store'), {
+            driver: filter.value.driver.id,
+            date: filter.value.date,
+            time: filter.value.time,
+            branch: filter.value.branch.id,
+            _checker: filter.value._checker,
+            local: filter.value.local
         })
-        .catch((e) => {
-            if (e.response?.status === 500) {
-                toast.error(e.response.data)
-                filter.value.error = e.response.data
-            } else if (e.response?.status === 403) {
-                toast.error(e.response.data.error)
-                filter.value.error = e.response.data.error
-            } else {
-                toast.error('Ocorreu um erro ao processar solicitação.')
-            }
-        })
+            .then((r) => {
+                toast.success(r.data.message)
+                verifyDriverRoute()
+                resetForm()
+            })
+            .catch((e) => {
+                if (e.response?.status === 500) {
+                    toast.error(e.response.data)
+                    filter.value.errors = e.response.data
+                } else if (e.response?.status === 403) {
+                    toast.error(e.response.data.error)
+                    filter.value.errors = e.response.data.error
+                } else {
+                    toast.error('Ocorreu um erro ao processar solicitação.')
+                    if (e.response?.data?.errors) {
+                        filter.value.errors = e.response?.data?.errors
+                    }
+                }
+            })
+    } else {
+        filter.value.errors = val
+        toast.error('Preecnha todos os campos.')
+    }
 }
 
 function updateRoute() {
@@ -170,11 +192,11 @@ function updateRoute() {
             .catch((e) => {
                 if (e.response?.status === 403) {
                     toast.error(e.response.data.error)
-                    filter.value.error = e.response.data.error
+                    filter.value.errors = e.response.data.error
                 }
                 if (e.response?.status === 503) {
                     toast.error(e.response.data)
-                    filter.value.error = e.response.data
+                    filter.value.errors = e.response.data
                 }
             })
     } else {
@@ -417,9 +439,9 @@ function setRouteToEdit(route) {
                                             <input type="date" v-model="filter.date" @change="verifyDriverRoute"
                                                 class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
 
-                                            <div v-if="$page.props.errors.driver_id"
+                                            <div v-if="filter.errors?.date"
                                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                                {{ $page.props.errors.driver_id }}
+                                                <small v-for="error in filter.errors?.date">{{ error }}</small>
                                             </div>
                                         </div>
 
@@ -431,9 +453,9 @@ function setRouteToEdit(route) {
                                                 :multiple="false" :close-on-select="true" selectedLabel="atual"
                                                 placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
 
-                                            <div v-if="$page.props.errors.driver_id"
+                                            <div v-if="filter.errors?.time"
                                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                                {{ $page.props.errors.driver_id }}
+                                                <small v-for="error in filter.errors?.time">{{ error }}</small>
                                             </div>
                                         </div>
 
@@ -446,9 +468,22 @@ function setRouteToEdit(route) {
                                                 placeholder="Unidade" :custom-label="branchName" track-by="id"
                                                 label="time" selectLabel="Selecionar" deselectLabel="Remover" />
 
-                                            <div v-if="$page.props.errors.driver_id"
+                                            <div v-if="filter.errors?.branch"
                                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                                {{ $page.props.errors.driver_id }}
+                                                <small v-for="error in filter.errors?.branch">{{ error }}</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="mx-2 col-span-4 mt-2" v-if="filter.branch?.id === 1">
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                Local*
+                                            </label>
+                                            <input type="text" v-model="filter.local"
+                                                class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
+
+                                            <div v-if="filter.errors?.local"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in filter.errors?.local">{{ error }}</small>
                                             </div>
                                         </div>
 
@@ -567,18 +602,17 @@ function setRouteToEdit(route) {
                                         {{ filter.driver?.user?.name ?? '' }}
                                     </span> em {{ moment(filter.date).format('DD/MM/YYYY') }}
                                 </h3>
-                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2 h-[375px]">
-                                    <div class="z-10 mb-6 w-full">
+                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2">
+                                    <div class="z-10 w-full">
                                         <div>Unidade</div>
                                         <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
                                             :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
                                             track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
+                                            :custom-label="branchName"
                                             @select="clean('branch'), $page.props.errors.date = null" />
                                     </div>
 
-
-                                    <div class="mx-2 col-span-2 md:col-span-1 mb-52 md:mb-20"
-                                        v-if="data?.timetables !== ''">
+                                    <div class="mx-2 col-span-2 md:col-span-1" v-if="data?.timetables !== ''">
                                         <label class="text-sm text-gray-500 dark:text-gray-400">
                                             Hora
                                         </label>
@@ -586,6 +620,22 @@ function setRouteToEdit(route) {
                                             :multiple="false" :close-on-select="true" selectedLabel="atual"
                                             placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
                                     </div>
+
+                                    <div class="mx-2 col-span-2 mt-2" v-if="routeForEdition.branch?.id === 1">
+                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                            Local*
+                                        </label>
+                                        <input type="text" v-model="routeForEdition.local"
+                                            class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
+
+                                        <div v-if="routeForEdition.error?.local"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            <small v-for="error in routeForEdition.error?.local">{{ error }}</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="h-[15rem]"></div>
+
                                 </div>
                             </div>
                             <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1">
