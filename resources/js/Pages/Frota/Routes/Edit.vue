@@ -8,6 +8,7 @@ import { toast } from '@/toast';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import moment from 'moment';
+import validateESR from '@/validates/editSaveRoute';
 
 const props = defineProps({
     branches: Object,
@@ -23,7 +24,8 @@ const routeForm = ref({
     time: '',
     branch: '',
     local: '',
-    error: ''
+    errors: '',
+    _checker: ''
 });
 
 const modal = ref({
@@ -48,19 +50,16 @@ function branchName({ id, name }) {
 }
 
 function saveRoute() {
-    routeForm.value.error = ''
-    if (!routeForm.value.time || !routeForm.value.branch.id
-        || (routeForm.value.branch.id === 1 && !routeForm.value.local)
-    ) {
-        routeForm.value.error = 'Preencha todos os campos.'
-    } else {
+    routeForm.value.errors = ''
+    let val = validateESR(routeForm.value)
+    if (val._run) {
         axios.post(route('frota.tasks.route.store'), {
             driver: props.driverRoutes.driver.id,
             date: props.driverRoutes.date,
             time: routeForm.value.time,
             local: routeForm.value.local,
             branch: routeForm.value.branch.id,
-            _checker: props._checker
+            _checker: routeForm.value._checker
         })
             .then((r) => {
                 toast.success(r.data.message)
@@ -70,17 +69,20 @@ function saveRoute() {
             .catch((e) => {
                 if (e.response?.status === 500) {
                     toast.error(e.response.data)
-                    routeForm.value.error = e.response.data
+                    routeForm.value.errors = e.response.data
                 }
                 if (e.response?.status === 403) {
                     toast.error(e.response.data.error)
-                    routeForm.value.error = e.response.data.error
+                    routeForm.value.errors = e.response.data.error
                 }
                 if (e.response?.status === 422) {
                     toast.error(e.response.data.message)
-                    routeForm.value.error = e.response.data.errors
+                    routeForm.value.errors = e.response.data.errors
                 }
             })
+    } else {
+        routeForm.value.errors = val
+        console.log(val)
     }
 }
 
@@ -91,7 +93,8 @@ function updateRoute() {
             branch: routeForEdition.value.branch,
             currentBranch: routeForEdition.value.currentBranch,
             local: routeForEdition.value.local,
-            time: routeForEdition.value.time
+            time: routeForEdition.value.time,
+            _checker: routeForm.value._checker
         })
             .then((r) => {
                 toast.success(r.data)
@@ -124,7 +127,7 @@ function resetForm() {
 }
 
 function verifyDriverRoute() {
-    routeForm.value.error = ''
+    routeForm.value.errors = ''
     routes.value = {};
     if (props.driverRoutes.date && props.driverRoutes.driver.id) {
         axios.post(route('frota.tasks.filter-routes'), {
@@ -133,8 +136,9 @@ function verifyDriverRoute() {
         })
             .then((r) => {
                 if (r.data.length >= 1) {
-                    console.log(r.data[0])
+                    //console.log(r.data[0])
                     routes.value = r.data[0]
+                    routeForm.value._checker = r.data[1]
                 }
             })
             .catch((e) => {
@@ -160,7 +164,7 @@ function setRouteToEdit(route) {
 
 onMounted(() => {
     routes.value = props.driverRoutes
-    console.log(props.driverRoutes)
+    //console.log(props.driverRoutes)
 })
 
 </script>
@@ -180,12 +184,6 @@ onMounted(() => {
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
-                    <div v-if="routeForm.error"
-                        class="p-2 mx-2 text-red-700 bg-red-400 rounded-md border border-red-700">
-                        {{ typeof routeForm.error === 'string'
-                            ? routeForm.error
-                            : 'Ocorreram erros ao processar requisição.' }}
-                    </div>
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
 
                         <div class="w-full z-auto grid grid-cols-1 md:grid-cols-2">
@@ -216,9 +214,9 @@ onMounted(() => {
                                     :close-on-select="true" selectedLabel="atual" placeholder="Hora"
                                     selectLabel="Selecionar" deselectLabel="Remover" />
 
-                                <div v-if="routeForm.error?.time"
+                                <div v-if="routeForm.errors?.time"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.error?.time">{{ error }}</small>
+                                    <small v-for="error in routeForm.errors?.time">{{ error }}</small>
                                 </div>
                             </div>
 
@@ -231,9 +229,9 @@ onMounted(() => {
                                     :custom-label="branchName" track-by="id" label="time" selectLabel="Selecionar"
                                     deselectLabel="Remover" />
 
-                                <div v-if="routeForm.error?.branch"
+                                <div v-if="routeForm.errors?.branch"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.error?.branch">{{ error }}</small>
+                                    <small v-for="error in routeForm.errors?.branch">{{ error }}</small>
                                 </div>
                             </div>
 
@@ -244,9 +242,9 @@ onMounted(() => {
                                 <input type="text" v-model="routeForm.local"
                                     class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
 
-                                <div v-if="routeForm.error?.local"
+                                <div v-if="routeForm.errors?.local"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.error?.local">{{ error }}</small>
+                                    <small v-for="error in routeForm.errors?.local">{{ error }}</small>
                                 </div>
                             </div>
 
@@ -299,7 +297,8 @@ onMounted(() => {
                                         <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center"
                                             :class="r.branch.id === 1 ? 'underline underline-offset-8' : ''">
                                             <span>{{ r.branch.name }}</span>
-                                            <mdicon name="circle" class="float-right text-red-500" v-if="r.branch.id === 1" />
+                                            <mdicon name="circle" class="float-right text-red-500"
+                                                v-if="r.branch.id === 1" />
                                         </td>
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">

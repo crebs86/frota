@@ -89,7 +89,7 @@ class RoutesController extends Controller
     public function filterRoutes(Request $request): array
     {
         if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
-            $a = $this->getTaskByDriver($request)[0];
+            $a = $this->getTaskByDriver($request)[0] ?? [];
             return [$a, $a ? setGetKey($a['id'], 'route_edit') : null];
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
@@ -104,8 +104,7 @@ class RoutesController extends Controller
                     ->where('date', $request->date)
                     ->select('id', 'task', 'to', 'started_at', 'ended_at', 'time')
                     ->with('taskData')
-                    ->get()
-                    ->toArray();
+                    ->get();
             } elseif ($request->driver) {
                 $res = $this->getTaskByDriver($request);
             }
@@ -113,7 +112,7 @@ class RoutesController extends Controller
             if (count($res) < 1) {
                 return response()->json(['error' => 'Nenhuma rota foi encontrada com os dados informados.'], 404);
             } else {
-                return response()->json(['data' => $res]);
+                return response()->json(['data' => $res, '_checker' => !$request->branch ? setGetKey($res[0]['id'], 'editar_add_rota') : null]);
             }
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
@@ -200,6 +199,10 @@ class RoutesController extends Controller
 
     public function routeUpdate(Request $request, Route $route): JsonResponse
     {
+        if ((int) getKeyValue($request->_checker, 'route_edit') !== (int) $route->task) {
+            return response()->json(['error' => 'Erro na utilização da aplicação.'], 403);
+        }
+        
         if ($this->can('Tarefa Editar')) {
 
             $request->merge(['to' => $request->branch['id']]);

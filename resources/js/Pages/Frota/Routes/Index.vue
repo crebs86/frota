@@ -20,10 +20,11 @@ const filter = ref({
     local: '',
     _checker: ''
 });
-
+//filter.value._che
 const routeForEdition = ref({
     id: '',
     branch: '',
+    currentBranch: '',
     time: '',
     local: ''
 });
@@ -110,6 +111,7 @@ function loadData() {
 }
 
 function verifyDriverRoute() {
+    console.log('verifyDriverRoute', filter.value)
     loading.value = true;
     filter.value.errors = '';
     results.value = {};
@@ -121,20 +123,19 @@ function verifyDriverRoute() {
             date: filter.value.date
         })
             .then((r) => {
-                loading.value = false;
                 if (r.data.length >= 1) {
                     results.value = r.data[0],
                         filter.value._checker = r.data[1]
                 }
             })
             .catch((e) => {
-                loading.value = false;
                 if (e.response?.status === 403) {
                     toast.error(e.response.data.error)
                 } else {
                     toast.error('Foram encontrados erros ao processar sua solicitação');
                 }
-            })/**/
+            })
+            .finally(() => loading.value = false)
     }
 }
 
@@ -142,7 +143,6 @@ function saveRoute() {
     filter.value.errors = '';
     let val = validate(filter.value)
 
-    console.log(val._run, val)
     if (val._run) {
         axios.post(route('frota.tasks.route.store'), {
             driver: filter.value.driver.id,
@@ -178,13 +178,17 @@ function saveRoute() {
 }
 
 function updateRoute() {
+    console.log('updateRoute Index.vue')
     if (routeForEdition.value.branch && routeForEdition.value.time) {
         axios.put(route('frota.routes.route.update', routeForEdition.value.id), {
             id: routeForEdition.value.id,
             branch: routeForEdition.value.branch,
-            time: routeForEdition.value.time
+            time: routeForEdition.value.time,
+            currentBranch: routeForEdition.value.currentBranch,
+            local: routeForEdition.value.local,
+            _checker: filter.value._checker,
         })
-            .then((r) => {
+            .then(() => {
                 verifyDriverRoute();
                 modal.value.editRoute = false;
                 routeForEdition.value = {};
@@ -213,7 +217,13 @@ function setRouteToEdit(route) {
     modal.value.editRoute = true
     routeForEdition.value.id = route.id
     routeForEdition.value.branch = route.branch
+    routeForEdition.value.currentBranch = route.branch
     routeForEdition.value.time = route.time
+    if (route.branch.id === 1) {
+        routeForEdition.value.local = route.branch.name
+    } else {
+        routeForEdition.value.local = ''
+    }
 }
 
 </script>
@@ -285,7 +295,7 @@ function setRouteToEdit(route) {
                                     moment(moment(results.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))) && (hasPermission($page.props.auth.permissions, ['Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar']) || hasPermission($page.props.auth.roles, ['Super Admin']))"
                                 @click="verifyDriverRoute()"
                                 class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right">
-                                Editar Rota
+                                Editar/Adicionar Rotas
                                 <mdicon name="text-box-edit" />
                             </button>
                             <table class="min-w-full">
@@ -420,7 +430,7 @@ function setRouteToEdit(route) {
                         <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
                     </div>
                     <div v-if="data?.timetables && data?.branches"
-                        class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
+                        class="bg-white rounded-lg text-left overflow-hidden overflow-y-scroll shadow-xl transform transition-all w-11/12 md:max-w-[1024px] max-h-[90%] dark:bg-gray-600">
                         <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                                 Editando Rota de:
@@ -609,7 +619,7 @@ function setRouteToEdit(route) {
                                             :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
                                             track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
                                             :custom-label="branchName"
-                                            @select="clean('branch'), $page.props.errors.date = null" />
+                                            @select="$page.props.errors.date = null" />
                                     </div>
 
                                     <div class="mx-2 col-span-2 md:col-span-1" v-if="data?.timetables !== ''">

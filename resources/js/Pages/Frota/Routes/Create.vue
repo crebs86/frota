@@ -3,11 +3,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import VueMultiselect from 'vue-multiselect';
-import { Head, router } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import { toast } from '@/toast';
 import axios from 'axios';
 import { ref } from 'vue';
 import moment from 'moment';
+import validate from '@/validates/indexSaveRoute';
+import validateUpRt from '@/validates/createUpdateRoute';
 
 const props = defineProps({
     drivers: Object,
@@ -23,7 +25,7 @@ const routeForm = ref({
     date: '',
     time: '',
     branch: '',
-    error: '',
+    errors: '',
     local: '',
     _checker: ''
 });
@@ -35,8 +37,10 @@ const modal = ref({
 const routeForEdition = ref({
     id: '',
     branch: '',
+    currentBranch: '',
     time: '',
-    local: ''
+    local: '',
+    errors: ''
 });
 
 function validateDate(date) {
@@ -56,11 +60,10 @@ function branchName({ id, name }) {
 }
 
 function saveRoute() {
-    routeForm.value.error = ''
-    if (routeForm.value.driver?.id &&
-        routeForm.value.date &&
-        routeForm.value.time &&
-        routeForm.value.branch?.id &&
+    routeForm.value.errors = ''
+    let val = validate(routeForm.value)
+
+    if (val._run &&
         validateDate(routeForm.value.date)
     ) {
         axios.post(route('frota.tasks.route.store'), {
@@ -79,13 +82,12 @@ function saveRoute() {
             .catch((e) => {
                 if (e.response?.status === 503) {
                     toast.error(e.response.data)
-                    routeForm.value.error = e.response.data
+                    routeForm.value.errors = e.response.data
                 } else if (e.response?.status === 403) {
                     toast.error(e.response.data.error)
-                    routeForm.value.error = e.response.data.error
                 } else if (e.response?.status === 422) {
-                    toast.error('Verifique os dados informados.')
-                    routeForm.value.error = e.response.data
+                    toast.error('Todos os campos são obrigatórios.')
+                    routeForm.value.errors = e.response.data.errors
                 } else {
                     toast.error('Foram encontrados erros ao processar sua solicitação');
                 }
@@ -94,6 +96,7 @@ function saveRoute() {
         if (!validateDate(routeForm.value.date)) {
             toast.error('Não é possível criar/adicionar a agenda para datas passadas.')
         } else {
+            routeForm.value.errors = val
             toast.error('Preencha todos os campos para prosseguir.')
         }
     }
@@ -105,7 +108,7 @@ function resetForm() {
 }
 
 function verifyDriverRoute() {
-    routeForm.value.error = ''
+    routeForm.value.errors = ''
     routes.value = {};
     if (routeForm.value.date && routeForm.value.driver) {
         axios.post(route('frota.tasks.filter-routes'), {
@@ -113,9 +116,11 @@ function verifyDriverRoute() {
             date: routeForm.value.date
         })
             .then((r) => {
-                if (r.data.length >= 1) {
+                if (r.data[0]?.routes) {
                     routes.value = r.data[0]
                     routeForm.value._checker = r.data[1]
+                } else {
+                    toast.info('Sem tarefas para a data selecionada.')
                 }
             })
             .catch((e) => {
@@ -129,11 +134,14 @@ function verifyDriverRoute() {
 }
 
 function updateRoute() {
-    if (routeForEdition.value.branch && routeForEdition.value.time) {
+    let val = validateUpRt(routeForEdition.value)
+    if (val._run) {
         axios.put(route('frota.routes.route.update', routeForEdition.value.id), {
             id: routeForEdition.value.id,
             branch: routeForEdition.value.branch,
-            time: routeForEdition.value.time
+            currentBranch: routeForEdition.value.currentBranch,
+            time: routeForEdition.value.time,
+            local: routeForEdition.value.local
         })
             .then(() => {
                 verifyDriverRoute();
@@ -143,23 +151,33 @@ function updateRoute() {
             .catch((e) => {
                 if (e.response?.status === 403) {
                     toast.error(e.response.data.error)
-                    filter.value.error = e.response.data.error
-                }
-                if (e.response?.status === 503) {
+                    routeForEdition.value.errors = e.response.data.error
+                } else if (e.response?.status === 422) {
+                    toast.error(e.response.data.message)
+                    routeForEdition.value.errors = e.response.data.errors
+                } else if (e.response?.status === 503) {
                     toast.error(e.response.data)
-                    filter.value.error = e.response.data
+                    routeForEdition.value.errors = e.response.data
                 }
             })
     } else {
+        routeForEdition.value.errors = val
         toast.error('Preencha todos os campos para atualizar a rota');
     }
 }
 
 function setRouteToEdit(route) {
+    routeForEdition.value._checker = routeForm.value._checker
     modal.value.editRoute = true
     routeForEdition.value.id = route.id
+    routeForEdition.value.currentBranch = route.branch
     routeForEdition.value.branch = route.branch
     routeForEdition.value.time = route.time
+    if (route.branch.id === 1) {
+        routeForEdition.value.local = route.branch.name
+    } else {
+        routeForEdition.value.local = ''
+    }
 }
 </script>
 
@@ -178,9 +196,6 @@ function setRouteToEdit(route) {
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
-                    <div v-if="routeForm.error && !routeForm.error?.errors"
-                        class="p-2 mx-2 text-red-700 bg-red-400 rounded-md border border-red-700">{{ routeForm.error }}
-                    </div>
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded"
                         v-if="routeForm.date">
                         <div class="relative mb-6 w-full z-auto min-h-fit">
@@ -194,9 +209,9 @@ function setRouteToEdit(route) {
                                     :custom-label="driverName" track-by="id" selectLabel="Selecionar"
                                     @select="verifyDriverRoute" deselectLabel="Remover" />
 
-                                <div v-if="routeForm.error?.errors?.driver"
+                                <div v-if="routeForm.errors?.driver"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.error?.errors.driver">{{ error }}</small>
+                                    <small v-for="error in routeForm.errors?.driver">{{ error }}</small>
                                 </div>
                             </div>
 
@@ -213,9 +228,9 @@ function setRouteToEdit(route) {
                                 <input type="date" v-model="routeForm.date" @change="verifyDriverRoute"
                                     class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
 
-                                <div v-if="routeForm.error?.errors?.date"
+                                <div v-if="routeForm.errors?.date"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.error?.errors.date">{{ error }}</small>
+                                    <small v-for="error in routeForm.errors?.date">{{ error }}</small>
                                 </div>
                             </div>
 
@@ -227,9 +242,9 @@ function setRouteToEdit(route) {
                                     :close-on-select="true" selectedLabel="atual" placeholder="Hora"
                                     selectLabel="Selecionar" deselectLabel="Remover" />
 
-                                <div v-if="routeForm.error?.errors?.time"
+                                <div v-if="routeForm.errors?.time"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.error?.errors.time">{{ error }}</small>
+                                    <small v-for="error in routeForm.errors?.time">{{ error }}</small>
                                 </div>
                             </div>
 
@@ -241,10 +256,9 @@ function setRouteToEdit(route) {
                                     :close-on-select="true" selectedLabel="atual" placeholder="Unidade"
                                     :custom-label="branchName" track-by="id" label="time" selectLabel="Selecionar"
                                     deselectLabel="Remover" />
-
-                                <div v-if="routeForm.error?.errors?.branch"
+                                <div v-if="routeForm.errors?.branch"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.error?.errors.branch">{{ error }}</small>
+                                    <small v-for="error in routeForm.errors?.branch">{{ error }}</small>
                                 </div>
                             </div>
                             <div class="mx-2 col-span-4 mt-6" v-if="routeForm.date && routeForm.branch?.id === 1">
@@ -254,9 +268,9 @@ function setRouteToEdit(route) {
                                 <input type="text" v-model="routeForm.local"
                                     class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700">
 
-                                <div v-if="routeForm.error?.errors?.local"
+                                <div v-if="routeForm.errors?.local"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.error?.errors.local">{{ error }}</small>
+                                    <small v-for="error in routeForm.errors?.local">{{ error }}</small>
                                 </div>
                             </div>
                         </div>
@@ -356,23 +370,32 @@ function setRouteToEdit(route) {
                             class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
                             <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
 
-                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2 h-[375px]">
-                                    <div class="z-10 mb-6 w-full">
+                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2">
+                                    <div class="z-10 w-full">
                                         <div>Unidade</div>
                                         <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
                                             :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
                                             track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
-                                            @select="$page.props.errors.date = null" />
+                                            @select="$page.props.errors.date = null" :custom-label="branchName" />
+
+                                        <div v-if="routeForEdition.errors?.branch"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            <small v-for="error in routeForEdition.errors?.branch">{{ error }}</small>
+                                        </div>
                                     </div>
 
-                                    <div class="mx-2 col-span-2 md:col-span-1 mb-52 md:mb-20">
+                                    <div class="mx-2 col-span-2 md:col-span-1">
                                         <label class="text-sm text-gray-500 dark:text-gray-400">
                                             Hora
                                         </label>
                                         <VueMultiselect v-model="routeForEdition.time" :options="$page.props.timetables"
                                             :multiple="false" :close-on-select="true" selectedLabel="atual"
-                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover"
-                                            :custom-label="branchName" />
+                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
+
+                                        <div v-if="routeForEdition.errors?.time"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            <small v-for="error in routeForEdition.errors?.time">{{ error }}</small>
+                                        </div>
                                     </div>
 
                                     <div class="mx-2 col-span-2 mt-2" v-if="routeForEdition.branch?.id === 1">
@@ -382,9 +405,16 @@ function setRouteToEdit(route) {
                                         <input type="text" v-model="routeForEdition.local"
                                             class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
 
-                                        <div v-if="routeForEdition.error?.local"
+                                        <div v-if="routeForEdition.errors?.local"
                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                            <small v-for="error in routeForEdition.error?.local">{{ error }}</small>
+                                            <small v-for="error in routeForEdition.errors?.local">{{ error }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="h-[14rem] mx-2 col-span-2 mt-2">
+                                        <div class="text-center mt-3" v-if="routeForEdition.errors?._checker">
+                                            <span class="border border-red-500 bg-red-400 rounded max-w-fit px-3">
+                                                {{ routeForEdition.errors?._checker[0] }}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
