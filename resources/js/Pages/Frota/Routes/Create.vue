@@ -118,10 +118,10 @@ function verifyDriverRoute() {
             .then((r) => {
                 if (r.data[0]?.routes) {
                     routes.value = r.data[0]
-                    routeForm.value._checker = r.data[1]
                 } else {
                     toast.info('Sem tarefas para a data selecionada.')
                 }
+                routeForm.value._checker = r.data[1]
             })
             .catch((e) => {
                 if (e.response?.status === 403) {
@@ -141,7 +141,8 @@ function updateRoute() {
             branch: routeForEdition.value.branch,
             currentBranch: routeForEdition.value.currentBranch,
             time: routeForEdition.value.time,
-            local: routeForEdition.value.local
+            local: routeForEdition.value.local,
+            _checker: routeForm.value._checker
         })
             .then(() => {
                 verifyDriverRoute();
@@ -199,7 +200,6 @@ function setRouteToEdit(route) {
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded"
                         v-if="routeForm.date">
                         <div class="relative mb-6 w-full z-auto min-h-fit">
-
                             <div class="mt-2">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
                                     Selecione um motorista
@@ -214,7 +214,6 @@ function setRouteToEdit(route) {
                                     <small v-for="error in routeForm.errors?.driver">{{ error }}</small>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
@@ -325,9 +324,11 @@ function setRouteToEdit(route) {
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                             {{ r.time }}
                                         </td>
-                                        <td
-                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                        <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center"
+                                            :class="r.branch.id === 1 ? 'underline underline-offset-8' : ''">
                                             {{ r.branch.name }}
+                                            <mdicon name="circle" class="float-right text-red-500"
+                                                v-if="r.branch.id === 1" />
                                         </td>
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">

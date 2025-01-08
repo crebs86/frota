@@ -1,11 +1,11 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import has from '@/arrayHelpers';
 
 const numberMenuItems = ref(2);
-const classNumberMenuItems = ref('7');
-onMounted: {
+const classNumberMenuItems = ref(2);
+onMounted(() => {
     if (has(
         usePage().props.auth.permissions, ['ACL Editar', 'ACL Ver', 'ACL Criar', 'ACL Apagar', 'Usuario Editar', 'Usuario Ver', 'Usuario Criar', 'Usuario Apagar']
     )
@@ -15,9 +15,8 @@ onMounted: {
     }
 
     if (has(
-        usePage().props.auth.permissions, ['Garagem Editar', 'Garagem Ver', 'Garagem Criar', 'Garagem Apagar', 'Ocorrência Editar', 'Ocorrência Ver', 'Ocorrência Criar', 'Ocorrência Apagar',
-        'Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar', 'Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar'
-    ]
+        usePage().props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar', 'Carro Editar', 'Carro Ver', 'Carro Criar',
+        'Carro Apagar', 'Ocorrencia Editar', 'Ocorrencia Ver', 'Ocorrencia Criar', 'Ocorrencia Apagar', 'Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar']
     )
         || has(usePage().props.auth.roles, ['Super Admin'])
     ) {
@@ -43,9 +42,9 @@ onMounted: {
         numberMenuItems.value++
         numberMenuItems.value++
     }
-    classNumberMenuItems.value = numberMenuItems.value > 8 ? parseInt(numberMenuItems.value / 2) : numberMenuItems.value;
-}
-const showMenuItems = 'grid grid-cols-' + classNumberMenuItems.value;
+    classNumberMenuItems.value = numberMenuItems.value > 9 ? parseInt(numberMenuItems.value / 2) : numberMenuItems.value;
+})
+const showMenuItems = computed(() => 'grid grid-cols-' + classNumberMenuItems.value);
 
 </script>
 <template>
@@ -65,7 +64,7 @@ const showMenuItems = 'grid grid-cols-' + classNumberMenuItems.value;
                 </span>
                 </Link>
             </div>
-            <div v-if="has(usePage().props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar', 'Ocorrência Editar', 'Ocorrência Ver', 'Ocorrência Criar', 'Ocorrência Apagar', 'Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar'])
+            <div v-if="has(usePage().props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar', 'Carro Editar', 'Carro Ver', 'Carro Criar', 'Carro Apagar', 'Ocorrencia Editar', 'Ocorrencia Ver', 'Ocorrencia Criar', 'Ocorrencia Apagar', 'Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar'])
                 || has(usePage().props.auth.roles, ['Super Admin'])" class="flex flex-col items-center">
                 <Link :href="route('frota.home')" :active="route().current('frota.*')"
                     class="col-span-1 flex flex-col items-center max-w-max"

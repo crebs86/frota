@@ -26,7 +26,8 @@ const routeForEdition = ref({
     branch: '',
     currentBranch: '',
     time: '',
-    local: ''
+    local: '',
+    error: ''
 });
 
 const results = ref({});
@@ -178,6 +179,7 @@ function saveRoute() {
 }
 
 function updateRoute() {
+    routeForEdition.value.error = ''
     console.log('updateRoute Index.vue')
     if (routeForEdition.value.branch && routeForEdition.value.time) {
         axios.put(route('frota.routes.route.update', routeForEdition.value.id), {
@@ -197,6 +199,10 @@ function updateRoute() {
                 if (e.response?.status === 403) {
                     toast.error(e.response.data.error)
                     filter.value.errors = e.response.data.error
+                }
+                if (e.response?.status === 422) {
+                    toast.error(e.response.data.error)
+                    routeForEdition.value.error = e.response?.data?.errors
                 }
                 if (e.response?.status === 503) {
                     toast.error(e.response.data)
@@ -618,8 +624,11 @@ function setRouteToEdit(route) {
                                         <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
                                             :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
                                             track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
-                                            :custom-label="branchName"
-                                            @select="$page.props.errors.date = null" />
+                                            :custom-label="branchName" @select="$page.props.errors.date = null" />
+                                        <div v-if="routeForEdition.error?.branch"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            <small v-for="error in routeForEdition.error?.branch">{{ error }}</small>
+                                        </div>
                                     </div>
 
                                     <div class="mx-2 col-span-2 md:col-span-1" v-if="data?.timetables !== ''">
@@ -629,6 +638,10 @@ function setRouteToEdit(route) {
                                         <VueMultiselect v-model="routeForEdition.time" :options="data?.timetables"
                                             :multiple="false" :close-on-select="true" selectedLabel="atual"
                                             placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
+                                        <div v-if="routeForEdition.error?.time"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            <small v-for="error in routeForEdition.error?.time">{{ error }}</small>
+                                        </div>
                                     </div>
 
                                     <div class="mx-2 col-span-2 mt-2" v-if="routeForEdition.branch?.id === 1">

@@ -27,13 +27,16 @@ const car = ref({});
 const routeModel = ref({
     km: '',
     obs: '',
-    time: ''
+    started_at: '',
+    errors: ''
 })
 
 const singleRouteModel = ref({
     branch: '',
     km: '',
-    obs: ''
+    obs: '',
+    local: '',
+    errors: ''
 })
 
 const branches = ref({})
@@ -41,7 +44,8 @@ const branches = ref({})
 function resetModel() {
     routeModel.value.km = ''
     routeModel.value.obs = ''
-    routeModel.value.time = ''
+    routeModel.value.started_at = ''
+    routeModel.value.errors = ''
 }
 
 const modal = ref(false)
@@ -83,26 +87,37 @@ function myRoutesByDate() {
 
 function startRoute() {
     if (currentRoute.value.started_at === null) {
-        axios.post(route('frota.tasks.start-route', {
-            id: currentRoute.value.id,
-        }), {
-            km: routeModel.value.km,
-            obs: routeModel.value.obs,
-            car: car.value.placa,
-            started_at: routeModel.value.time
-        })
-            .then((r) => {
-                myRoutes.value = r.data[0]
-                modalStart.value = false
-                resetModel()
+        if (routeModel.value.km && car.value?.placa) {
+            axios.post(route('frota.tasks.start-route', {
+                id: currentRoute.value.id,
+            }), {
+                km: routeModel.value.km,
+                obs: routeModel.value.obs,
+                car: car.value.placa,
+                started_at: routeModel.value.started_at
             })
-            .catch((e) => {
-                if (e?.response?.status === 403) {
-                    toast.error(e?.response?.data)
-                } else {
-                    toast.error('Erro ao processar sua solicitação.')
-                }
-            })
+                .then((r) => {
+                    myRoutes.value = r.data[0]
+                    modalStart.value = false
+                    resetModel()
+                })
+                .catch((e) => {
+                    if (e?.response?.status === 403 || e?.response?.status === 404) {
+                        toast.error(e?.response?.data)
+                    } else if (e?.response?.status === 422) {
+                        toast.error(e?.response?.data?.message)
+                        routeModel.value.errors = e?.response?.data?.errors
+                    } else {
+                        toast.error('Erro ao processar sua solicitação.')
+                    }
+                })
+        } else {
+            if (!car.value?.placa) {
+                toast.error('Selecione um carro para fazer a rota.')
+            } else {
+                toast.error('Informe a quilometragem no momento da partida.')
+            }
+        }
     } else {
         toast.warning('Rota já iniciada.')
     }
@@ -110,26 +125,34 @@ function startRoute() {
 
 function finishRoute() {
     if (currentRoute.value.ended_at === null) {
-        axios.post(route('frota.tasks.finish-route', {
-            id: currentRoute.value.id
-        }), {
-            km: routeModel.value.km,
-            obs: routeModel.value.obs,
-            car: car.value.placa,
-            ended_at: routeModel.value.time
-        })
-            .then((r) => {
-                myRoutes.value = r.data[0]
-                modalEnd.value = false
-                resetModel()
+        if (routeModel.value.km && car.value?.placa) {
+            axios.post(route('frota.tasks.finish-route', {
+                id: currentRoute.value.id
+            }), {
+                km: routeModel.value.km,
+                obs: routeModel.value.obs,
+                car: car.value.placa,
+                ended_at: routeModel.value.started_at
             })
-            .catch((e) => {
-                if (e?.response?.status === 403) {
-                    toast.error(e?.response?.data)
-                } else {
-                    toast.error('Erro ao processar sua solicitação.')
-                }
-            })
+                .then((r) => {
+                    myRoutes.value = r.data[0]
+                    modalEnd.value = false
+                    resetModel()
+                })
+                .catch((e) => {
+                    if (e?.response?.status === 403) {
+                        toast.error(e?.response?.data)
+                    } else {
+                        toast.error('Erro ao processar sua solicitação.')
+                    }
+                })
+        } else {
+            if (!car.value?.placa) {
+                toast.error('Selecione um carro para fazer a rota.')
+            } else {
+                toast.error('Informe a quilometragem no momento da partida.')
+            }
+        }
     } else {
         toast.warning('Rota já finalizada.')
     }
@@ -152,7 +175,6 @@ function endRouteModal(route) {
 
 function singleRouteModal() {
     if (branches.value.length > 0) {
-        console.log('Unidades Carregadas...')
         modalSingleRoute.value = true
     } else {
         axios.get(route('frota.load-branches'))
@@ -194,14 +216,33 @@ function saveSingleRoute() {
             car: car.value.placa,
             branch: singleRouteModel.value.branch.id,
             km: singleRouteModel.value.km,
-            obs: singleRouteModel.value?.obs
+            obs: singleRouteModel.value?.obs,
+            local: singleRouteModel.value?.local
         })
             .then((r) => {
                 myRoutes.value = r.data[0]
                 modalSingleRoute.value = false
             })
             .catch((e) => {
-                toast.error(e?.response?.data ?? 'Erro.')
+                if (e.response?.status === 500) {
+                    toast.error(e.response.data)
+                    routeForm.value.errors = e.response.data
+                }
+                if (e.response?.status === 403) {
+                    toast.error(e.response.data.error)
+                    routeForm.value.errors = e.response.data.error
+                }
+                if (e.response?.status === 422) {
+                    toast.error(e.response.data.message)
+                    singleRouteModel.value.errors = e.response.data.errors
+                }
+            })
+            .finally(() => {
+                singleRouteModel.value.branch = ''
+                singleRouteModel.value.km = ''
+                singleRouteModel.value.obs = ''
+                singleRouteModel.value.local = ''
+                singleRouteModel.value.errors = ''
             })
     } else {
         toast.error('Preencha todos os campos.')
@@ -250,7 +291,7 @@ onMounted(() => {
                             <div class="my-2">
                                 <button @click="singleRouteModal()"
                                     class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
-                                    Rota Avulsa
+                                    Inserir Rota Avulsa
                                 </button>
                             </div>
                         </div>
@@ -277,9 +318,11 @@ onMounted(() => {
                             </thead>
                             <tbody :class="$page.props.app.settingsStyles.main.body">
                                 <tr v-for="(m, i) in myRoutes?.routes" :key="i + '_myroutes'">
-                                    <td
-                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        {{ m.branch.name }}
+                                    <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center"
+                                        :class="m.branch.id === 1 ? 'underline underline-offset-8' : ''">
+                                        <span>{{ m.branch.name }}</span>
+                                        <mdicon name="circle" class="float-right text-red-500"
+                                            v-if="m.branch.id === 1" />
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
@@ -329,7 +372,7 @@ onMounted(() => {
                         <div class="h-[12em]"></div>
                     </div>
                 </div>
-                
+
                 <!-- modal start route-->
                 <div class="fixed z-50 inset-0 flex items-center justify-center overflow-hidden mx-1"
                     :class="modalStart ? 'block' : 'hidden'">
@@ -339,26 +382,46 @@ onMounted(() => {
                     <div
                         class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[768px] dark:bg-gray-600">
                         <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
-                                Confirmação
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 uppercase">
+                                Confirmar inicialização de rota
                             </h3>
                             <div class="mt-2">
                                 <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
                                     <div class="mb-6 p-3 w-full z-auto min-h-fit grid grid-cols-1 gap-1">
 
                                         <div class="my-2 grid grid-cols-1 place-items-center">
+                                            <div>
+                                                <div>
+                                                    <span class="font-bold">Destino:</span>
+                                                    {{ currentRoute.branch?.name }}
+                                                </div>
+                                                <div>
+                                                    <span class="font-bold">Horário:</span>
+                                                    {{ currentRoute.time }}
+                                                </div>
+                                            </div>
 
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                                 Hora
                                             </label>
-                                            <input type="time" v-model="routeModel.time"
+                                            <input type="time" v-model="routeModel.started_at"
                                                 class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
+                                            <div v-if="routeModel.errors?.started_at"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in routeModel.errors?.started_at">
+                                                    {{ error }}
+                                                </small>
+                                            </div>
 
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                                 KM
                                             </label>
                                             <input type="number" maxlength="7" v-model="routeModel.km"
                                                 class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
+                                            <div v-if="routeModel.errors?.km"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in routeModel.errors?.km">{{ error }}</small>
+                                            </div>
 
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                                 Observações
@@ -367,8 +430,11 @@ onMounted(() => {
                                                 class="rounded border border-black mt-0.5 text-gray-700 w-full max-w-[450px]"
                                                 rows="4">
                                             </textarea>
+                                            <div v-if="routeModel.errors?.obs"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in routeModel.errors?.obs">{{ error }}</small>
+                                            </div>
                                         </div>
-
                                     </div>
 
                                     <button type="button" @click="startRoute"
@@ -395,25 +461,44 @@ onMounted(() => {
                     <div
                         class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[768px] dark:bg-gray-600">
                         <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
-                                Confirmação
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 uppercase">
+                                Confirmar finalização de rota
                             </h3>
                             <div class="mt-2">
                                 <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
                                     <div class="mb-6 p-3 w-full z-auto min-h-fit grid grid-cols-1 gap-1">
 
                                         <div class="my-2 grid grid-cols-1 place-items-center">
+                                            <div>
+                                                <div>
+                                                    <span class="font-bold">Destino:</span>
+                                                    {{ currentRoute.branch?.name }}
+                                                </div>
+                                                <div>
+                                                    <span class="font-bold">Horário:</span>
+                                                    {{ currentRoute.time }}
+                                                </div>
+                                            </div>
+
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                                 Hora
                                             </label>
-                                            <input type="time" v-model="routeModel.time"
+                                            <input type="time" v-model="routeModel.started_at"
                                                 class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
-
+                                            <div v-if="routeModel.errors?.started_at"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in routeModel.errors?.started_at">{{ error
+                                                    }}</small>
+                                            </div>
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                                 KM
                                             </label>
                                             <input type="number" maxlength="7" v-model="routeModel.km"
                                                 class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
+                                            <div v-if="routeModel.errors?.km"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in routeModel.errors?.km">{{ error }}</small>
+                                            </div>
 
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                                 Observações
@@ -422,6 +507,10 @@ onMounted(() => {
                                                 class="rounded border border-black mt-0.5 text-gray-700 w-full max-w-[450px]"
                                                 rows="4">
                                             </textarea>
+                                            <div v-if="routeModel.errors?.obs"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in routeModel.errors?.obs">{{ error }}</small>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -506,12 +595,38 @@ onMounted(() => {
                                                 placeholder="Unidade" :custom-label="branchName" track-by="id"
                                                 label="time" selectLabel="Selecionar" deselectLabel="Remover"
                                                 class="max-w-[450px]" v-if="branches.length > 0" />
+                                            <div v-if="singleRouteModel.errors?.branch"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in singleRouteModel.errors?.branch">
+                                                    {{ error }}
+                                                </small>
+                                            </div>
+
+                                            <label class="text-sm text-gray-500 dark:text-gray-400 mt-3"
+                                                v-if="singleRouteModel.branch?.id === 1">
+                                                Local*
+                                            </label>
+                                            <input type="text" v-model="singleRouteModel.local"
+                                                v-if="singleRouteModel.branch?.id === 1"
+                                                class="w-full max-w-[450px] rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
+                                            <div v-if="singleRouteModel.errors?.local"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in singleRouteModel.errors?.local">
+                                                    {{ error }}
+                                                </small>
+                                            </div>
 
                                             <label class="mt-3 text-sm text-gray-500 dark:text-gray-400">
                                                 KM
                                             </label>
                                             <input type="number" maxlength="7" v-model="singleRouteModel.km"
                                                 class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
+                                            <div v-if="singleRouteModel.errors?.km"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in singleRouteModel.errors?.km">
+                                                    {{ error }}
+                                                </small>
+                                            </div>
 
                                             <label class="mt-3 text-sm text-gray-500 dark:text-gray-400">
                                                 Observações
@@ -520,6 +635,13 @@ onMounted(() => {
                                                 class="rounded border border-black mt-0.5 text-gray-700 w-full max-w-[450px]"
                                                 rows="4">
                                             </textarea>
+                                            <div v-if="singleRouteModel.errors?.obs"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in singleRouteModel.errors?.obs">
+                                                    {{ error }}
+                                                </small>
+                                            </div>
+
                                         </div>
 
                                     </div>

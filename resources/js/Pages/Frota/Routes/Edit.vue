@@ -164,7 +164,7 @@ function setRouteToEdit(route) {
 
 onMounted(() => {
     routes.value = props.driverRoutes
-    //console.log(props.driverRoutes)
+    routeForm.value._checker = props._checker
 })
 
 </script>

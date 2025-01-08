@@ -9,7 +9,7 @@ import hasPermission from '@/permissions'
 
 <template>
 
-    <Head title="Veículo" />
+    <Head title="Veículos" />
 
 
     <AuthenticatedLayout>
@@ -76,6 +76,11 @@ import hasPermission from '@/permissions'
                                                 v-if="hasPermission(
                                                     $page.props.auth.permissions, ['Carros Editar', 'Carros Ver', 'Carros Criar', 'Carros Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
                                             <mdicon name="car-info" />
+                                            </Link>
+                                            <Link :href="route('frota.cars.edit', c.id)" title="Editar"
+                                                v-if="hasPermission(
+                                                    $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                                            <mdicon name="car-cog" />
                                             </Link>
                                             <Link :href="route('frota.cars.edit', c.id)" title="Editar"
                                                 v-if="hasPermission(
