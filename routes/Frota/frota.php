@@ -5,6 +5,7 @@ use App\Frota\Controllers\CarsController;
 use App\Frota\Controllers\HomeController;
 use App\Frota\Controllers\RoutesController;
 use App\Frota\Controllers\DriversController;
+use App\Frota\Controllers\FuelController;
 use App\Frota\Controllers\GaragesController;
 use App\Frota\Controllers\ReportsController;
 use App\Frota\Controllers\IncidentsController;
@@ -42,4 +43,6 @@ Route::prefix('/frota')->middleware(
     Route::resource('/ocorrencias', IncidentsController::class, ['names' => 'incidents'])->parameter('ocorrencias', 'incident')->withTrashed(['show', 'edit', 'update', 'restore']);
 
     Route::resource('/relatorios', ReportsController::class, ['names' => 'reports'])->parameter('relatorios', 'report')->withTrashed(['show', 'edit', 'update', 'restore']);
+
+    Route::get('/loadLastFill/{car}', [FuelController::class, 'loadLastFill'])->name('load-last-fill');
 });

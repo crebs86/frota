@@ -3,11 +3,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import { Head } from '@inertiajs/vue3';
-import { onMounted, ref } from 'vue';
+import { defineAsyncComponent, onMounted, ref } from 'vue';
 import axios from 'axios';
 import { toast } from '@/toast';
 import moment from 'moment';
 import VueMultiselect from 'vue-multiselect';
+
+const Abastecer = defineAsyncComponent(() => import('../Components/Abastecer.vue'));
 
 const props = defineProps({
     myRoutesByDate: Object,
@@ -249,6 +251,12 @@ function saveSingleRoute() {
     }
 }
 
+const abastecerModal = ref(false)
+
+function abastecerModalStatus(status) {
+    abastecerModal.value = status
+}
+
 onMounted(() => {
     myRoutes.value = props.myRoutesByDate[0]
     car.value = props.driver?.car
@@ -267,7 +275,7 @@ onMounted(() => {
         </template>
         <SubSection>
             <template #header>
-                Minhas Rotas
+                Minhas Tarefas
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
@@ -288,10 +296,28 @@ onMounted(() => {
                                     <small>{{ date.error }}</small>
                                 </div>
                             </div>
-                            <div class="my-2">
+                            <div class="my-2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
                                 <button @click="singleRouteModal()"
                                     class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
                                     Inserir Rota Avulsa
+                                </button>
+                                <button @click="abastecerModalStatus(true)"
+                                    class="border rounded-md px-4 py-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
+                                    :class="car ? 'border-yellow-600 bg-yellow-700 text-yellow-100 hover:bg-yellow-500' : 'border-gray-600 bg-gray-600 text-gray-100'"
+                                    :disabled="!car">
+                                    Abastecer
+                                </button>
+                                <button
+                                    class="border rounded-md px-4 py-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
+                                    :class="car ? 'border-green-600 bg-green-500 text-green-100 hover:bg-green-700' : 'border-gray-600 bg-gray-600 text-gray-100'"
+                                    :disabled="!car">
+                                    Manutenção
+                                </button>
+                                <button
+                                    class="border rounded-md px-4 py-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
+                                    :class="car ? ' border-red-600 bg-red-700 text-red-100 hover:bg-red-500' : 'border-gray-600 bg-gray-600 text-gray-100'"
+                                    :disabled="!car">
+                                    Ocorrências
                                 </button>
                             </div>
                         </div>
@@ -661,6 +687,11 @@ onMounted(() => {
                     </div>
                 </div>
 
+                <Abastecer v-if="abastecerModal" @abastecerModalStatus="abastecerModalStatus">
+                    <template #back>
+                        <div v-if="abastecerModal" class="opacity-70 fixed inset-0 z-40 bg-black"></div>
+                    </template>
+                </Abastecer>
             </template>
         </SubSection>
     </AuthenticatedLayout>

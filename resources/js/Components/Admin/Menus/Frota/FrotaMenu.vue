@@ -60,7 +60,7 @@ import has from '@/arrayHelpers'
                 :class="route().current('frota.my-routes') ? 'text-emerald-500 dark:text-lime-300' : 'text-gray-600 hover:text-emerald-600 dark:hover:text-lime-300'">
             <mdicon name="routes-clock" title="Minha Rota" />
             <span class="text-[10px] font-bold text-center">
-                Minhas Rotas
+                Minhas Tarefas
             </span>
             </Link>
         </div>
