@@ -22,7 +22,10 @@ use Illuminate\Http\RedirectResponse;
 
 trait Routes
 {
-
+    /**
+     * @param Request $request
+     * @return Response|RedirectResponse
+     */
     public function runEdit(Request $request): Response|RedirectResponse
     {
         if (!$request->driver || !$request->date) {
@@ -48,6 +51,10 @@ trait Routes
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function runMyRoutes(Request $request): Response
     {
         $request->merge(['driver' => auth()->id()]);
@@ -60,12 +67,20 @@ trait Routes
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return array|JsonResponse
+     */
     public function runFilterRoutes(Request $request): array|JsonResponse
     {
         $a = $this->runGetTaskByDriver($request)[0] ?? [];
         return [$a, $a ? setGetKey($a['id'], 'route_edit') : null];
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function runFilter(Request $request): JsonResponse
     {
         $res = [];
@@ -86,6 +101,10 @@ trait Routes
         }
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
     private function runGetTaskByDriver(Request $request): array
     {
         $task = Task::select('id', 'driver', 'date')
@@ -100,6 +119,10 @@ trait Routes
         return [];
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function runRouteStore(Request $request): JsonResponse
     {
         $request->validate([
@@ -140,6 +163,11 @@ trait Routes
         return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
     }
 
+    /**
+     * @param $task
+     * @param Request $request
+     * @return JsonResponse
+     */
     private function runRoutePersist($task, Request $request): JsonResponse
     {
         $request->validate(
@@ -180,6 +208,11 @@ trait Routes
         }
     }
 
+    /**
+     * @param Request $request
+     * @param Route $route
+     * @return JsonResponse
+     */
     public function runRouteUpdate(Request $request, Route $route): JsonResponse
     {
         $request->merge(['to' => $request->branch['id']]);
@@ -225,6 +258,10 @@ trait Routes
         }
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function runStartRoute(Request $request): JsonResponse
     {
         $request->validate([
@@ -273,6 +310,13 @@ trait Routes
         }
     }
 
+    /**
+     * @param $routeId
+     * @param Car $car
+     * @param int $km
+     * @param string $type
+     * @return void
+     */
     public function runSaveCarLog($routeId, Car $car, int $km, string $type): void
     {
         $carDrive = DB::table('routes')
@@ -297,6 +341,10 @@ trait Routes
         }
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function runFinishRoute(Request $request): JsonResponse
     {
         $request->validate([
@@ -342,6 +390,10 @@ trait Routes
         }
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function runEraseRoute(Request $request): JsonResponse
     {
         $route = Route::where('id', $request->id)->select('id', 'date', 'ended_at', 'started_at', 'task')->with('taskData')->first();
@@ -366,7 +418,11 @@ trait Routes
         }
     }
 
-    public function runSetSingleRoute(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function runSetSingleRoute(Request $request): JsonResponse
     {
         $request->merge(['date' => date('Y-m-d'), 'driver' => auth()->id()]);
 
@@ -403,6 +459,11 @@ trait Routes
         return response()->json('Não foi possível validar inicio da rota. Atualize a página para verificar sua criação e início manual.', 404);
     }
 
+    /**
+     * @param $task
+     * @param Request $request
+     * @return Route|JsonResponse
+     */
     private function runPersistSingleRoute($task, Request $request): Route|JsonResponse
     {
         $route =  Route::create([
@@ -422,10 +483,15 @@ trait Routes
             }
             return $route;
         } else {
-            return response()->json('Erro ao criar rota', 503);
+            return response()->json('Erro ao criar rota.', 503);
         }
     }
 
+    /**
+     * @param $driver
+     * @param $car
+     * @return void
+     */
     private function runSetNewFavoriteCar($driver, $car)
     {
         Driver::find($driver)->update([
@@ -433,6 +499,10 @@ trait Routes
         ]);
     }
 
+    /**
+     * @param $date
+     * @return bool
+     */
     private function runValidateDate($date)
     {
         $date1 = Carbon::createFromFormat('Y-m-d H:i:s', $date . ' 00:00:00');
@@ -440,6 +510,10 @@ trait Routes
         return $date1->gte($date2);
     }
 
+    /**
+     * @param array $task
+     * @return array
+     */
     private function runSetRealBranch(array $task)
     {
         $t = [];
@@ -462,6 +536,10 @@ trait Routes
         return $t;
     }
 
+    /**
+     * @param int $loose
+     * @return string
+     */
     private function runGetRealBranch(int $loose): string
     {
         return RealBranch::select('name')->find($loose)?->name ?? 'Erro...';
