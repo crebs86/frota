@@ -23,6 +23,7 @@
         "form-serialize": "^0.7.2",
         "moment": "^2.29.4",
         "sweetalert": "^2.1.2",
+        "tw-elements": "^2.0.0",
         "vue-multiselect": "^3.0.0-alpha.2",
         "vue-toast-notification": "^3.1.1"
     }

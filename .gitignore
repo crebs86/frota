@@ -3,6 +3,7 @@
 !.gitignore
 !composer.json
 !package.json
+!tailwind.config.js
 
 !/app
 /app/*
@@ -34,6 +35,8 @@
 
 !/resources/js
 /resources/js/*
+
+!/resources/js/validates
 
 !/resources/js/Components
 /resources/js/Components/*

@@ -59,7 +59,8 @@ function openNav() {
                     </div>
                 </div>
 
-                <div class="hidden sm:block text-sm md:text-md text-black dark:text-white">{{ $page.props.auth.user.name }}
+                <div class="hidden sm:block text-sm md:text-md text-black dark:text-white">{{ $page.props.auth.user.name
+                    }}
                 </div>
             </div>
 
@@ -81,8 +82,8 @@ function openNav() {
         </div>
         <div @click="openNav()"
             class="-right-6 transition transform ease-in-out duration-500 flex border-4 border-white dark:border-[#0F172A] bg-[#1E293B] dark:hover:bg-blue-500 hover:bg-purple-500 absolute top-2 p-3 rounded-full text-white hover:rotate-45">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor"
-                class="w-4 h-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3}
+                stroke="currentColor" class="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round"
                     d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
             </svg>
@@ -91,7 +92,7 @@ function openNav() {
         <div ref="maxSidebar" class="hidden text-white mt-20 flex-col space-y-2 w-full h-[calc(100vh)]">
             <div
                 class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
-                <Link class="flex gap-4" :href="route('home')">
+                <Link class="flex gap-4" :href="route('frota.home')">
                 <mdicon name="chart-pie" />
                 <div>
                     Painel
@@ -100,16 +101,7 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
-                <Link class="flex gap-4" :href="route('tasks.index')">
-                <mdicon name="calendar-check" />
-                <div>
-                    Tarefas
-                </div>
-                </Link>
-            </div>
-            <div
-                class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
-                <Link class="flex gap-4" :href="route('schedules.index')">
+                <Link class="flex gap-4" :href="route('frota.schedules.index')">
                 <mdicon name="car-clock" />
                 <div>
                     Agendas
@@ -118,7 +110,7 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
-                <Link class="flex gap-4" :href="route('garages.index')">
+                <Link class="flex gap-4" :href="route('frota.garages.index')">
                 <mdicon name="garage-open-variant" />
                 <div>
                     Garagens
@@ -127,7 +119,7 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
-                <Link class="flex gap-4" :href="route('drivers.index')">
+                <Link class="flex gap-4" :href="route('frota.drivers.index')">
                 <mdicon name="account-multiple" />
                 <div>
                     Motoristas
@@ -136,7 +128,7 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
-                <Link class="flex gap-4" :href="route('garages.index')">
+                <Link class="flex gap-4" :href="route('frota.cars.index')">
                 <mdicon name="car-multiple" />
                 <div>
                     Veículos
@@ -145,7 +137,7 @@ function openNav() {
             </div>
             <div
                 class="hover:ml-4 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-300 flex flex-row items-center space-x-3">
-                <Link class="flex gap-4" :href="route('reports.index')" title="Relatórios">
+                <Link class="flex gap-4" :href="route('frota.reports.index')" title="Relatórios">
                 <mdicon name="chart-bar" />
                 <div>
                     Relatórios
@@ -157,43 +149,37 @@ function openNav() {
         <div ref="miniSidebar" class="mt-20 flex flex-col space-y-2 w-full h-[calc(100vh)]">
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('home')" title="Início">
+                <Link class="flex gap-4" :href="route('frota.home')" title="Início">
                 <mdicon name="chart-pie" />
                 </Link>
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('tasks.index')" title="Tarefas">
-                <mdicon name="calendar-check" />
-                </Link>
-            </div>
-            <div
-                class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('schedules.index')" title="Agendas">
+                <Link class="flex gap-4" :href="route('frota.schedules.index')" title="Agendas">
                 <mdicon name="car-clock" />
                 </Link>
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('garages.index')" title="Carros">
+                <Link class="flex gap-4" :href="route('frota.garages.index')" title="Carros">
                 <mdicon name="garage-open-variant" />
                 </Link>
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('drivers.index')" title="Motoristas">
+                <Link class="flex gap-4" :href="route('frota.drivers.index')" title="Motoristas">
                 <mdicon name="account-multiple" />
                 </Link>
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('cars.index')" title="Carros">
+                <Link class="flex gap-4" :href="route('frota.cars.index')" title="Carros">
                 <mdicon name="car-multiple" />
                 </Link>
             </div>
             <div
                 class="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
-                <Link class="flex gap-4" :href="route('tasks.index')" title="Relatórios">
+                <Link class="flex gap-4" :href="route('frota.reports.index')" title="Relatórios">
                 <mdicon name="chart-bar" />
                 </Link>
             </div>
