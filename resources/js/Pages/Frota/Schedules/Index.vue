@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import hasPermission from '@/permissions';
+import has from '@/arrayHelpers'
 
 </script>
 
@@ -23,8 +23,8 @@ import hasPermission from '@/permissions';
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
                     <Link
-                        v-if="hasPermission(
-                            $page.props.auth.permissions, ['Agenda Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
+                        v-if="has(
+                            $page.props.auth.permissions, ['Agenda Criar']) || has($page.props.auth.roles, ['Super Admin'])"
                         class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
                         :href="route('frota.schedules.create')" title="Nova Agenda">
                     <mdicon name="car-arrow-right" />
@@ -55,14 +55,14 @@ import hasPermission from '@/permissions';
                                         <div class="flex gap-1">
 
                                             <Link :href="route('frota.schedules.show', s.driver)" title="Ver"
-                                                v-if="hasPermission(
-                                                    $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar', 'Carros Ver']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                                                v-if="has(
+                                                    $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar', 'Carros Ver']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <mdicon name="car-search" />
                                             </Link>
 
                                             <Link :href="route('frota.schedules.edit', s.driver)" title="Editar"
-                                                v-if="hasPermission(
-                                                    $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                                                v-if="has(
+                                                    $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <mdicon name="car-wrench" />
                                             </Link>
                                         </div>

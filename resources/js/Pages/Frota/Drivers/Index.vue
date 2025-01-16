@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import hasPermission from '@/permissions'
+import has from '@/arrayHelpers'
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 
@@ -22,8 +22,8 @@ import SubSection from '@/Components/Admin/SubSection.vue';
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
                     <Link
-                        v-if="hasPermission(
-                            $page.props.auth.permissions, ['Motorista Criar']) || hasPermission($page.props.auth.roles, ['Super Admin'])"
+                        v-if="has(
+                            $page.props.auth.permissions, ['Motorista Criar']) || has($page.props.auth.roles, ['Super Admin'])"
                         class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
                         :href="route('frota.drivers.create')" title="Novo Motorista">
                     <mdicon name="account-multiple-plus" />
@@ -68,13 +68,13 @@ import SubSection from '@/Components/Admin/SubSection.vue';
                                     <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
                                         <div class="flex justify-center gap-1">
                                             <Link :href="route('frota.drivers.show', d.user.id)" title="Ver"
-                                                v-if="hasPermission(
-                                                    $page.props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                                                v-if="has(
+                                                    $page.props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <mdicon name="account-eye" />
                                             </Link>
                                             <Link :href="route('frota.drivers.edit', d.user.id)" title="Editar"
-                                                v-if="hasPermission(
-                                                    $page.props.auth.permissions, ['Motorista Editar', 'Motorista Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                                                v-if="has(
+                                                    $page.props.auth.permissions, ['Motorista Editar', 'Motorista Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <mdicon name="account-edit" />
                                             </Link>
                                         </div>

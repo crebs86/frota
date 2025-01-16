@@ -6,7 +6,7 @@ import VueMultiselect from 'vue-multiselect';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { toast } from '@/toast';
-import hasPermission from '@/permissions';
+import has from '@/arrayHelpers'
 
 const props = defineProps({
     canEdit: Boolean,
@@ -172,16 +172,16 @@ function getTime(time) {
                         </div>
 
                         <template
-                            v-if="!canEdit && hasPermission(
-                                $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                            v-if="!canEdit && has(
+                                $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                             <button type="button" @click="canEdit = true"
                                 class="border border-yellow-600 bg-yellow-500 text-yellow-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-yellow-700 focus:outline-none focus:shadow-outline">
                                 Editar Agenda
                             </button>
                         </template>
                         <template
-                            v-else-if="canEdit && hasPermission(
-                                $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar', 'Carros Ver']) || hasPermission($page.props.auth.roles, ['Super Admin'])">
+                            v-else-if="canEdit && has(
+                                $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar', 'Carros Ver']) || has($page.props.auth.roles, ['Super Admin'])">
                             <button type="button" @click="canEdit = false"
                                 class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 mt-4 transition duration-500 ease select-none hover:bg-gray-700 focus:outline-none focus:shadow-outline">
                                 Cancelar Edição de Agenda

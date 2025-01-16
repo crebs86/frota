@@ -4,7 +4,7 @@ import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import VueMultiselect from 'vue-multiselect';
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import hasPermission from '@/permissions';
+import has from '@/arrayHelpers'
 import { toast } from '@/toast'
 import { ref } from 'vue';
 import moment from 'moment';
@@ -298,7 +298,7 @@ function setRouteToEdit(route) {
 
                             <button
                                 v-if="(moment(moment(results.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
-                                    moment(moment(results.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))) && (hasPermission($page.props.auth.permissions, ['Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar']) || hasPermission($page.props.auth.roles, ['Super Admin']))"
+                                    moment(moment(results.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))) && (has($page.props.auth.permissions, ['Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar']) || has($page.props.auth.roles, ['Super Admin']))"
                                 @click="verifyDriverRoute()"
                                 class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right">
                                 Editar/Adicionar Rotas
@@ -415,7 +415,7 @@ function setRouteToEdit(route) {
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                             <Link
                                                 v-if="moment(moment(results.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD'))
-                                                    || (moment(moment(results.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))) && (hasPermission($page.props.auth.permissions, ['Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar']) || hasPermission($page.props.auth.roles, ['Super Admin']))"
+                                                    || (moment(moment(results.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))) && (has($page.props.auth.permissions, ['Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar']) || has($page.props.auth.roles, ['Super Admin']))"
                                                 :href="route('frota.routes.driver.edit', [filter.date, r.task_data?.driver?.id])">
                                             <button
                                                 class="px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200">

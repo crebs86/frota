@@ -67,8 +67,8 @@ function branchName({ id, name }) {
     return `${id ? id : ''} - ${name ? name : ''}`
 }
 
-function cars({ id, modelo, placa }) {
-    return `${id ?? ''} - ${modelo ?? ''} ${placa ?? ''}`
+function cars({ modelo, placa }) {
+    return `${modelo ?? ''} ${placa ?? ''}`
 }
 
 function myRoutesByDate() {
