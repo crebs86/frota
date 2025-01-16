@@ -60,10 +60,19 @@ trait Routes
         $request->merge(['driver' => auth()->id()]);
         $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
+        $cars = Car::all(['id', 'modelo', 'placa']);
+        $cars->each(function ($car) {
+            return $car->token = setGetKey($car->id, 'car_token');
+        });
+
+        $driver = Driver::where('id', auth()->id())->select('id', 'carro_favorito')->with('user')->with('car')->first();
+        if ($driver->car?->id) {
+            $driver->car->token = setGetKey($driver->car->id, 'car_token');
+        }
         return Inertia::render('Frota/Routes/MyRoutes', [
             'myRoutesByDate' => $this->runGetTaskByDriver($request),
-            'driver' => Driver::where('id', auth()->id())->select('id', 'carro_favorito')->with('user')->with('car')->first(),
-            'cars' => Car::all(['id', 'modelo', 'placa'])
+            'driver' => $driver,
+            'cars' => $cars
         ]);
     }
 
@@ -279,7 +288,7 @@ trait Routes
                 'id' => $request->id,
                 'started_at' => null
             ]
-        )->select('id', 'date', 'started_at', 'task')->with('taskData')->first();
+        )->select('id', 'date', 'started_at', 'task', 'time')->with('taskData')->first();
 
         if (!$route) {
             return response()->json('Esta rota não existe.', 404);
@@ -287,7 +296,7 @@ trait Routes
 
         $routeArray = $route?->toArray();
         if (count($routeArray) > 0) {
-            if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
+            if ($routeArray['task_data']['driver']['id'] === auth()->id() && explode(' ', now()->format('Y-m-d H:i:s'))[0] === $routeArray['date']) {
                 $route->started_at = $request->started_at ? date('Y-m-d') . ' ' . $request->started_at : now();
                 $route->obs_start = $request->obs;
 
@@ -303,7 +312,7 @@ trait Routes
                     return response()->json('Erro ao salvar rota.', 403);
                 }
             } else {
-                return response()->json('Você não possui permissão para editar esta rota.', 403);
+                return response()->json('Você não possui permissão para editar esta rota(1)', 403);
             }
         } else {
             return response()->json('Esta rota já foi iniciada.', 403);
@@ -369,7 +378,7 @@ trait Routes
 
         $routeArray = $route?->toArray();
         if (count($routeArray) > 0) {
-            if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
+            if ($routeArray['task_data']['driver']['id'] === auth()->id() && explode(' ', now()->format('Y-m-d H:i:s'))[0] === $routeArray['date']) {
                 $route->ended_at = $request->ended_at ? date('Y-m-d') . ' ' . $request->ended_at : now();
                 $route->obs_end = $request->obs;
 
@@ -383,7 +392,7 @@ trait Routes
                     return response()->json($myRoutesByDate);
                 }
             } else {
-                return response()->json('Você não possui permissão para editar esta rota.', 403);
+                return response()->json('Você não possui permissão para editar esta rota(2).', 403);
             }
         } else {
             return response()->json('Esta rota já foi finalizada.', 403);
@@ -398,7 +407,7 @@ trait Routes
     {
         $route = Route::where('id', $request->id)->select('id', 'date', 'ended_at', 'started_at', 'task')->with('taskData')->first();
         $routeArray = $route->toArray();
-        if ($routeArray['task_data']['driver']['id'] === auth()->id() && Carbon::parse($routeArray['date'])->diffInDays(now()) === 0) {
+        if ($routeArray['task_data']['driver']['id'] === auth()->id() && explode(' ', now()->format('Y-m-d H:i:s'))[0] === $routeArray['date']) {
             $route->started_at = null;
             $route->ended_at = null;
             $route->obs_start = null;
@@ -414,7 +423,7 @@ trait Routes
                 return response()->json($myRoutesByDate);
             }
         } else {
-            return response()->json('Você não possui permissão para editar esta rota.', 403);
+            return response()->json('Você não possui permissão para editar esta rota(3).', 403);
         }
     }
 
@@ -441,7 +450,6 @@ trait Routes
             'km.max' => 'Quilometragem deve ter no máximo 6 caracteres.',
             'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
         ]);
-
         if (count($task) === 0) {
             $createTask = Task::create([
                 'driver' => $request->driver,

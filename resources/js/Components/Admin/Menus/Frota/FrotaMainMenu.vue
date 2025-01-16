@@ -60,7 +60,8 @@ function setNewColorText(color, value, mode = '', active) {
                 <!-- Logo -->
                 <a class="mb-4 me-5 ms-2 mt-3 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:mb-0 lg:mt-0"
                     href="#">
-                    <img src="/favicons/verde/routes.svg" style="height: 35px; color:green;" alt="Frota Inteligente" loading="lazy" />
+                    <img src="/favicons/verde/routes.svg" style="height: 35px; color:green;" alt="Frota Inteligente"
+                        loading="lazy" />
                 </a>
                 <!-- Left navigation links -->
                 <ul class="list-style-none me-auto flex flex-col ps-0 md:flex-row" data-twe-navbar-nav-ref>
@@ -152,7 +153,7 @@ function setNewColorText(color, value, mode = '', active) {
             <!-- Right elements -->
             <div class="relative flex items-center">
                 <!-- Icon -->
-                <!--                 <a class="me-4 text-neutral-600 dark:text-white" href="#">
+                <!-- <a class="me-4 text-neutral-600 dark:text-white" href="#">
                     <span class="[&>svg]:w-5">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                             <path
@@ -160,6 +161,10 @@ function setNewColorText(color, value, mode = '', active) {
                         </svg>
                     </span>
                 </a> -->
+
+                <p class="me-4">
+                    {{ usePage().props.auth.user.name }}
+                </p>
 
                 <!--                 <!-- First dropdown container
                 <div class="relative" data-twe-dropdown-ref data-twe-dropdown-alignment="end">

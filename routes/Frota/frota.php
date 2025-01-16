@@ -16,14 +16,14 @@ Route::prefix('/frota')->middleware(
 )->name('frota.')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/loadData', [HomeController::class, 'loadData'])->name('load-data');
-    Route::get('/loadBranches', [HomeController::class, 'loadBranches'])->name('load-branches');
+    Route::get('/carregarUnidades', [HomeController::class, 'loadBranches'])->name('load-branches');
 
     Route::resource('/rotas', RoutesController::class, ['names' => 'routes'])->parameter('rotas', 'route')->withTrashed(['show', 'edit', 'update', 'restore']);
     Route::get('/tarefas/minhas', [RoutesController::class, 'myRoutes'])->name('my-routes');
-    Route::post('/tarefas/minhas/startRoute/{id}', [RoutesController::class, 'startRoute'])->name('tasks.start-route');
-    Route::post('/tarefas/minhas/finishRoute/{id}', [RoutesController::class, 'finishRoute'])->name('tasks.finish-route');
-    Route::post('/tarefas/minhas/eraseRoute/{id}', [RoutesController::class, 'eraseRoute'])->name('tasks.erase-route');
-    Route::post('/tarefas/minhas/setSingleRoute', [RoutesController::class, 'setSingleRoute'])->name('tasks.set-sigle-route');
+    Route::post('/tarefas/minhas/iniciarRota/{id}', [RoutesController::class, 'startRoute'])->name('tasks.start-route');
+    Route::post('/tarefas/minhas/finalizarRota/{id}', [RoutesController::class, 'finishRoute'])->name('tasks.finish-route');
+    Route::post('/tarefas/minhas/limparRota/{id}', [RoutesController::class, 'eraseRoute'])->name('tasks.erase-route');
+    Route::post('/tarefas/minhas/inserirRotaAvulsa', [RoutesController::class, 'setSingleRoute'])->name('tasks.set-sigle-route');
     Route::post('/tarefas/minhas/filtrar', [RoutesController::class, 'myRoutesByDate'])->name('my-routes-bydate');
     Route::post('/tarefas/filtrar', [RoutesController::class, 'filter'])->name('tasks.filter');
     Route::post('/tarefas', [RoutesController::class, 'filterRoutes'])->name('tasks.filter-routes');
@@ -44,5 +44,6 @@ Route::prefix('/frota')->middleware(
 
     Route::resource('/relatorios', ReportsController::class, ['names' => 'reports'])->parameter('relatorios', 'report')->withTrashed(['show', 'edit', 'update', 'restore']);
 
-    Route::get('/loadLastFill/{car}', [FuelController::class, 'loadLastFill'])->name('load-last-fill');
+    Route::post('/combustivel/carregarAbastecimentos', [FuelController::class, 'loadLastFill'])->name('load-last-fill');
+    Route::post('/combustivel/informarAbastecimento', [FuelController::class, 'insertFill'])->name('insert-fill');
 });

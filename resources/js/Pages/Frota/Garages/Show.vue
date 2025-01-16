@@ -3,7 +3,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import hasPermission from '@/permissions';
 import { ref } from 'vue';
 import { toast } from '@/toast';
 

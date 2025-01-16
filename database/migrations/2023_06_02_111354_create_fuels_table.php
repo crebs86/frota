@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fuel', function (Blueprint $table) {
+        Schema::create('fuels', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('car')->unique();
@@ -24,12 +24,13 @@ return new class extends Migration
                 ->references('id')
                 ->on('users');
 
-            $table->string('km');
+            $table->integer('km');
             $table->string('quantidade');
             $table->string('valor')->nullable();
             $table->string('local')->nullable();
             $table->text('observacao')->nullable();
-            $table->text('arquivo')->nullable();
+            $table->string('arquivo')->nullable();
+            $table->timestamp('hora');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -40,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fuel');
+        Schema::dropIfExists('fuels');
     }
 };

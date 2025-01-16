@@ -17,7 +17,7 @@ import SubSection from '@/Components/Admin/SubSection.vue';
         </template>
         <SubSection>
             <template #header>
-                Sobre o Recurso
+                Motoristas
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">

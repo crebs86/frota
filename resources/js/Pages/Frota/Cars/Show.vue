@@ -4,7 +4,6 @@ import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import VueMultiselect from 'vue-multiselect';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import hasPermission from '@/permissions';
 import { ref } from 'vue';
 import { toast } from '@/toast';
 

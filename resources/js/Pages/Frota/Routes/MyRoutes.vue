@@ -68,7 +68,7 @@ function branchName({ id, name }) {
 }
 
 function cars({ modelo, placa }) {
-    return `${modelo ?? ''} ${placa ?? ''}`
+    return `${modelo ?? ''} - ${placa ?? ''}`
 }
 
 function myRoutesByDate() {
@@ -240,11 +240,11 @@ function saveSingleRoute() {
                 }
             })
             .finally(() => {
-                singleRouteModel.value.branch = ''
+/*                 singleRouteModel.value.branch = ''
                 singleRouteModel.value.km = ''
                 singleRouteModel.value.obs = ''
                 singleRouteModel.value.local = ''
-                singleRouteModel.value.errors = ''
+                singleRouteModel.value.errors = '' */
             })
     } else {
         toast.error('Preencha todos os campos.')
@@ -687,7 +687,7 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <Abastecer v-if="abastecerModal" @abastecerModalStatus="abastecerModalStatus">
+                <Abastecer v-if="abastecerModal" @abastecerModalStatus="abastecerModalStatus" :car="car">
                     <template #back>
                         <div v-if="abastecerModal" class="opacity-70 fixed inset-0 z-40 bg-black"></div>
                     </template>
