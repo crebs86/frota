@@ -4,6 +4,7 @@ import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
+import moment from 'moment';
 
 </script>
 
@@ -82,10 +83,12 @@ import has from '@/arrayHelpers'
                                                     $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <mdicon name="car-cog" />
                                             </Link>
-                                            <Link :href="route('frota.cars.edit', c.id)" title="Editar"
+                                            <Link
+                                                :href="route('frota.load-history-fill', [c.id, moment().format('YYYY-MM-DD')])"
+                                                title="Histórico de Abastecimento"
                                                 v-if="has(
-                                                    $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
-                                            <mdicon name="car-wrench" />
+                                                    $page.props.auth.permissions, ['Combistivel Editar', 'Combistivel Apagar', 'Combustivel Ver', 'Combustivel Criar']) || has($page.props.auth.roles, ['Super Admin'])">
+                                            <mdicon name="gas-station" />
                                             </Link>
                                         </div>
                                     </td>

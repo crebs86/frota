@@ -51,6 +51,27 @@ trait Routes
         ]);
     }
 
+    public function runAllRoutes()
+    {
+        $allRoutes = [];
+        $task = DB::table('tasks as t')
+            ->select('r.id as route', 't.id as task', 't.date', 't.driver', 'r.time', 'r.started_at', 'r.ended_at', 'u.name', 'b.name as branch', 'r.to')
+            ->where('t.date', now()->format('Y-m-d'))
+            ->join('routes as r', 't.id', 'r.task')
+            ->join('drivers as d', 't.driver', 'd.id')
+            ->join('users as u', 'u.id', 'd.id')
+            ->join('branches as b', 'b.id', 'r.to')
+            ->orderBy('r.time')
+            ->get();
+
+        if ($task->count() > 0) {
+            $allRoutes = $this->runSetAllRoutesRealBranch($task->toArray());
+        }
+        return Inertia::render('Frota/Routes/AllRoutes', [
+            'allRoutes' => $allRoutes
+        ]);
+    }
+
     /**
      * @param Request $request
      * @return Response
@@ -65,8 +86,11 @@ trait Routes
             return $car->token = setGetKey($car->id, 'car_token');
         });
 
-        $driver = Driver::where('id', auth()->id())->select('id', 'carro_favorito')->with('user')->with('car')->first();
-        if ($driver->car?->id) {
+        if (!$driver = Driver::where('id', auth()->id())->select('id', 'carro_favorito')->with('user')->with('car')->first()) {
+            return Inertia::render('Admin/403');
+        }
+
+        if ($driver?->car?->id) {
             $driver->car->token = setGetKey($driver->car->id, 'car_token');
         }
         return Inertia::render('Frota/Routes/MyRoutes', [
@@ -224,6 +248,10 @@ trait Routes
      */
     public function runRouteUpdate(Request $request, Route $route): JsonResponse
     {
+        if ($route->started_at) {
+            return response()->json(['error' => 'Rota já iniciada, não é possível a sua edição. rru(403-1)'], 403);
+        }
+
         $request->merge(['to' => $request->branch['id']]);
 
         $request->validate([
@@ -516,6 +544,31 @@ trait Routes
         $date1 = Carbon::createFromFormat('Y-m-d H:i:s', $date . ' 00:00:00');
         $date2 = Carbon::createFromFormat('Y-m-d H:i:s', now()->format('Y-m-d') . ' 00:00:00');
         return $date1->gte($date2);
+    }
+
+    /**
+     * @param array $tasks
+     * @return array
+     */
+    private function runSetAllRoutesRealBranch(array $tasks)
+    {
+        $t = [];
+
+        /**
+         * Renomeia o nome da branch para local não cadastrado
+         */
+        foreach ($tasks as $c => $v) {
+            $vv = (array) $v;
+            foreach ($vv as $value) {
+                if ($vv['to'] === 1) {
+                    $t[$c] = $vv;
+                    $t[$c]['branch'] = $this->runGetRealBranch($vv['route']);
+                } else {
+                    $t[$c] = $vv;
+                }
+            }
+        }
+        return $t;
     }
 
     /**

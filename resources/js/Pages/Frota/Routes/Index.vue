@@ -112,7 +112,6 @@ function loadData() {
 }
 
 function verifyDriverRoute() {
-    console.log('verifyDriverRoute', filter.value)
     loading.value = true;
     filter.value.errors = '';
     results.value = {};
@@ -180,7 +179,6 @@ function saveRoute() {
 
 function updateRoute() {
     routeForEdition.value.error = ''
-    console.log('updateRoute Index.vue')
     if (routeForEdition.value.branch && routeForEdition.value.time) {
         axios.put(route('frota.routes.route.update', routeForEdition.value.id), {
             id: routeForEdition.value.id,
@@ -585,10 +583,12 @@ function setRouteToEdit(route) {
                                             </td>
                                             <td
                                                 class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                                <button @click="setRouteToEdit(r)">
+                                                <button @click="setRouteToEdit(r)" v-if="!r.started_at">
                                                     <mdicon name="pencil"
                                                         class="hover:text-green-500 dark:hover:text-gray-400" />
                                                 </button>
+                                                <mdicon name="cancel" v-else
+                                                    class="hover:text-green-500 dark:hover:text-gray-400" />
                                             </td>
                                         </tr>
                                     </tbody>

@@ -19,6 +19,7 @@ Route::prefix('/frota')->middleware(
     Route::get('/carregarUnidades', [HomeController::class, 'loadBranches'])->name('load-branches');
 
     Route::resource('/rotas', RoutesController::class, ['names' => 'routes'])->parameter('rotas', 'route')->withTrashed(['show', 'edit', 'update', 'restore']);
+    Route::get('/tarefas', [RoutesController::class, 'allRoutes'])->name('all-routes');
     Route::get('/tarefas/minhas', [RoutesController::class, 'myRoutes'])->name('my-routes');
     Route::post('/tarefas/minhas/iniciarRota/{id}', [RoutesController::class, 'startRoute'])->name('tasks.start-route');
     Route::post('/tarefas/minhas/finalizarRota/{id}', [RoutesController::class, 'finishRoute'])->name('tasks.finish-route');
@@ -44,6 +45,7 @@ Route::prefix('/frota')->middleware(
 
     Route::resource('/relatorios', ReportsController::class, ['names' => 'reports'])->parameter('relatorios', 'report')->withTrashed(['show', 'edit', 'update', 'restore']);
 
+    Route::get('/combustivel/carregarAbastecimentos/{car}/de/{de}/para/{para?}', [FuelController::class, 'loadHistoryFill'])->name('load-history-fill');
     Route::post('/combustivel/carregarAbastecimentos', [FuelController::class, 'loadLastFill'])->name('load-last-fill');
     Route::post('/combustivel/informarAbastecimento', [FuelController::class, 'insertFill'])->name('insert-fill');
 });

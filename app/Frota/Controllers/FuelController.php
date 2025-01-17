@@ -31,7 +31,8 @@ class FuelController extends Controller
                     //->with('carModel')
                     ->limit(3)
                     ->orderBy('hora', 'desc')
-                    ->get());
+                    ->get()
+            );
         } else {
             return response()->json('Você não possui permissão para acessar este recurso. Fill(403-1)', 403);
         }
@@ -48,5 +49,10 @@ class FuelController extends Controller
         } else {
             return response()->json('Você não possui permissão para acessar este recurso. Fill(403-2)', 403);
         }
+    }
+
+    public function loadHistoryFill(Request $request)
+    {
+        return $this->runLoadHistoryFill($request);
     }
 }

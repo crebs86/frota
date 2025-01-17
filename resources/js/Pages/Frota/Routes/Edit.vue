@@ -105,16 +105,17 @@ function updateRoute() {
             .catch((e) => {
                 if (e.response?.status === 403) {
                     toast.error(e.response.data.error)
-                    filter.value.error = e.response.data.error
+                    routeForEdition.value.error = e.response.data.error;
                 }
                 if (e.response?.status === 503) {
                     toast.error(e.response.data)
-                    filter.value.error = e.response.data
+                    routeForEdition.value.error = e.response.data
                 }
                 if (e.response?.status === 422) {
                     toast.error(e.response.data.message)
                     routeForEdition.value.error = e.response.data.errors
                 }
+                verifyDriverRoute();
             })
     } else {
         toast.error('Preencha todos os campos para atualizar a rota');
@@ -318,10 +319,12 @@ onMounted(() => {
                                         </td>
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                            <button @click="setRouteToEdit(r)">
+                                            <button @click="setRouteToEdit(r)" v-if="!r.started_at">
                                                 <mdicon name="pencil"
                                                     class="hover:text-green-500 dark:hover:text-gray-400" />
                                             </button>
+                                            <mdicon name="cancel" v-else
+                                                class="hover:text-green-500 dark:hover:text-gray-400" />
                                         </td>
                                     </tr>
                                 </tbody>

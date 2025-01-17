@@ -44,6 +44,15 @@ class RoutesController extends Controller
         return $this->runEdit($request);
     }
 
+    public function allRoutes(): Response
+    {
+        if ($this->can('Tarefa Ver')) {
+            return $this->runAllRoutes();
+        } else {
+            return Inertia::render('Admin/403');
+        }
+    }
+
     public function myRoutes(Request $request): Response
     {
         return $this->runMyRoutes($request);
@@ -60,7 +69,7 @@ class RoutesController extends Controller
         if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
             return $this->runFilterRoutes($request);
         }
-        return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. fr(403-1)'], 403);
     }
 
     public function filter(Request $request): JsonResponse
@@ -68,7 +77,7 @@ class RoutesController extends Controller
         if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
             return $this->runFilter($request);
         }
-        return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. f(403-1)'], 403);
     }
 
     private function getTaskByDriver(Request $request): array
@@ -89,13 +98,13 @@ class RoutesController extends Controller
     public function routeUpdate(Request $request, Route $route): JsonResponse
     {
         if ((int) getKeyValue($request->_checker, 'route_edit') !== (int) $route->task) {
-            return response()->json(['error' => 'Erro na utilização da aplicação.'], 403);
+            return response()->json(['error' => 'Erro na utilização da aplicação. ru(403-1)'], 403);
         }
 
         if ($this->can('Tarefa Editar')) {
             return $this->runRouteUpdate($request, $route);
         }
-        return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. ru(403-2)'], 403);
     }
 
     public function startRoute(Request $request): JsonResponse
@@ -123,7 +132,7 @@ class RoutesController extends Controller
         if (Driver::find(auth()->id())) {
             return $this->runSetSingleRoute($request);
         }
-        return response()->json('Você não possui permissão para editar esta rota(4).', 403);
+        return response()->json('Você não possui permissão para editar esta rota. ssr(403-1).', 403);
     }
 
     private function persistSingleRoute($task, Request $request): Route

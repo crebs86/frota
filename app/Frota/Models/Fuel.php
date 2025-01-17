@@ -18,4 +18,9 @@ class Fuel extends Model
     {
         return $this->belongsTo(Car::class, 'car')->select('id', 'modelo', 'placa');
     }
+
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class, 'driver')->select('id')->with('user');
+    }
 }

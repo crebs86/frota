@@ -4,7 +4,6 @@ namespace App\Frota\Requests;
 
 use App\Traits\ACL;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class FuelRequest extends FormRequest
 {
