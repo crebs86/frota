@@ -34,32 +34,6 @@ class FrotaInitDriversPermissionsSeeder extends Seeder
                 'permission_id' => 42,
                 'role_id' => 8,
             ),
-            28 =>
-            array(
-                'permission_id' => 35,
-                'role_id' => 8,
-            ),
-            29 =>
-            array(
-                'permission_id' => 38,
-                'role_id' => 8,
-            ),
-            30 =>
-            array(
-                'permission_id' => 36,
-                'role_id' => 8,
-            ),
-            31 =>
-            array(
-                'permission_id' => 37,
-                'role_id' => 8,
-            ),
-            32 =>
-            array(
-                'permission_id' => 21,
-                'role_id' => 8,
-            ),
-
         ));
     }
 }

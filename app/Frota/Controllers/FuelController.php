@@ -18,22 +18,33 @@ class FuelController extends Controller
 {
     use ACL, Helpers, Fuels;
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function loadLastFill(Request $request): JsonResponse
     {
         if ($this->can('Combustivel Ver', 'Combustivel Editar', 'Combustivel Criar', 'Combustivel Apagar')) {
-            return response()->json(Fuel::where('car', getKeyValue($request->token, 'car_token'))
-                ->limit(5)
-                ->orderBy('hora')
-                ->get());
+            return response()->json(
+                Fuel::where('car', getKeyValue($request->token, 'car_token'))
+                    ->select('km', 'quantidade', 'valor', 'local', 'hora', 'created_at', 'car')
+                    //->with('carModel')
+                    ->limit(3)
+                    ->orderBy('hora', 'desc')
+                    ->get());
         } else {
             return response()->json('Você não possui permissão para acessar este recurso. Fill(403-1)', 403);
         }
     }
 
-    public function insertFill(FuelRequest $request)
+    /**
+     * @param FuelRequest $request
+     * @return JsonResponse
+     */
+    public function insertFill(FuelRequest $request): JsonResponse
     {
         if ($this->can('Combustivel Criar')) {
-            return response()->json($this->runInsertFill($request));
+            return $this->runInsertFill($request);
         } else {
             return response()->json('Você não possui permissão para acessar este recurso. Fill(403-2)', 403);
         }

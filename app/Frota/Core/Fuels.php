@@ -10,7 +10,11 @@ trait Fuels
 {
     public function runInsertFill(Request $request): JsonResponse
     {
-        dd($request->all());
+        if ($request->data && $request->hora) {
+            $hora = $request->data . ' ' . $request->hora;
+        } else {
+            $hora = now();
+        }
         $fuel = Fuel::create([
             'car' => $request->car,
             'driver' => auth()->id(),
@@ -20,8 +24,12 @@ trait Fuels
             'local' => $request->local,
             'observacao' => $request->observacao,
             'arquivo' => $request->arquivo,
-            'hora' => $request->data . ' ' . $request->hora,
+            'hora' => $hora,
         ]);
-        return response()->json();
+        if ($fuel) {
+            return response()->json($fuel);
+        } else {
+            return response()->json('Erro ao inserir o registro. Fuels (500-1)', 500);
+        }
     }
 }

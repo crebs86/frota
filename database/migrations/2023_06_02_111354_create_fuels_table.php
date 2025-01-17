@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('fuels', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('car')->unique();
+            $table->unsignedBigInteger('car');
             $table->foreign('car')
                 ->references('id')
                 ->on('cars');
 
-            $table->unsignedBigInteger('driver')->unique();
+            $table->unsignedBigInteger('driver');
             $table->foreign('driver')
                 ->references('id')
                 ->on('users');

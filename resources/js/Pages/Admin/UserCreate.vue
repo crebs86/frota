@@ -19,7 +19,7 @@ const user = useForm({
 const _branch = ref(null);
 
 function createUser() {
-    user.branch_id = _branch.value.id;
+    user.branch_id = _branch.value?.id;
     user.post(route('admin.acl.users.store'), {
         onSuccess: () => {
             if (usePage().props.flash.success) {

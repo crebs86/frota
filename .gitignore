@@ -60,6 +60,7 @@
 
 !/resources/js/Components/Frota
 !/resources/js/Layouts/Frota
+!/resources/js/Layouts/AuthenticatedLayout.vue
 !/resources/js/Pages/Frota
 !/resources/views/Frota
 
@@ -71,6 +72,7 @@
 !/routes
 /routes/*
 
+!/routes/web.php
 !/routes/Frota
 
 !/database
@@ -81,6 +83,7 @@
 
 !/database/migrations/2023_06_02_*
 !/database/migrations/2014_10_12_000000_create_users_table.php
+!/database/migrations/2014_09_29_100932_create_branches_table.php
 
 !/database/seeders
 /database/seeders/*

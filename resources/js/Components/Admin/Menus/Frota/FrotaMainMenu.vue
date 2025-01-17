@@ -65,7 +65,7 @@ function setNewColorText(color, value, mode = '', active) {
                 </a>
                 <!-- Left navigation links -->
                 <ul class="list-style-none me-auto flex flex-col ps-0 md:flex-row" data-twe-navbar-nav-ref>
-                    <li class="md:min-w-24 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
+                    <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
                         :class="linksStyles(route().current('dashboard'))">
                         <Link
                             class="transition duration-200 hover:ease-in-out motion-reduce:transition-none md:px-2 w-full flex justify-center"
@@ -74,7 +74,7 @@ function setNewColorText(color, value, mode = '', active) {
                         </Link>
                     </li>
 
-                    <li class="md:min-w-24 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
+                    <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
                         :class="linksStyles(route().current('frota.*'))" v-if="has(usePage().props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar', 'Carro Editar', 'Carro Ver', 'Carro Criar', 'Carro Apagar', 'Ocorrencia Editar', 'Ocorrencia Ver', 'Ocorrencia Criar', 'Ocorrencia Apagar', 'Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar'])
                             || has(usePage().props.auth.roles, ['Super Admin'])">
                         <Link
@@ -84,7 +84,7 @@ function setNewColorText(color, value, mode = '', active) {
                         </Link>
                     </li>
 
-                    <li class="md:min-w-24 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
+                    <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
                         :class="linksStyles(route().current('admin.acl.*'))" v-if="has(usePage().props.auth.permissions, ['ACL Editar', 'ACL Ver', 'ACL Criar', 'ACL Apagar', 'Usuario Editar', 'Usuario Ver', 'Usuario Criar', 'Usuario Apagar'])
                             || has(usePage().props.auth.roles, ['Super Admin'])">
                         <Link
@@ -95,7 +95,7 @@ function setNewColorText(color, value, mode = '', active) {
                         </Link>
                     </li>
 
-                    <li class="md:min-w-24 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
+                    <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
                         :class="linksStyles(route().current('clients.*'))" v-if="has(usePage().props.auth.permissions, ['Cliente Editar', 'Cliente Ver', 'Cliente Criar', 'Cliente Apagar'])
                             || has(usePage().props.auth.roles, ['Super Admin'])">
                         <Link
@@ -105,7 +105,7 @@ function setNewColorText(color, value, mode = '', active) {
                         </Link>
                     </li>
 
-                    <li class="md:min-w-24 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
+                    <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
                         :class="linksStyles(route().current('branches.*'))" v-if="has(usePage().props.auth.permissions, ['Unidade Editar', 'Unidade Ver', 'Unidade Criar', 'Unidade Apagar'])
                             || has(usePage().props.auth.roles, ['Super Admin'])">
                         <Link
@@ -117,7 +117,7 @@ function setNewColorText(color, value, mode = '', active) {
                         </Link>
                     </li>
 
-                    <li class="md:min-w-24 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
+                    <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
                         :class="linksStyles(route().current('settings.*'))"
                         v-if="has(usePage().props.auth.roles, ['Super Admin'])">
                         <Link
@@ -128,7 +128,7 @@ function setNewColorText(color, value, mode = '', active) {
                         </Link>
                     </li>
 
-                    <li class="md:min-w-24 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
+                    <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
                         :class="linksStyles(route().current('audit.*'))"
                         v-if="has(usePage().props.auth.roles, ['Super Admin'])">
                         <Link
@@ -138,7 +138,7 @@ function setNewColorText(color, value, mode = '', active) {
                         </Link>
                     </li>
 
-                    <li class="md:min-w-24 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
+                    <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
                         :class="linksStyles(route().current('user.*'))">
                         <Link
                             class="transition duration-200 hover:ease-in-out motion-reduce:transition-none md:px-2 w-full flex justify-center"

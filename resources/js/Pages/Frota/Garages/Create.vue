@@ -4,9 +4,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import VueMultiselect from 'vue-multiselect';
-import { Head, router, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { toast } from '@/toast'
+import {Head, router, useForm} from '@inertiajs/vue3';
+import {ref} from 'vue';
+import {toast} from '@/toast'
 import axios from 'axios';
 
 const props = defineProps({
@@ -60,7 +60,7 @@ function createBranch() {
 const branchesOptions = props.branches;
 const _branch = ref(null);
 
-function branchName({ id, name }) {
+function branchName({id, name}) {
     return `${id} - ${name}`
 }
 
@@ -97,16 +97,16 @@ function saveGarage() {
 
 <template>
 
-    <Head title="Nova Garagem" />
+    <Head title="Nova Garagem"/>
 
     <AuthenticatedLayout>
 
         <template #inner_menu>
-            <FrotaMenu />
+            <FrotaMenu/>
         </template>
         <SubSection>
             <template #header>
-                Garagens
+                Criar Garagem
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-max">
@@ -116,16 +116,16 @@ function saveGarage() {
                                 <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                     Selecione uma unidade para cadastrar garagem
                                     <button @click="modal.newBranch = true">
-                                        <mdicon name="source-branch-plus" title="Nova Unidade" />
+                                        <mdicon name="source-branch-plus" title="Nova Unidade"/>
                                     </button>
                                 </label>
                                 <VueMultiselect v-model="_branch" :options="branchesOptions" :multiple="false"
-                                    :close-on-select="true" selectedLabel="atual" placeholder="Unidades"
-                                    :custom-label="branchName" track-by="id" selectLabel="Selecionar"
-                                    deselectLabel="Remover" />
+                                                :close-on-select="true" selectedLabel="atual" placeholder="Unidades"
+                                                :custom-label="branchName" track-by="id" selectLabel="Selecionar"
+                                                deselectLabel="Remover"/>
 
                                 <div v-if="$page.props.errors.id"
-                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                     {{ $page.props.errors.id }}
                                 </div>
                             </div>
@@ -153,7 +153,7 @@ function saveGarage() {
                                 </ul>
                             </div>
                             <button type="button" @click="saveGarage"
-                                class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                                    class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
                                 Cadastrar Garagem
                             </button>
                         </div>
@@ -161,7 +161,7 @@ function saveGarage() {
                 </div>
                 <!-- modal -->
                 <div class="fixed z-50 inset-0 flex items-center justify-center overflow-hidden mx-1"
-                    :class="modal.newBranch ? 'block' : 'hidden'">
+                     :class="modal.newBranch ? 'block' : 'hidden'">
                     <div class="fixed inset-0 transition-opacity">
                         <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
                     </div>
@@ -177,10 +177,10 @@ function saveGarage() {
 
                                         <div class="relative z-0 mb-6 w-full">
                                             <input type="text" name="name" id="name" v-model="branch.name"
-                                                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                placeholder=" " />
+                                                   class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                   placeholder=" "/>
                                             <label for="name"
-                                                class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                                   class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                                 Nome
                                             </label>
                                             <div v-if="branch.errors.name" class="text-sm text-red-500">
@@ -189,10 +189,10 @@ function saveGarage() {
                                         </div>
                                         <div class="relative z-0 mb-6 w-full">
                                             <input type="email" name="email" id="email" v-model="branch.email"
-                                                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                placeholder=" " />
+                                                   class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                   placeholder=" "/>
                                             <label for="email"
-                                                class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                                   class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                                 E-mail
                                             </label>
                                             <div v-if="branch.errors.email" class="text-sm text-red-500">
@@ -202,10 +202,10 @@ function saveGarage() {
 
                                         <div class="relative z-0 mb-6 w-full group">
                                             <input type="text" name="cep" id="cep" v-model="branch.cep"
-                                                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                placeholder=" " />
+                                                   class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                   placeholder=" "/>
                                             <label for="cep"
-                                                class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                                   class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                                 CEP
                                             </label>
                                             <div v-if="branch.errors.cep" class="text-sm text-red-500">
@@ -214,10 +214,10 @@ function saveGarage() {
                                         </div>
                                         <div class="relative z-0 mb-6 w-full group">
                                             <input type="text" name="address" id="address" v-model="branch.address"
-                                                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                placeholder=" " required />
+                                                   class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                   placeholder=" " required/>
                                             <label for="address"
-                                                class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                                   class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                                 Endereço
                                             </label>
                                             <div v-if="branch.errors.address" class="text-sm text-red-500">
@@ -228,10 +228,10 @@ function saveGarage() {
 
                                         <div class="relative z-0 mb-6 w-full group">
                                             <input type="text" name="phones" id="phones" v-model="branch.phones"
-                                                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                placeholder=" " required />
+                                                   class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                   placeholder=" " required/>
                                             <label for="phones"
-                                                class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                                   class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                                 Telefones
                                             </label>
                                             <div v-if="branch.errors.phones" class="text-sm text-red-500">
@@ -240,10 +240,10 @@ function saveGarage() {
                                         </div>
                                         <div class="relative z-0 mb-6 w-full group">
                                             <input type="text" name="cnpj" id="cnpj" v-model="branch.cnpj"
-                                                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                placeholder=" " />
+                                                   class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                   placeholder=" "/>
                                             <label for="cnpj"
-                                                class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                                   class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                                 CNPJ
                                             </label>
                                             <div v-if="branch.errors.cnpj" class="text-sm text-red-500">
@@ -254,10 +254,10 @@ function saveGarage() {
                                         <div class="grid xl:grid-cols-1 xl:gap-6">
                                             <div class="relative z-0 mb-6 w-full group">
                                                 <textarea type="text" name="notes" id="notes" v-model="branch.notes"
-                                                    class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                    placeholder=" " required />
+                                                          class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                          placeholder=" " required/>
                                                 <label for="notes"
-                                                    class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                                       class="absolute text-sm duration-300 transform -translate-y-6 scale-75 top-3 z-0 origin-[0] peer-focus:left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                                     Observações
                                                 </label>
                                                 <div v-if="branch.errors.notes" class="text-sm text-red-500">
@@ -269,12 +269,12 @@ function saveGarage() {
                                     </div>
 
                                     <button type="button" @click="createBranch" :disabled="branch.processing"
-                                        class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
                                         Criar/Adicionar
                                     </button>
 
                                     <button type="button" @click="modal.newBranch = false"
-                                        class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-gray-600 focus:outline-none focus:shadow-outline">
+                                            class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-gray-600 focus:outline-none focus:shadow-outline">
                                         Cancelar
                                     </button>
                                 </div>
@@ -287,7 +287,7 @@ function saveGarage() {
     </AuthenticatedLayout>
 </template>
 <style scoped>
-input:checked~.dot {
+input:checked ~ .dot {
     transform: translateX(100%);
     background-color: #0ae465;
 }

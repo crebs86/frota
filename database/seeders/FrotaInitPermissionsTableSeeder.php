@@ -151,7 +151,7 @@ class FrotaInitPermissionsTableSeeder extends Seeder
                 'created_at' => now(),
                 'guard_name' => 'web',
                 'id' => 39,
-                'name' => 'Ocorrência Criar',
+                'name' => 'Ocorrencia Criar',
                 'updated_at' => now(),
             ),
             17 =>
@@ -159,7 +159,7 @@ class FrotaInitPermissionsTableSeeder extends Seeder
                 'created_at' => now(),
                 'guard_name' => 'web',
                 'id' => 40,
-                'name' => 'Ocorrência Ver',
+                'name' => 'Ocorrencia Ver',
                 'updated_at' => now(),
             ),
             18 =>
@@ -167,7 +167,7 @@ class FrotaInitPermissionsTableSeeder extends Seeder
                 'created_at' => now(),
                 'guard_name' => 'web',
                 'id' => 41,
-                'name' => 'Ocorrência Apagar',
+                'name' => 'Ocorrencia Apagar',
                 'updated_at' => now(),
             ),
             19 =>
@@ -175,7 +175,7 @@ class FrotaInitPermissionsTableSeeder extends Seeder
                 'created_at' => now(),
                 'guard_name' => 'web',
                 'id' => 42,
-                'name' => 'Ocorrência Editar',
+                'name' => 'Ocorrencia Editar',
                 'updated_at' => now(),
             ),
             20 =>

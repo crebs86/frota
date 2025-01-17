@@ -138,26 +138,6 @@ class FrotaInitRoleHasPermissionsTableSeeder extends Seeder
                 'permission_id' => 46,
                 'role_id' => 14,
             ),
-            24 =>
-            array(
-                'permission_id' => 39,
-                'role_id' => 8,
-            ),
-            25 =>
-            array(
-                'permission_id' => 40,
-                'role_id' => 8,
-            ),
-            26 =>
-            array(
-                'permission_id' => 41,
-                'role_id' => 8,
-            ),
-            27 =>
-            array(
-                'permission_id' => 42,
-                'role_id' => 8,
-            ),
             28 =>
             array(
                 'permission_id' => 17,
