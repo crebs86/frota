@@ -14,9 +14,9 @@ class DriverRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return $this->can('Motorista Ver', 'Motorista Criar', 'Motorista Editar' ,'Motorista Apagar');
+        return $this->can('Motorista Criar', 'Motorista Editar');
     }
 
     /**
@@ -24,7 +24,7 @@ class DriverRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         $req = $this;
         return [
@@ -42,7 +42,7 @@ class DriverRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'id.unique' => 'Motorista já cadastrado.',

@@ -3,13 +3,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import VueMultiselect from 'vue-multiselect';
-import { Head } from '@inertiajs/vue3';
-import { toast } from '@/toast';
+import {Head} from '@inertiajs/vue3';
+import {toast} from '@/toast';
 import axios from 'axios';
-import { ref } from 'vue';
+import {ref} from 'vue';
 import moment from 'moment';
 import validate from '@/validates/indexSaveRoute';
 import validateUpRt from '@/validates/createUpdateRoute';
+import has from '@/arrayHelpers'
 
 const props = defineProps({
     drivers: Object,
@@ -47,11 +48,11 @@ function validateDate(date) {
     return moment(date).isSame(moment(), 'day') || moment(date).isAfter(moment(), 'day')
 }
 
-function driverName({ id, user }) {
+function driverName({id, user}) {
     return `${id ? id : ''} - ${user?.name ? user.name : ''}`
 }
 
-function branchName({ id, name }) {
+function branchName({id, name}) {
     if (id === 1) {
         return `${id ? id : ''} - Não Cadastrado`
     } else {
@@ -184,33 +185,33 @@ function setRouteToEdit(route) {
 
 <template>
 
-    <Head title="Criar Rota" />
+    <Head title="Criar Rota"/>
 
     <AuthenticatedLayout>
 
         <template #inner_menu>
-            <FrotaMenu />
+            <FrotaMenu/>
         </template>
         <SubSection>
             <template #header>
-                Adicionar Rota
+                {{ (has($page.props.auth.permissions, ['Agenda Criar', 'Agenda Editar', 'Agenda Apagar']) || has($page.props.auth.permissions, ['Super Admin'])) ? 'Adicionar Rota' : 'Pesquisar Rotas'}}
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded"
-                        v-if="routeForm.date">
+                         v-if="routeForm.date">
                         <div class="relative mb-6 w-full z-auto min-h-fit">
                             <div class="mt-2">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
                                     Selecione um motorista
                                 </label>
                                 <VueMultiselect v-model="routeForm.driver" :options="props.drivers" :multiple="false"
-                                    :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
-                                    :custom-label="driverName" track-by="id" selectLabel="Selecionar"
-                                    @select="verifyDriverRoute" deselectLabel="Remover" />
+                                                :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
+                                                :custom-label="driverName" track-by="id" selectLabel="Selecionar"
+                                                @select="verifyDriverRoute" deselectLabel="Remover"/>
 
                                 <div v-if="routeForm.errors?.driver"
-                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                     <small v-for="error in routeForm.errors?.driver">{{ error }}</small>
                                 </div>
                             </div>
@@ -225,10 +226,10 @@ function setRouteToEdit(route) {
                                     Data
                                 </label>
                                 <input type="date" v-model="routeForm.date" @change="verifyDriverRoute"
-                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
+                                       class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
 
                                 <div v-if="routeForm.errors?.date"
-                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                     <small v-for="error in routeForm.errors?.date">{{ error }}</small>
                                 </div>
                             </div>
@@ -238,11 +239,12 @@ function setRouteToEdit(route) {
                                     Hora
                                 </label>
                                 <VueMultiselect v-model="routeForm.time" :options="props.timetables" :multiple="false"
-                                    :close-on-select="true" selectedLabel="atual" placeholder="Hora"
-                                    selectLabel="Selecionar" deselectLabel="Remover" />
+                                                :close-on-select="true" selectedLabel="atual" placeholder="Hora"
+                                                selectLabel="Selecionar" deselectLabel="Remover"
+                                                :disabled="!(has($page.props.auth.permissions, ['Agenda Criar', 'Agenda Editar', 'Agenda Apagar'])  || has($page.props.auth.permissions, ['Super Admin']))"/>
 
                                 <div v-if="routeForm.errors?.time"
-                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                     <small v-for="error in routeForm.errors?.time">{{ error }}</small>
                                 </div>
                             </div>
@@ -252,11 +254,12 @@ function setRouteToEdit(route) {
                                     Unidade
                                 </label>
                                 <VueMultiselect v-model="routeForm.branch" :options="props.branches" :multiple="false"
-                                    :close-on-select="true" selectedLabel="atual" placeholder="Unidade"
-                                    :custom-label="branchName" track-by="id" label="time" selectLabel="Selecionar"
-                                    deselectLabel="Remover" />
+                                                :close-on-select="true" selectedLabel="atual" placeholder="Unidade"
+                                                :custom-label="branchName" track-by="id" label="time"
+                                                selectLabel="Selecionar" deselectLabel="Remover"
+                                                :disabled="!(has($page.props.auth.permissions, ['Agenda Criar', 'Agenda Editar', 'Agenda Apagar'])  || has($page.props.auth.permissions, ['Super Admin']))"/>
                                 <div v-if="routeForm.errors?.branch"
-                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                     <small v-for="error in routeForm.errors?.branch">{{ error }}</small>
                                 </div>
                             </div>
@@ -265,22 +268,23 @@ function setRouteToEdit(route) {
                                     Local
                                 </label>
                                 <input type="text" v-model="routeForm.local"
-                                    class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700">
+                                       class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700">
 
                                 <div v-if="routeForm.errors?.local"
-                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                     <small v-for="error in routeForm.errors?.local">{{ error }}</small>
                                 </div>
                             </div>
                         </div>
 
-                        <button type="button" @click="saveRoute" v-if="validateDate(routes?.date)"
-                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                        <button type="button" @click="saveRoute"
+                                v-if="(has($page.props.auth.permissions, ['Agenda Editar', 'Agenda Apagar'])  || has($page.props.auth.permissions, ['Super Admin'])) && validateDate(routes?.date)"
+                                class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
                             Criar/Adicionar
                         </button>
                     </div>
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2"
-                        v-if="routeForm?.driver?.id === routes?.driver && routes?.driver">
+                         v-if="routeForm?.driver?.id === routes?.driver && routes?.driver">
                         <p><span class="font-bold">Motorista:</span>
                             {{ routeForm.driver.id === routes.driver ? routeForm.driver.user.name : '' }}
                         </p>
@@ -288,74 +292,79 @@ function setRouteToEdit(route) {
                             {{ moment(routes.date).format('DD/MM/YYYY') }}
                         </p>
                         <div class="p-2 rounded-lg overflow-y-auto"
-                            :class="$page.props.app.settingsStyles.main.innerSection">
+                             :class="$page.props.app.settingsStyles.main.innerSection">
                             <button @click="verifyDriverRoute"
-                                class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right">
+                                    class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right">
                                 Recarregar Rotas
-                                <mdicon name="refresh" />
+                                <mdicon name="refresh"/>
                             </button>
                             <table class="min-w-full">
                                 <thead>
-                                    <tr>
-                                        <th
-                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Hora
-                                        </th>
-                                        <th
-                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Unidade</th>
-                                        <th
-                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Saída
-                                        </th>
-                                        <th
-                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Chegada
-                                        </th>
-                                        <th
-                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Ações
-                                        </th>
-                                    </tr>
+                                <tr>
+                                    <th
+                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                        Hora
+                                    </th>
+                                    <th
+                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                        Unidade
+                                    </th>
+                                    <th
+                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                        Saída
+                                    </th>
+                                    <th
+                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                        Chegada
+                                    </th>
+                                    <th
+                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                        Ações
+                                    </th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(r, i) in routes.routes" :key="'route-' + i">
-                                        <td
-                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                            {{ r.time }}
-                                        </td>
-                                        <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center"
-                                            :class="r.branch.id === 1 ? 'underline underline-offset-8' : ''">
-                                            {{ r.branch.name }}
-                                            <mdicon name="circle" class="float-right text-red-500"
-                                                v-if="r.branch.id === 1" />
-                                        </td>
-                                        <td
-                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                            <p class="mx-auto text-sm px-2 rounded-md border  w-min"
-                                                :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
-                                                {{ r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') :
-                                                    'pendente' }}
-                                            </p>
-                                        </td>
-                                        <td
-                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                            <p class="mx-auto text-sm px-2 rounded-md border  w-min"
-                                                :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
-                                                {{ r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
-                                                    'pendente' }}
-                                            </p>
-                                        </td>
-                                        <td
-                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                            <button @click="setRouteToEdit(r)"
-                                                v-if="moment(moment(routeForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
-                                                    moment(moment(routeForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))">
-                                                <mdicon name="pencil"
-                                                    class="hover:text-green-500 dark:hover:text-gray-400" />
-                                            </button>
-                                        </td>
-                                    </tr>
+                                <tr v-for="(r, i) in routes.routes" :key="'route-' + i">
+                                    <td
+                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                        {{ r.time }}
+                                    </td>
+                                    <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center"
+                                        :class="r.branch.id === 1 ? 'underline underline-offset-8' : ''">
+                                        {{ r.branch.name }}
+                                        <mdicon name="circle" class="float-right text-red-500"
+                                                v-if="r.branch.id === 1"/>
+                                    </td>
+                                    <td
+                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                        <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                           :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                            {{
+                                                r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') : 'pendente'
+                                            }}
+                                        </p>
+                                    </td>
+                                    <td
+                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                        <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                           :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                            {{
+                                                r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
+                                                    'pendente'
+                                            }}
+                                        </p>
+                                    </td>
+                                    <td
+                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                        <button @click="setRouteToEdit(r)"
+                                                v-if="(has($page.props.auth.permissions, ['Agenda Editar', 'Agenda Apagar'])  || has($page.props.auth.permissions, ['Super Admin'])) && (moment(moment(routeForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
+                                                    moment(moment(routeForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD')))">
+                                            <mdicon name="pencil"
+                                                    class="hover:text-green-500 dark:hover:text-gray-400"/>
+                                        </button>
+                                        <span v-else>-</span>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -363,24 +372,26 @@ function setRouteToEdit(route) {
 
                     <!--Modal editar rota-->
                     <div class="fixed inset-0 flex items-center justify-center overflow-hidden mx-1"
-                        :class="modal.editRoute ? 'block' : 'hidden'">
+                         :class="modal.editRoute ? 'block' : 'hidden'">
                         <div class="fixed inset-0 transition-opacity">
                             <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
                         </div>
                         <div v-if="routeForEdition"
-                            class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
+                             class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
                             <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
 
                                 <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2">
                                     <div class="z-10 w-full">
                                         <div>Unidade</div>
                                         <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
-                                            :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
-                                            track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
-                                            @select="$page.props.errors.date = null" :custom-label="branchName" />
+                                                        :multiple="false" :close-on-select="true" placeholder="Unidade"
+                                                        label="name"
+                                                        track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
+                                                        @select="$page.props.errors.date = null"
+                                                        :custom-label="branchName"/>
 
                                         <div v-if="routeForEdition.errors?.branch"
-                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                             <small v-for="error in routeForEdition.errors?.branch">{{ error }}</small>
                                         </div>
                                     </div>
@@ -390,11 +401,12 @@ function setRouteToEdit(route) {
                                             Hora
                                         </label>
                                         <VueMultiselect v-model="routeForEdition.time" :options="$page.props.timetables"
-                                            :multiple="false" :close-on-select="true" selectedLabel="atual"
-                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
+                                                        :multiple="false" :close-on-select="true" selectedLabel="atual"
+                                                        placeholder="Hora" selectLabel="Selecionar"
+                                                        deselectLabel="Remover"/>
 
                                         <div v-if="routeForEdition.errors?.time"
-                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                             <small v-for="error in routeForEdition.errors?.time">{{ error }}</small>
                                         </div>
                                     </div>
@@ -404,10 +416,10 @@ function setRouteToEdit(route) {
                                             Local*
                                         </label>
                                         <input type="text" v-model="routeForEdition.local"
-                                            class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
+                                               class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
 
                                         <div v-if="routeForEdition.errors?.local"
-                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                             <small v-for="error in routeForEdition.errors?.local">{{ error }}</small>
                                         </div>
                                     </div>
@@ -422,13 +434,13 @@ function setRouteToEdit(route) {
                             </div>
                             <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1">
                                 <button type="button"
-                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                    @click="updateRoute()">
+                                        class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                        @click="updateRoute()">
                                     Salvar
                                 </button>
                                 <button type="button"
-                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                    @click="modal.editRoute = false, routeForEdition = {}">
+                                        class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                        @click="modal.editRoute = false, routeForEdition = {}">
                                     Fechar
                                 </button>
                             </div>
@@ -440,7 +452,7 @@ function setRouteToEdit(route) {
     </AuthenticatedLayout>
 </template>
 <style scoped>
-input:checked~.dot {
+input:checked ~ .dot {
     transform: translateX(100%);
     background-color: #0ae465;
 }

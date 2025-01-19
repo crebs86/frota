@@ -79,7 +79,7 @@ trait Routes
     public function runMyRoutes(Request $request): Response
     {
         $request->merge(['driver' => auth()->id()]);
-        $request->date ?? $request->merge(['date' => date('Y-m-d')]);
+            $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
         $cars = Car::all(['id', 'modelo', 'placa']);
         $cars->each(function ($car) {
@@ -160,8 +160,8 @@ trait Routes
     {
         $request->validate([
             'branch' => 'required|integer|exists:branches,id',
-            'time' => 'required',
-            'date' => 'required|date',
+            'time' => 'required|date_format:H:i:s',
+            'date' => 'required|date_format:Y-m-d',
             'driver' => 'required|integer|exists:drivers,id',
             'local' => 'required_if:branch,==,1|string|nullable|max:255'
         ], [
@@ -187,7 +187,7 @@ trait Routes
                  * Verificar payload em edição de rota
                  */
 
-                if ((int) getKeyValue($request->_checker, 'route_edit') === (int) $task[0]['id']) {
+                if ((int)getKeyValue($request->_checker, 'route_edit') === (int)$task[0]['id']) {
                     return $this->runRoutePersist($task[0], $request);
                 }
                 return response()->json(['error' => 'Erro na utilização da aplicação.'], 403);
@@ -258,6 +258,7 @@ trait Routes
             'to' => 'required|integer|exists:branches,id',
             'time' => [
                 'required',
+                'date_format:H:i:s',
                 Rule::unique('routes')->where(function ($q) use ($request, $route) {
                     return $q->where([
                         'time' => $request->time,
@@ -502,7 +503,7 @@ trait Routes
      */
     private function runPersistSingleRoute($task, Request $request): Route|JsonResponse
     {
-        $route =  Route::create([
+        $route = Route::create([
             'task' => $task['id'],
             'user' => auth()->id(),
             'to' => $request->branch,
@@ -558,7 +559,7 @@ trait Routes
          * Renomeia o nome da branch para local não cadastrado
          */
         foreach ($tasks as $c => $v) {
-            $vv = (array) $v;
+            $vv = (array)$v;
             foreach ($vv as $value) {
                 if ($vv['to'] === 1) {
                     $t[$c] = $vv;

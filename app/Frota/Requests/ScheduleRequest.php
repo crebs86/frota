@@ -9,14 +9,15 @@ use Illuminate\Foundation\Http\FormRequest;
 class ScheduleRequest extends FormRequest
 {
     use ACL;
+
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return $this->can('Agenda Ver', 'Agenda Criar', 'Agenda Editar' ,'Agenda Apagar');
+        return $this->can('Agenda Criar', 'Agenda Editar');
     }
 
     /**
@@ -24,7 +25,7 @@ class ScheduleRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         $req = $this;
         return [
@@ -56,7 +57,7 @@ class ScheduleRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'driver_id.exists' => 'Selecione um motorista',

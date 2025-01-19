@@ -1,5 +1,6 @@
 <?php
 
+use App\Frota\Controllers\RequestsController;
 use Illuminate\Support\Facades\Route;
 use App\Frota\Controllers\CarsController;
 use App\Frota\Controllers\HomeController;
@@ -48,4 +49,8 @@ Route::prefix('/frota')->middleware(
     Route::get('/combustivel/carregarAbastecimentos/{car}/de/{de}/para/{para?}', [FuelController::class, 'loadHistoryFill'])->name('load-history-fill');
     Route::post('/combustivel/carregarAbastecimentos', [FuelController::class, 'loadLastFill'])->name('load-last-fill');
     Route::post('/combustivel/informarAbastecimento', [FuelController::class, 'insertFill'])->name('insert-fill');
+
+    Route::get('/solicitacoes', [RequestsController::class, 'index'])->name('requests.index');
+    Route::post('/solicitacoes', [RequestsController::class, 'store'])->name('requests.store');
+    Route::post('/solicitacoes/rotasESolicitacoes', [RequestsController::class, 'getRoutesAndRequests'])->name('requests.get-routes-and-requests');
 });

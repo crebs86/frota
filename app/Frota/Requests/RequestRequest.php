@@ -9,14 +9,15 @@ use Illuminate\Foundation\Http\FormRequest;
 class RequestRequest extends FormRequest
 {
     use ACL;
+
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return $this->can('Carro Ver', 'Carro Criar', 'Carro Editar', 'Carro Apagar');
+        return $this->can('Solicitacao Criar', 'Solicitacao Editar');
     }
 
     /**
@@ -24,28 +25,27 @@ class RequestRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+
+    public function rules(): array
     {
-        $req = $this;
         return [
-            'garagem_id' => ['int', 'nullable', Rule::exists('garages', 'id')],
-            'marca' => 'max:25',
-            'modelo' => 'max:55',
-            'placa' => 'max:7|unique:cars,placa,' . $req->car?->id,
-            'patrimonio' => 'boolean|nullable',
-            'tombo' => ['max:55', 'nullable', Rule::requiredIf(function () use ($req) {
-                return $req->patrimonio === true;
-            })]
+            'branch' => 'required|integer|exists:branches,id',
+            'time' => 'required|date_format:H:i:s',
+            'date' => 'required|date|date_format:Y-m-d',
+            'driver' => 'required|integer|exists:drivers,id',
+            'local' => 'required_if:branch,==,1|string|nullable|max:255',
+            'passengers' => 'nullable|array'
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
-            'garagem_id.exists' => 'Garagem não existe.',
-            'tombo.max' => 'Número de patrimônio muito grande.',
-            'tombo.required' => 'Informe o número de patrimônio.',
-            'placa.unique' => 'Já existe um veículo cadastrado com a placa informada.'
+            'branch.*' => 'Informe uma unidade para a rota.',
+            'time.required' => 'Selecione um horário para a rota.',
+            'date.*' => 'A data não foi informada.',
+            'driver.*' => 'Selecione um motorista para fazer a rota.',
+            'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
         ];
     }
 }

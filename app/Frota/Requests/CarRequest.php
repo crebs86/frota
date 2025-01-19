@@ -14,9 +14,9 @@ class CarRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return $this->can('Carro Ver', 'Carro Criar', 'Carro Editar', 'Carro Apagar');
+        return $this->can('Carro Criar', 'Carro Editar');
     }
 
     /**
@@ -24,7 +24,7 @@ class CarRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         $req = $this;
         return [
@@ -39,7 +39,7 @@ class CarRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'garagem_id.exists' => 'Garagem não existe.',

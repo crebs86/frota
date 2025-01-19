@@ -4,17 +4,18 @@ import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import VueMultiselect from 'vue-multiselect';
 import {Head} from '@inertiajs/vue3';
-import {toast} from '@/toast';
+import {toast} from '@/toast.ts';
 import axios from 'axios';
 import {ref} from 'vue';
 import moment from 'moment';
-import validate from '@/validates/indexSaveRoute';
-import validateUpRt from '@/validates/createUpdateRoute';
+import validate from '@/validates/indexSaveRoute.js';
+import validateUpRt from '@/validates/createUpdateRoute.js';
 
 const props = defineProps({
     drivers: Object,
     branches: Object,
     timetables: Object,
+    routes: Object | null,
     errors: Object
 });
 
@@ -27,6 +28,7 @@ const routeForm = ref({
     branch: '',
     errors: '',
     local: '',
+    passengers: [],
     _checker: ''
 });
 
@@ -42,6 +44,17 @@ const routeForEdition = ref({
     local: '',
     errors: ''
 });
+
+const passengerModel = ref()
+
+function setPassenger(remove = false, passenger = null) {
+    if (!remove) {
+        routeForm.value.passengers.push(passengerModel.value)
+        passengerModel.value = ''
+    } else {
+        routeForm.value.passengers.splice(routeForm.value.passengers.indexOf(passenger), 1)
+    }
+}
 
 function validateDate(date) {
     return moment(date).isSame(moment(), 'day') || moment(date).isAfter(moment(), 'day')
@@ -66,16 +79,17 @@ function saveRoute() {
     if (val._run &&
         validateDate(routeForm.value.date)
     ) {
-        axios.post(route('frota.tasks.route.store'), {
+        axios.post(route('frota.requests.store'), {
             driver: routeForm.value.driver?.id,
             date: routeForm.value.date,
             time: routeForm.value.time,
             branch: routeForm.value.branch?.id,
             local: routeForm.value.local,
-            _checker: routeForm.value._checker
+            _checker: routeForm.value._checker,
+            passengers: routeForm.value.passengers
         })
             .then((r) => {
-                toast.success(r.data.message)
+                toast.success(r.data.message, {duration: 5000})
                 verifyDriverRoute()
                 resetForm()
             })
@@ -105,23 +119,24 @@ function saveRoute() {
 function resetForm() {
     routeForm.value.time = ''
     routeForm.value.branch = ''
+    routeForm.value.passengers = []
 }
 
 function verifyDriverRoute() {
     routeForm.value.errors = ''
     routes.value = {};
     if (routeForm.value.date && routeForm.value.driver) {
-        axios.post(route('frota.tasks.filter-routes'), {
+        axios.post(route('frota.requests.get-routes-and-requests'), {
             driver: routeForm.value.driver.id,
             date: routeForm.value.date
         })
             .then((r) => {
-                if (r.data[0]?.routes) {
-                    routes.value = r.data[0]
+                if (Object.values(r.data).length > 0) {
+                    console.log('rota', Object.values(r.data).length)
+                    routes.value = r.data
                 } else {
                     toast.info('Sem tarefas para a data selecionada.')
                 }
-                routeForm.value._checker = r.data[1]
             })
             .catch((e) => {
                 if (e.response?.status === 403) {
@@ -180,11 +195,32 @@ function setRouteToEdit(route) {
         routeForEdition.value.local = ''
     }
 }
+
+function getRouteStatus(task, status) {
+    if (task) {
+        return 'Confirmado'
+    }
+    //0 Pendente; 1 Aprovado; 2 Negado; 3 em Avaliação; 4 Carona
+    switch (status) {
+        case 0:
+            return 'Pendente'
+        case 1:
+            return 'Aprovado'
+        case 2:
+            return 'Negado'
+        case 3:
+            return 'Em avaliação'
+        case 4:
+            return 'Carona'
+        default:
+            return 'Erro'
+    }
+}
 </script>
 
 <template>
 
-    <Head title="Criar Rota"/>
+    <Head title="Solicitar Carro"/>
 
     <AuthenticatedLayout>
 
@@ -216,7 +252,6 @@ function setRouteToEdit(route) {
                             </div>
                         </div>
                     </div>
-
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
                         <div class="mb-6 w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-4">
 
@@ -266,24 +301,48 @@ function setRouteToEdit(route) {
                                     Local
                                 </label>
                                 <input type="text" v-model="routeForm.local"
-                                       class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700">
+                                       class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700"/>
 
                                 <div v-if="routeForm.errors?.local"
                                      class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                     <small v-for="error in routeForm.errors?.local">{{ error }}</small>
                                 </div>
                             </div>
+                            <div class="mx-2 col-span-4 mt-6" v-if="routeForm.date">
+                                <div class="text-left">
+                                    <label class="text-sm text-gray-500 dark:text-gray-400">
+                                        Incluir Passageiro
+                                    </label>
+                                    <input type="text" v-model="passengerModel"
+                                           class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700"/>
+                                    <button type="button" @click="setPassenger(false)" v-if="validateDate(routes?.date)"
+                                            :disabled="passengerModel?.length < 4"
+                                            class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
+                                            :class="passengerModel?.length < 4 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                        Incluir Passageiro
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mx-2 col-span-4 mt-6" v-if="routeForm.date">
+                                <span v-for="(p, i) in routeForm.passengers" :key="'p_' + i"
+                                      class="flex inline-flex mx-4">
+                                    {{ p }}
+                                    <button @click="setPassenger(true, p)">
+                                        <mdicon name="close" class="text-red-400"/>
+                                    </button>
+                                </span>
+                            </div>
                         </div>
 
                         <button type="button" @click="saveRoute" v-if="validateDate(routes?.date)"
                                 class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
-                            Criar/Adicionar
+                            Solicitar
                         </button>
                     </div>
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2"
-                         v-if="routeForm?.driver?.id === routes?.driver && routes?.driver">
+                         v-if="routeForm?.driver?.id === routes[0]?.driver">
                         <p><span class="font-bold">Motorista:</span>
-                            {{ routeForm.driver.id === routes.driver ? routeForm.driver.user.name : '' }}
+                            {{ routeForm?.driver?.id === routes[0]?.driver ? routeForm?.driver?.user?.name : '' }}
                         </p>
                         <p><span class="font-bold">Data:</span>
                             {{ moment(routes.date).format('DD/MM/YYYY') }}
@@ -316,25 +375,29 @@ function setRouteToEdit(route) {
                                     </th>
                                     <th
                                         class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                        Status
+                                    </th>
+                                    <th
+                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
                                         Ações
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="(r, i) in routes.routes" :key="'route-' + i">
+                                <tr v-for="(r, i) in routes" :key="'route-' + i">
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                         {{ r.time }}
                                     </td>
                                     <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center"
-                                        :class="r.branch.id === 1 ? 'underline underline-offset-8' : ''">
-                                        {{ r.branch.name }}
+                                        :class="r.local || r.b === 1 ? 'underline underline-offset-8' : ''">
+                                        {{ r.branch ?? r.local }}
                                         <mdicon name="circle" class="float-right text-red-500"
-                                                v-if="r.branch.id === 1"/>
+                                                v-if="r.local || r.b === 1"/>
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                        <p class="mx-auto text-sm px-2 rounded-md border w-min"
                                            :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
                                             {{
                                                 r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') :
@@ -344,7 +407,7 @@ function setRouteToEdit(route) {
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                        <p class="mx-auto text-sm px-2 rounded-md border w-min"
                                            :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
                                             {{
                                                 r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
@@ -354,9 +417,19 @@ function setRouteToEdit(route) {
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                        <p class="mx-auto text-sm px-2"
+                                        >
+                                            {{
+                                                getRouteStatus(r.task, r.status)
+                                            }}
+                                        </p>
+                                    </td>
+                                    <td
+                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                         <button @click="setRouteToEdit(r)"
                                                 v-if="moment(moment(routeForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
                                                     moment(moment(routeForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))">
+                                            //todo
                                             <mdicon name="pencil"
                                                     class="hover:text-green-500 dark:hover:text-gray-400"/>
                                         </button>
@@ -366,7 +439,6 @@ function setRouteToEdit(route) {
                             </table>
                         </div>
                     </div>
-
                     <!--Modal editar rota-->
                     <div class="fixed inset-0 flex items-center justify-center overflow-hidden mx-1"
                          :class="modal.editRoute ? 'block' : 'hidden'">
@@ -454,4 +526,4 @@ input:checked ~ .dot {
     background-color: #0ae465;
 }
 </style>
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>
+<style src="../../../../../node_modules/vue-multiselect/dist/vue-multiselect.css"></style>

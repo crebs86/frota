@@ -4,35 +4,42 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('fuels', function (Blueprint $table) {
+        Schema::create('requests', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('car');
-            $table->foreign('car')
-                ->references('id')
-                ->on('cars');
-
-            $table->unsignedBigInteger('driver');
+            $table->unsignedBigInteger('driver')->nullable();
             $table->foreign('driver')
+                ->references('id')
+                ->on('drivers');
+
+            $table->unsignedBigInteger('user');
+            $table->foreign('user')
                 ->references('id')
                 ->on('users');
 
-            $table->integer('km');
-            $table->string('quantidade');
-            $table->string('valor')->nullable();
-            $table->string('local')->nullable();
-            $table->text('observacao')->nullable();
-            $table->string('arquivo')->nullable();
-            $table->timestamp('hora');
-            $table->softDeletes();
-            $table->timestamps();
+            $table->unsignedBigInteger('mediator')->nullable();
+            $table->foreign('mediator')
+                ->references('id')
+                ->on('users');
+
+            $table->unsignedBigInteger('to');
+            $table->foreign('to')
+                ->references('id')
+                ->on('branches');
+
+            $table->string('local', 255)->nullable();
+
+            $table->integer('vacancy')->nullable();
+            $table->date('date');
+            $table->time('time');
+            $table->string('passengers', 510)->nullable();
+            $table->integer('status')->default(0);
         });
     }
 
@@ -41,6 +48,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fuels');
+        Schema::dropIfExists('requests');
     }
 };

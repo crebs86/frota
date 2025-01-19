@@ -13,9 +13,9 @@ class FuelRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return $this->can('Combustivel Ver', 'Combustivel Criar', 'Combustivel Editar', 'Combustivel Apagar');
+        return $this->can('Combustivel Criar', 'Combustivel Editar');
     }
 
     /**
@@ -23,7 +23,7 @@ class FuelRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         $this->merge(['car' => (int) getKeyValue($this->car['token'], 'car_token')]);
         $req = $this;

@@ -4,29 +4,27 @@ namespace App\Frota\Models;
 
 
 use App\Models\Branch;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Request extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['task', 'date', 'user', 'to', 'vacancy', 'passengers', 'obs_start', 'obs_end', 'time', 'started_at', 'endend_at'];
+    protected $fillable = ['user', 'to', 'local', 'vacancy', 'date', 'time', 'passengers', 'status'];
 
     public $timestamps = false;
 
-    public function branch()
+    public function branch(): HasOne
     {
         return $this->hasOne(Branch::class, 'id', 'to')->select('id', 'name');
     }
 
-    public function taskData()
+    public function user(): HasOne
     {
-        return $this->hasOne(Task::class, 'id', 'task')->select('id', 'date', 'driver')->with('driver');
+        return $this->hasOne(User::class, 'id', 'user')->select('id', 'name');
     }
 
-    public function carsLog()
-    {
-        return $this->hasMany(CarsLog::class, 'route', 'id');
-    }
 }
