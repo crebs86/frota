@@ -38,6 +38,7 @@ return new class extends Migration {
             $table->integer('vacancy')->nullable();
             $table->date('date');
             $table->time('time');
+            $table->time('duration')->nullable();
             $table->string('passengers', 510)->nullable();
             $table->integer('status')->default(0);
         });
