@@ -11,7 +11,7 @@ class Route extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['task', 'date', 'user', 'to', 'vacancy', 'passengers', 'obs_start', 'obs_end', 'time', 'started_at', 'endend_at'];
+    protected $fillable = ['task', 'date', 'user', 'to', 'vacancy', 'passengers', 'obs_start', 'obs_end', 'time', 'duration', 'started_at', 'endend_at'];
 
     public $timestamps = false;
 

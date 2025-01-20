@@ -10,10 +10,7 @@ trait Requests
 {
     use Routes;
 
-    public function runGetRoutes(Request $request)
-    {
-
-    }
+    public function runGetRoutes(Request $request) {}
 
     /**
      * @param Request $request
@@ -44,7 +41,14 @@ trait Requests
         $rm = RequestModel::where([
             'driver' => $request->driver,
             'date' => $request->date
-        ])->get()->toArray();
+        ])
+            ->with('branch')
+            ->get()
+            ->each(function ($item) {
+                if ($item->to !== 1) {
+                    return $item->local = $item->branch->name;
+                }
+            })->toArray();
         $a = [];
         $i = 0;
         foreach ($data as $key => $item) {
@@ -56,14 +60,14 @@ trait Requests
                     $a[$i]['b'] = $route['branch']['id'];
                     $a[$i]['time'] = $route['time'];
                     $a[$i]['task'] = $route['task'];
+                    $a[$i]['passengers'] = $route['passengers'];
+                    $a[$i]['duration'] = $route['duration'];
                     $a[$i]['started_at'] = $route['started_at'];
                     $a[$i]['ended_at'] = $route['ended_at'];
                     $i++;
                 }
             }
         }
-        return collect(array_merge_recursive($a, $rm))->sortBy(function ($item) {
-            return $item['time'];
-        })->toArray();
+        return collect(array_merge_recursive($a, $rm))->sortBy('time')->values()->all();
     }
 }

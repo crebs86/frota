@@ -25,7 +25,7 @@ import moment from 'moment';
                         <table class="min-w-full">
                             <thead>
                                 <tr>
-                                    <th v-for=" (value, index) in ['Local Destino', 'Hora Agendada', 'Motorista', 'Iniciada', 'Finalizada', 'Ações']"
+                                    <th v-for=" (value, index) in ['Local Destino', 'Hora Agendada', 'Motorista', 'Duração', 'Iniciada', 'Finalizada', 'Ações']"
                                         :key="index + '' + value"
                                         class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider"
                                         :class="$page.props.app.settingsStyles.main.container">
@@ -50,11 +50,14 @@ import moment from 'moment';
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                        {{ m.duration }}
+                                    </td>
+                                    <td
+                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                         <p class="mx-auto text-sm px-2 rounded-md border  w-min"
                                             :class="m.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
                                             {{ m.started_at ? moment(m.started_at).format('DD/MM/YY HH:mm') : '-' }}
                                         </p>
-                                        <!-- <small>Km: {{ km(m.cars_log, 'start')[0]?.km }}</small> -->
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
@@ -62,7 +65,6 @@ import moment from 'moment';
                                             :class="m.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
                                             {{ m.ended_at ? moment(m.ended_at).format('DD/MM/YY HH:mm') : '-' }}
                                         </p>
-                                        <!-- <small>Km: {{ km(m.cars_log, 'end')[0]?.km }}</small> -->
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">

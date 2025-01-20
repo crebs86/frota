@@ -55,7 +55,7 @@ trait Routes
     {
         $allRoutes = [];
         $task = DB::table('tasks as t')
-            ->select('r.id as route', 't.id as task', 't.date', 't.driver', 'r.time', 'r.started_at', 'r.ended_at', 'u.name', 'b.name as branch', 'r.to')
+            ->select('r.id as route', 't.id as task', 't.date', 't.driver', 'r.time', 'r.started_at', 'r.ended_at', 'u.name', 'b.name as branch', 'r.to', 'r.duration')
             ->where('t.date', now()->format('Y-m-d'))
             ->join('routes as r', 't.id', 'r.task')
             ->join('drivers as d', 't.driver', 'd.id')
@@ -161,12 +161,16 @@ trait Routes
         $request->validate([
             'branch' => 'required|integer|exists:branches,id',
             'time' => 'required|date_format:H:i:s',
+            'duration' => 'required|date_format:H:i',
             'date' => 'required|date_format:Y-m-d',
             'driver' => 'required|integer|exists:drivers,id',
             'local' => 'required_if:branch,==,1|string|nullable|max:255'
         ], [
             'branch.*' => 'Informe uma unidade para a rota.',
             'time.required' => 'Selecione um horário para a rota.',
+            'time.date_format' => 'Selecione um horário na lista.',
+            'duration.required' => 'Selecione um horário para a rota.',
+            'duration.date_format' => 'Duração inválida.',
             'date.*' => 'A data não foi informada.',
             'driver.*' => 'Selecione um motorista para fazer a rota.',
             'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'

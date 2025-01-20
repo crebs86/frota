@@ -31,6 +31,7 @@ class RequestRequest extends FormRequest
         return [
             'branch' => 'required|integer|exists:branches,id',
             'time' => 'required|date_format:H:i:s',
+            'duration' => 'required|date_format:H:i',
             'date' => 'required|date|date_format:Y-m-d',
             'driver' => 'required|integer|exists:drivers,id',
             'local' => 'required_if:branch,==,1|string|nullable|max:255',
@@ -43,6 +44,9 @@ class RequestRequest extends FormRequest
         return [
             'branch.*' => 'Informe uma unidade para a rota.',
             'time.required' => 'Selecione um horário para a rota.',
+            'time.date_format' => 'Selecione um horário na lista.',
+            'duration.required' => 'Informe a duração.',
+            'duration.date_format' => 'Duração inválida.',
             'date.*' => 'A data não foi informada.',
             'driver.*' => 'Selecione um motorista para fazer a rota.',
             'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'

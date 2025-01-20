@@ -34,6 +34,7 @@ return new class extends Migration {
             $table->text('obs_end')->nullable();
             $table->date('date');
             $table->time('time');
+            $table->time('duration')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();
         });

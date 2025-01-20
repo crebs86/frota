@@ -15,7 +15,7 @@ class Task extends Model
 
     public function routes()
     {
-        return $this->hasMany(Route::class, 'task', 'id')->select('id', 'task', 'to', 'time', 'started_at', 'ended_at')->orderBy('time')->with('branch', 'carsLog');
+        return $this->hasMany(Route::class, 'task', 'id')->select('id', 'task', 'to', 'time', 'passengers', 'started_at', 'ended_at', 'duration')->orderBy('time')->with('branch', 'carsLog');
     }
 
     public function driver()
