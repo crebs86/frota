@@ -1,10 +1,9 @@
 export default function validateUpRt(value) {
-  console.log(value);
   let errors = '{"errors":{';
   let partial = "";
 
   if (!value.id) {
-    partial += '"driver": ["Erro ao carregar rota."],';
+    partial += '"rota": ["Erro ao carregar rota."],';
   }
 
   if (!value.time) {

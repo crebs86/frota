@@ -17,6 +17,11 @@ class Request extends Model
 
     public $timestamps = false;
 
+    protected $casts = [
+        'time' => 'datetime:H:i:s',
+        'duration' => 'datetime:H:i'
+    ];
+
     public function branch(): HasOne
     {
         return $this->hasOne(Branch::class, 'id', 'to')->select('id', 'name');
@@ -26,5 +31,4 @@ class Request extends Model
     {
         return $this->hasOne(User::class, 'id', 'user')->select('id', 'name');
     }
-
 }

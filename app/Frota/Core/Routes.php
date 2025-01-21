@@ -79,7 +79,7 @@ trait Routes
     public function runMyRoutes(Request $request): Response
     {
         $request->merge(['driver' => auth()->id()]);
-            $request->date ?? $request->merge(['date' => date('Y-m-d')]);
+        $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
         $cars = Car::all(['id', 'modelo', 'placa']);
         $cars->each(function ($car) {
@@ -160,7 +160,7 @@ trait Routes
     {
         $request->validate([
             'branch' => 'required|integer|exists:branches,id',
-            'time' => 'required|date_format:H:i:s',
+            'time' => 'required|date_format:H:i',
             'duration' => 'required|date_format:H:i',
             'date' => 'required|date_format:Y-m-d',
             'driver' => 'required|integer|exists:drivers,id',
@@ -227,7 +227,9 @@ trait Routes
             'user' => auth()->id(),
             'to' => $request->branch,
             'date' => $task['date'],
-            'time' => $request->time
+            'time' => $request->time,
+            'duration' => $request->duration,
+            'passengers' => json_encode($request->passengers),
         ]);
 
         if ($route) {
@@ -258,29 +260,38 @@ trait Routes
 
         $request->merge(['to' => $request->branch['id']]);
 
-        $request->validate([
-            'to' => 'required|integer|exists:branches,id',
-            'time' => [
-                'required',
-                'date_format:H:i:s',
-                Rule::unique('routes')->where(function ($q) use ($request, $route) {
-                    return $q->where([
-                        'time' => $request->time,
-                        'task' => $route->task
-                    ])->where('id', '<>', $route->id);
-                })
+        $request->validate(
+            [
+                'to' => 'required|integer|exists:branches,id',
+                'time' => [
+                    'required',
+                    'date_format:H:i:s',
+                    Rule::unique('routes')->where(function ($q) use ($request, $route) {
+                        return $q->where([
+                            'time' => $request->time,
+                            'task' => $route->task
+                        ])->where('id', '<>', $route->id);
+                    })
+                ],
+                'passengers' => 'required|array',
+                'duration' => 'required|date_format:H:i',
+                'local' => 'required_if:to,==,1|string|nullable|max:255',
             ],
-            'local' => 'required_if:to,==,1|string|nullable|max:255'
-        ], [
-            'to.*' => 'Informe uma unidade para a rota.',
-            'time.required' => 'Selecione um horário para a rota.',
-            'time.unique' => 'Já existe uma agenda neste horário para este motorista.',
-            'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
-        ]);
+            [
+                'to.*' => 'Informe uma unidade para a rota.',
+                'time.required' => 'Selecione um horário para a rota.',
+                'time.unique' => 'Já existe uma agenda neste horário para este motorista.',
+                'duration.required' => 'Selecione um horário para a rota.',
+                'duration.date_format' => 'Duração inválida.',
+                'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
+            ]
+        );
 
         if ($route->update([
             'time' => $request->time,
-            'to' => $request->branch['id']
+            'to' => $request->branch['id'],
+            'duration' => $request->duration,
+            'passengers' => json_encode($request->passengers)
         ])) {
 
             if ($request->currentBranch['id'] === 1 && $request->branch['id'] === 1) {

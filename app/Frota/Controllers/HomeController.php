@@ -20,15 +20,19 @@ class HomeController extends Controller
 
     public function index()
     {
-        $routes = Route::where('date', now()->format('Y-m-d'))
-            ->select('started_at', 'ended_at')
-            ->get();
-        return Inertia::render('Frota/Home', [
-            'drivers_count' => Driver::count(),
-            'cars_count' => Car::count(),
-            'routes_count' => $routes->count(),
-            'exec_routes' => $routes->where('started_at', '<>', null)->where('ended_at', '<>', null)->count()
-        ]);
+        if ($this->can('Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar', 'Carro Editar', 'Carro Ver', 'Carro Criar', 'Carro Apagar', 'Ocorrencia Editar', 'Ocorrencia Ver', 'Ocorrencia Criar', 'Ocorrencia Apagar', 'Solicitacao Editar', 'Solicitacao Ver', 'Solicitacao Criar', 'Solicitacao Apagar', 'Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar')) {
+            $routes = Route::where('date', now()->format('Y-m-d'))
+                ->select('started_at', 'ended_at')
+                ->get();
+            return Inertia::render('Frota/Home', [
+                'drivers_count' => Driver::count(),
+                'cars_count' => Car::count(),
+                'routes_count' => $routes->count(),
+                'exec_routes' => $routes->where('started_at', '<>', null)->where('ended_at', '<>', null)->count()
+            ]);
+        } else {
+            return Inertia::render('Admin/403');
+        }
     }
 
     public function loadData(): JsonResponse

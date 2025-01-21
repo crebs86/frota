@@ -35,7 +35,7 @@ class RequestRequest extends FormRequest
             'date' => 'required|date|date_format:Y-m-d',
             'driver' => 'required|integer|exists:drivers,id',
             'local' => 'required_if:branch,==,1|string|nullable|max:255',
-            'passengers' => 'nullable|array'
+            'passengers' => 'required|array'
         ];
     }
 

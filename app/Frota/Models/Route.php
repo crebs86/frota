@@ -15,6 +15,10 @@ class Route extends Model
 
     public $timestamps = false;
 
+    protected $casts = [
+        'duration' => 'datetime:H:i'
+    ];
+
     public function branch()
     {
         return $this->hasOne(Branch::class, 'id', 'to')->select('id', 'name');

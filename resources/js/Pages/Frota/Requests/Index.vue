@@ -11,6 +11,7 @@ import moment from 'moment';
 import validate from '@/validates/indexSaveRoute.js';
 import validateUpRt from '@/validates/createUpdateRoute.js';
 import { getStyles, styles } from '@/contrasts';
+import has from '@/arrayHelpers';
 
 const props = defineProps({
     drivers: Object,
@@ -35,7 +36,8 @@ const routeForm = ref({
 });
 
 const modal = ref({
-    editRoute: false
+    editRoute: false,
+    editRequest: false
 });
 
 const routeForEdition = ref({
@@ -46,23 +48,59 @@ const routeForEdition = ref({
     local: '',
     duration: '',
     passengers: [],
-    duration: '',
     errors: []
 });
 
-const passengerModel = ref()
+const routeRequestEdition = ref({
+    id: '',
+    branch: '',
+    currentBranch: '',
+    time: '',
+    local: '',
+    duration: '',
+    passengers: [],
+    errors: []
+});
+
+const passengersModel = ref('')
 
 function setPassenger(remove = false, passenger = null) {
     routeForm.value.errors.passengers = ''
-    if (passengerModel.value) {
-        if (!remove) {
-            routeForm.value.passengers.push(passengerModel.value)
-            passengerModel.value = ''
-        } else {
-            routeForm.value.passengers.splice(routeForm.value.passengers.indexOf(passenger), 1)
-        }
+    if (remove) {
+        routeForm.value.passengers.splice(routeForm.value.passengers.indexOf(passenger), 1)
+    } else if (passengersModel.value) {
+        routeForm.value.passengers.push(passengersModel.value)
+        passengersModel.value = ''
     } else {
         routeForm.value.errors.passengers = 'Vazio.'
+    }
+}
+
+const passengersRequestModel = ref('')
+
+function setRequestPassenger(remove = false, passenger = null) {
+    routeRequestEdition.value.errors.passengers = ''
+    if (remove) {
+        routeRequestEdition.value.passengers.splice(routeRequestEdition.value.passengers.indexOf(passenger), 1)
+    } else if (passengersRequestModel.value) {
+        routeRequestEdition.value.passengers.push(passengersRequestModel.value)
+        passengersRequestModel.value = ''
+    } else {
+        routeRequestEdition.value.errors.passengers = 'Vazio.'
+    }
+}
+
+const passengersEditModel = ref('')
+
+function setEditPassenger(remove = false, passenger = null) {
+    routeForEdition.value.errors.passengers = ''
+    if (remove) {
+        routeForEdition.value.passengers.splice(routeForEdition.value.passengers.indexOf(passenger), 1)
+    } else if (passengersEditModel.value) {
+        routeForEdition.value.passengers.push(passengersEditModel.value)
+        passengersEditModel.value = ''
+    } else {
+        routeForEdition.value.errors.passengers = 'Vazio.'
     }
 }
 
@@ -84,12 +122,12 @@ function branchName({ id, name }) {
 
 function saveRoute() {
     routeForm.value.errors = []
-    let val = validate(routeForm.value, ['driver'])
+    let val = validate(routeForm.value)
 
     if (val._run &&
         validateDate(routeForm.value.date)
     ) {
-        axios.post(route('frota.requests.store'), {
+        axios.post(route('frota.tasks.route.store'), {
             driver: routeForm.value.driver?.id,
             date: routeForm.value.date,
             time: routeForm.value.time,
@@ -121,7 +159,6 @@ function saveRoute() {
         if (!validateDate(routeForm.value.date)) {
             toast.error('Não é possível criar/adicionar a agenda para datas passadas.')
         } else {
-            console.log(val)
             routeForm.value.errors = val
             toast.error('Preencha todos os campos para prosseguir.')
         }
@@ -161,20 +198,26 @@ function verifyDriverRoute() {
 }
 
 function updateRoute() {
-    let val = validateUpRt(routeForEdition.value)
+    let val = validateUpRt(routeForEdition.value, ['driver'])
     if (val._run) {
         axios.put(route('frota.routes.route.update', routeForEdition.value.id), {
             id: routeForEdition.value.id,
             branch: routeForEdition.value.branch,
             currentBranch: routeForEdition.value.currentBranch,
             time: routeForEdition.value.time,
+            duration: routeForEdition.value.duration,
+            passengers: routeForEdition.value.passengers,
             local: routeForEdition.value.local,
-            _checker: routeForm.value._checker
+            _checker: routeForEdition.value._checker
         })
             .then(() => {
                 verifyDriverRoute();
                 modal.value.editRoute = false;
-                routeForEdition.value = {};
+                routeForEdition.value.time = ''
+                routeForEdition.value.branch = ''
+                routeForEdition.value.local = ''
+                routeForEdition.value.duration = ''
+                routeForEdition.value.passengers = []
             })
             .catch((e) => {
                 if (e.response?.status === 403) {
@@ -195,16 +238,39 @@ function updateRoute() {
 }
 
 function setRouteToEdit(route) {
-    routeForEdition.value._checker = routeForm.value._checker
+    console.log(route)
+    routeForEdition.value._checker = route._checker
     modal.value.editRoute = true
     routeForEdition.value.id = route.id
-    routeForEdition.value.currentBranch = route.branch
-    routeForEdition.value.branch = route.branch
+    routeForEdition.value.errors = []
     routeForEdition.value.time = route.time
-    if (route.branch.id === 1) {
-        routeForEdition.value.local = route.branch.name
+    routeForEdition.value.duration = route.duration
+    routeForEdition.value.passengers = Object.values(JSON.parse(route.passengers) ?? [])
+    if (route.b === 1) {
+        routeForEdition.value.currentBranch = { "id": route.b, "name": 'Não Cadastrado' }
+        routeForEdition.value.branch = { "id": route.b, "name": 'Não Cadastrado' }
+        routeForEdition.value.local = route.branch
     } else {
         routeForEdition.value.local = ''
+        routeForEdition.value.currentBranch = { "id": route.b, "name": route.branch }
+        routeForEdition.value.branch = { "id": route.b, "name": route.branch }
+    }
+}
+
+function setRequestToEdit(route) {
+    routeRequestEdition.value._checker = routeForm.value._checker
+    modal.value.editRoute = true
+    routeRequestEdition.value.id = route.id
+    routeRequestEdition.value.errors = []
+    routeRequestEdition.value.currentBranch = route.branch
+    routeRequestEdition.value.branch = route.branch
+    routeRequestEdition.value.time = route.time
+    routeRequestEdition.value.duration = route.duration
+    routeRequestEdition.value.passengers = Object.values(JSON.parse(route.passengers) ?? [])
+    if (route.branch.id === 1) {
+        routeRequestEdition.value.local = route.branch.name
+    } else {
+        routeRequestEdition.value.local = ''
     }
 }
 
@@ -340,12 +406,12 @@ function getRouteStatus(task, status) {
                                         Incluir Passageiro*
                                     </label>
                                     <div class="inline-flex col-span-6">
-                                        <input type="text" v-model="passengerModel"
+                                        <input type="text" v-model="passengersModel"
                                             class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700" />
                                         <button type="button" @click="setPassenger(false)"
-                                            v-if="validateDate(routes?.date)" :disabled="passengerModel?.length < 4"
+                                            v-if="validateDate(routes?.date)" :disabled="passengersModel?.length < 4"
                                             class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
-                                            :class="passengerModel?.length < 4 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                            :class="passengersModel?.length < 4 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
                                             Incluir
                                         </button>
                                     </div>
@@ -355,7 +421,7 @@ function getRouteStatus(task, status) {
                                     </div>
                                 </div>
                             </div>
-                            <div class="mx-2 col-span-4 mt-6" v-if="routeForm.date">
+                            <div class="col-span-4 mb-4 -mt-2" v-if="routeForm.date">
                                 <span v-for="(p, i) in routeForm.passengers" :key="'p_' + i" class=" inline-flex mx-4">
                                     {{ p }}
                                     <button @click="setPassenger(true, p)">
@@ -474,13 +540,17 @@ function getRouteStatus(task, status) {
                                         </td>
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                            <button @click="setRouteToEdit(r)"
-                                                v-if="moment(moment(routeForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
-                                                    moment(moment(routeForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))">
-                                                //todo
+                                            <button @click="setRouteToEdit(r)" v-if="moment(moment(routeForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
+                                                moment(moment(routeForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))
+                                                && (has($page.props.auth.permissions, ['Agenda Editar', 'Agenda Apagar']) || has($page.props.auth.roles, ['Super Admin']))
+                                                && r.task
+                                            ">
                                                 <mdicon name="pencil"
                                                     class="hover:text-green-500 dark:hover:text-gray-400" />
                                             </button>
+                                            <span v-else-if="r.user?.id === $page.props.auth.user.id">{{
+                                                $page.props.auth.user.id }}</span>
+                                            <span v-else>-</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -494,58 +564,108 @@ function getRouteStatus(task, status) {
                             <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
                         </div>
                         <div v-if="routeForEdition"
-                            class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
-                            <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600 p-4">
 
-                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2">
-                                    <div class="z-10 w-full">
-                                        <div>Unidade</div>
-                                        <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
-                                            :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
-                                            track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
-                                            @select="$page.props.errors.date = null" :custom-label="branchName" />
+                            {{ routeForEdition }}
+                            <div class="overflow-x-auto grid grid-cols-3 gap-3">
 
-                                        <div v-if="routeForEdition.errors?.branch"
-                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                            <small v-for="error in routeForEdition.errors?.branch">{{ error }}</small>
-                                        </div>
+                                <div class="col-span-3 md:col-span-1">
+                                    <label class="text-sm">
+                                        Hora
+                                    </label>
+                                    <VueMultiselect v-model="routeForEdition.time" :options="$page.props.timetables"
+                                        :multiple="false" :close-on-select="true" selectedLabel="atual"
+                                        placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
+
+                                    <div v-if="routeForEdition.errors?.time"
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        <small v-for="error in routeForEdition.errors?.time">{{ error }}</small>
                                     </div>
+                                </div>
 
-                                    <div class="mx-2 col-span-2 md:col-span-1">
-                                        <label class="text-sm text-gray-500 dark:text-gray-400">
-                                            Hora
+                                <div class="col-span-3 md:col-span-2">
+                                    <label class="text-sm">
+                                        Unidade
+                                    </label>
+                                    <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
+                                        :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
+                                        track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
+                                        @select="$page.props.errors.date = null" :custom-label="branchName" />
+
+                                    <div v-if="routeForEdition.errors?.branch"
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        <small v-for="error in routeForEdition.errors?.branch">{{ error }}</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-span-3" v-if="routeForEdition.branch?.id === 1">
+                                    <label class="text-sm">
+                                        Local*
+                                    </label>
+                                    <input type="text" v-model="routeForEdition.local"
+                                        class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
+
+                                    <div v-if="routeForEdition.errors?.local"
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        <small v-for="error in routeForEdition.errors?.local">{{ error }}</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-span-3 md:col-span-1">
+                                    <label class="text-sm">
+                                        Duração*
+                                    </label>
+                                    <input type="time" v-model="routeForEdition.duration"
+                                        class="w-full rounded border h-[41px] mt-0.5 text-gray-700">
+
+                                    <div v-if="routeForEdition.errors?.duration"
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        <small v-for="error in routeForEdition.errors?.duration">{{ error }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-span-3 md:col-span-3">
+                                    <div class="grid grid-cols-6">
+                                        <label class="text-sm col-span-6">
+                                            Incluir Passageiro*
                                         </label>
-                                        <VueMultiselect v-model="routeForEdition.time" :options="$page.props.timetables"
-                                            :multiple="false" :close-on-select="true" selectedLabel="atual"
-                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
-
-                                        <div v-if="routeForEdition.errors?.time"
-                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                            <small v-for="error in routeForEdition.errors?.time">{{ error }}</small>
+                                        <div class="inline-flex col-span-6">
+                                            <input type="text" v-model="passengersEditModel"
+                                                class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700" />
+                                            <button type="button" @click="setEditPassenger(false)"
+                                                v-if="validateDate(routes?.date)"
+                                                :disabled="passengersEditModel?.length < 3"
+                                                class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
+                                                :class="passengersEditModel?.length < 4 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                                Incluir
+                                            </button>
                                         </div>
-                                    </div>
-
-                                    <div class="mx-2 col-span-2 mt-2" v-if="routeForEdition.branch?.id === 1">
-                                        <label class="text-sm text-gray-500 dark:text-gray-400">
-                                            Local*
-                                        </label>
-                                        <input type="text" v-model="routeForEdition.local"
-                                            class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
-
-                                        <div v-if="routeForEdition.errors?.local"
-                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                            <small v-for="error in routeForEdition.errors?.local">{{ error }}</small>
-                                        </div>
-                                    </div>
-                                    <div class="h-[14rem] mx-2 col-span-2 mt-2">
-                                        <div class="text-center mt-3" v-if="routeForEdition.errors?._checker">
-                                            <span class="border border-red-500 bg-red-400 rounded max-w-fit px-3">
-                                                {{ routeForEdition.errors?._checker[0] }}
-                                            </span>
+                                        <div v-if="routeForEdition.errors?.passengers"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                                            <small v-for="error in routeForEdition.errors?.passengers">
+                                                {{ error }}
+                                            </small>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-span-3 mb-4 -mt-2">
+                                    <span v-for="(p, i) in routeForEdition.passengers" :key="'ps_' + i"
+                                        class=" inline-flex">
+                                        {{ p }}
+                                        <button @click="setEditPassenger(true, p)">
+                                            <mdicon name="close" class="text-red-400" />
+                                        </button>
+                                    </span>
+                                </div>
+
+                                <div class="h-[10rem] mx-2 col-span-2 mt-2">
+                                    <div class="text-center mt-3" v-if="routeForEdition.errors?._checker">
+                                        <span class="border border-red-500 bg-red-400 rounded max-w-fit px-3">
+                                            {{ routeForEdition.errors?._checker[0] }}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
+
                             <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1">
                                 <button type="button"
                                     class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
@@ -555,6 +675,83 @@ function getRouteStatus(task, status) {
                                 <button type="button"
                                     class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                                     @click="modal.editRoute = false, routeForEdition = {}">
+                                    Fechar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Modal editar solicitação -->
+                    <div class="fixed inset-0 flex items-center justify-center overflow-hidden mx-1"
+                        :class="modal.editRequest ? 'block' : 'hidden'">
+                        <div class="fixed inset-0 transition-opacity">
+                            <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
+                        </div>
+                        <div v-if="routeRequestEdition"
+                            class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
+                            <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+
+                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2">
+                                    <div class="z-10 w-full">
+                                        <div>Unidade</div>
+                                        <VueMultiselect v-model="routeRequestEdition.branch"
+                                            :options="$page.props.branches" :multiple="false" :close-on-select="true"
+                                            placeholder="Unidade" label="name" track-by="id" selectLabel="Selecionar"
+                                            deselectLabel="Remover" @select="$page.props.errors.date = null"
+                                            :custom-label="branchName" />
+
+                                        <div v-if="routeRequestEdition.errors?.branch"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            <small v-for="error in routeRequestEdition.errors?.branch">{{ error
+                                                }}</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mx-2 col-span-2 md:col-span-1">
+                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                            Hora
+                                        </label>
+                                        <VueMultiselect v-model="routeRequestEdition.time"
+                                            :options="$page.props.timetables" :multiple="false" :close-on-select="true"
+                                            selectedLabel="atual" placeholder="Hora" selectLabel="Selecionar"
+                                            deselectLabel="Remover" />
+
+                                        <div v-if="routeRequestEdition.errors?.time"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            <small v-for="error in routeRequestEdition.errors?.time">{{ error }}</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mx-2 col-span-2 mt-2" v-if="routeRequestEdition.branch?.id === 1">
+                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                            Local*
+                                        </label>
+                                        <input type="text" v-model="routeRequestEdition.local"
+                                            class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
+
+                                        <div v-if="routeRequestEdition.errors?.local"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            <small v-for="error in routeRequestEdition.errors?.local">{{ error
+                                                }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="h-[14rem] mx-2 col-span-2 mt-2">
+                                        <div class="text-center mt-3" v-if="routeRequestEdition.errors?._checker">
+                                            <span class="border border-red-500 bg-red-400 rounded max-w-fit px-3">
+                                                {{ routeRequestEdition.errors?._checker[0] }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1">
+                                <button type="button"
+                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    @click="updateRoute()">
+                                    Salvar Solicitação
+                                </button>
+                                <button type="button"
+                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    @click="modal.editRoute = false, routeRequestEdition = {}">
                                     Fechar
                                 </button>
                             </div>

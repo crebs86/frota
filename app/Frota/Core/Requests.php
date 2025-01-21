@@ -40,26 +40,31 @@ trait Requests
     {
         $rm = RequestModel::where([
             'driver' => $request->driver,
-            'date' => $request->date
+            'date' => $request->date,
         ])
-            ->with('branch')
+            ->where('status', '<>', 1)
+            ->with('branch', 'user')
             ->get()
             ->each(function ($item) {
+                $item->_checker = setGetKey($item->id, 'route_edit');
                 if ($item->to !== 1) {
-                    return $item->local = $item->branch->name;
+                    $item->local = $item->branch->name;
                 }
+                return $item;
             })->toArray();
         $a = [];
         $i = 0;
         foreach ($data as $key => $item) {
             if ($key === 'routes') {
                 foreach ($item as $route) {
+                    $a[$i]['id'] = $route['id'];
+                    $a[$i]['task'] = $route['task'];
                     $a[$i]['driver'] = $data['driver'];
                     $a[$i]['date'] = $data['date'];
                     $a[$i]['branch'] = $route['branch']['name'];
                     $a[$i]['b'] = $route['branch']['id'];
                     $a[$i]['time'] = $route['time'];
-                    $a[$i]['task'] = $route['task'];
+                    $a[$i]['_checker'] = setGetKey($route['task'], 'route_edit');
                     $a[$i]['passengers'] = $route['passengers'];
                     $a[$i]['duration'] = $route['duration'];
                     $a[$i]['started_at'] = $route['started_at'];
