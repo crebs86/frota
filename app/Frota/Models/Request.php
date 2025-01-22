@@ -31,4 +31,9 @@ class Request extends Model
     {
         return $this->hasOne(User::class, 'id', 'user')->select('id', 'name');
     }
+
+    public function driver(): HasOne
+    {
+        return $this->hasOne(Driver::class, 'id', 'driver')->select('id')->with('user');
+    }
 }

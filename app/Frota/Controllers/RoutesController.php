@@ -20,7 +20,7 @@ use Illuminate\Http\RedirectResponse;
 
 class RoutesController extends Controller
 {
-    use ACL, Helpers, Routes;
+    use ACL, Routes;
 
     public function index(): Response
     {
@@ -143,11 +143,6 @@ class RoutesController extends Controller
     private function setNewFavoriteCar($driver, $car)
     {
         $this->runSetNewFavoriteCar($driver, $car);
-    }
-
-    private function validateDate($date)
-    {
-        return $this->runValidateDate($date);
     }
 
     private function setRealBranch(array $task)

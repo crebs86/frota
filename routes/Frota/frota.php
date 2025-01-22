@@ -52,5 +52,6 @@ Route::prefix('/frota')->middleware(
 
     Route::get('/solicitacoes', [RequestsController::class, 'index'])->name('requests.index');
     Route::post('/solicitacoes', [RequestsController::class, 'store'])->name('requests.store');
+    Route::put('/solicitacoes/{model}/update', [RequestsController::class, 'update'])->name('requests.update');
     Route::post('/solicitacoes/rotasESolicitacoes', [RequestsController::class, 'getRoutesAndRequests'])->name('requests.get-routes-and-requests');
 });

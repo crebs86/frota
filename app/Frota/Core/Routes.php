@@ -16,12 +16,14 @@ use App\Frota\Models\CarsLog;
 use App\Frota\Models\Timetable;
 use Illuminate\Validation\Rule;
 use App\Frota\Models\RealBranch;
+use App\Traits\Helpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 
 trait Routes
 {
+    use Helpers;
     /**
      * @param Request $request
      * @return Response|RedirectResponse
@@ -160,7 +162,7 @@ trait Routes
     {
         $request->validate([
             'branch' => 'required|integer|exists:branches,id',
-            'time' => 'required|date_format:H:i',
+            'time' => 'required|date_format:H:i:s',
             'duration' => 'required|date_format:H:i',
             'date' => 'required|date_format:Y-m-d',
             'driver' => 'required|integer|exists:drivers,id',
@@ -176,7 +178,11 @@ trait Routes
             'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
         ]);
 
-        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar') && $this->validateDate($request->date)) {
+        if (!$this->validateDate($request->date, $request->time)) {
+            return response()->json(['error' => 'Você não pode agendar um horário passado.'], 403);
+        }
+
+        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar')) {
 
             $task = $this->runGetTaskByDriver($request);
 
@@ -254,8 +260,11 @@ trait Routes
      */
     public function runRouteUpdate(Request $request, Route $route): JsonResponse
     {
+        if (!$this->validateDate($route->date, $request->time)) {
+            return response()->json(['error' => 'Não é possível atualizar uma rota passada. rru(403-1)'], 403);
+        }
         if ($route->started_at) {
-            return response()->json(['error' => 'Rota já iniciada, não é possível a sua edição. rru(403-1)'], 403);
+            return response()->json(['error' => 'Rota já iniciada, não é possível a sua edição. rru(403-2)'], 403);
         }
 
         $request->merge(['to' => $request->branch['id']]);
@@ -549,17 +558,6 @@ trait Routes
         Driver::find($driver)->update([
             'carro_favorito' => $car
         ]);
-    }
-
-    /**
-     * @param $date
-     * @return bool
-     */
-    private function runValidateDate($date)
-    {
-        $date1 = Carbon::createFromFormat('Y-m-d H:i:s', $date . ' 00:00:00');
-        $date2 = Carbon::createFromFormat('Y-m-d H:i:s', now()->format('Y-m-d') . ' 00:00:00');
-        return $date1->gte($date2);
     }
 
     /**

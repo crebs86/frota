@@ -51,7 +51,7 @@ import has from '@/arrayHelpers'
         </div>
         <div class="col-span-1 flex flex-col items-center">
             <Link :href="route('frota.requests.index')" class="flex flex-col items-center max-w-fill"
-                  :class="route().current('frota.request.index') ? 'text-emerald-500 dark:text-lime-300' : 'text-gray-600 hover:text-emerald-600 dark:hover:text-lime-300'">
+                  :class="route().current('frota.requests.*') ? 'text-emerald-500 dark:text-lime-300' : 'text-gray-600 hover:text-emerald-600 dark:hover:text-lime-300'">
                 <mdicon name="hand-extended" title="Solicitar carro"/>
                 <span class="text-[10px] font-bold text-center">
                 Solicitacoes

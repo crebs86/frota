@@ -66,4 +66,12 @@ class RequestsController extends Controller
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso. fr(403-1)'], 403);
     }
+
+    public function update(RequestRequest $request, RequestModel $model)
+    {
+        if ($this->can('Solicitacao Editar') && $model->user === auth()->id() || $this->can('Agenda Editar')) {
+            return $this->runUpdate($request, $model);
+        }
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. up(403-1)'], 403);
+    }
 }

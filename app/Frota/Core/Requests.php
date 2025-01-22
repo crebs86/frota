@@ -5,10 +5,11 @@ namespace App\Frota\Core;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Frota\Models\Request as RequestModel;
+use App\Traits\Helpers;
 
 trait Requests
 {
-    use Routes;
+    use Routes, Helpers;
 
     public function runGetRoutes(Request $request) {}
 
@@ -18,6 +19,9 @@ trait Requests
      */
     public function runStore(Request $request): JsonResponse
     {
+        if (!$this->validateDate($request->date, $request->time)) {
+            return response()->json(['error' => 'Você não pode solicitar um horário passado. rs(403-1)'], 403);
+        }
         if ($this->can('Solicitacao Criar')) {
             $request->merge(['user' => auth()->id()]);
             $request->merge(['to' => $request->branch]);
@@ -43,7 +47,7 @@ trait Requests
             'date' => $request->date,
         ])
             ->where('status', '<>', 1)
-            ->with('branch', 'user')
+            ->with('branch', 'user', 'driver')
             ->get()
             ->each(function ($item) {
                 $item->_checker = setGetKey($item->id, 'route_edit');
@@ -74,5 +78,17 @@ trait Requests
             }
         }
         return collect(array_merge_recursive($a, $rm))->sortBy('time')->values()->all();
+    }
+
+    public function runUpdate(Request $request, $model)
+    {
+        if ((int)getKeyValue($request->_checker, 'route_edit') === $request->id) {
+            $request->merge(['to', $request->branch]);
+            $request->merge(['passengers', json_encode($request->passengers)]);
+            if ($model->update($request->all())) {
+                return response()->json('A rota foi atualizada.');
+            }
+        }
+        return response()->json(['error' => 'Erro na utilização da aplicação. rup(403-1)'], 403);
     }
 }
