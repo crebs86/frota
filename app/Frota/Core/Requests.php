@@ -2,14 +2,65 @@
 
 namespace App\Frota\Core;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use App\Frota\Models\Request as RequestModel;
+use Inertia\Inertia;
+use App\Models\Branch;
 use App\Traits\Helpers;
+use Illuminate\Support\Arr;
+use App\Frota\Models\Driver;
+use Illuminate\Http\Request;
+use App\Frota\Models\Timetable;
+use Illuminate\Http\JsonResponse;
+use App\Frota\Models\Request as RequestModel;
 
 trait Requests
 {
     use Routes, Helpers;
+
+    public function runIndex($request)
+    {
+        $props = [
+            'drivers' => Driver::with('user')->select('id')->get(),
+            'branches' => Branch::select('id', 'name')->get(),
+            'timetables' => Arr::pluck(Timetable::all(['time']), 'time')
+        ];
+
+        $date = $request->date ?? now()->format('Y-m-d');
+
+        if ($this->can('Liberador') && !$this->hasRole('Super Admin')) {
+            return Inertia::render('Frota/Requests/Admin', array_merge_recursive(
+                [
+                    'requests' => RequestModel::where(
+                        function ($q) use ($date, $request) {
+                            if ($request->type === 'Data Criação') {
+                                return $q->whereBetween('created_at', [$date . ' 00:00:00', $date . ' 23:59:59']);
+                            } else {
+                                return $q->where('date', request('date') ?? now()->format('Y-m-d'));
+                            }
+                        }
+                    )->where(function ($q) use ($request) {
+                        if ($request->driver) {
+                            return $q->where('driver', $request->driver);
+                        }
+                        return $q;
+                    })
+                        ->where(function ($q) use ($request) {
+                            if ($request->branch) {
+                                return $q->where('to', $request->branch);
+                            }
+                            return $q;
+                        })
+                        ->with('branch', 'driver')
+                        ->get()->toArray()
+                ],
+                $props
+            ));
+        }
+
+        if ($this->can('Solicitacao Criar', 'Solicitacao Ver', 'Solicitacao Apagar', 'Solicitacao Editar')) {
+            return Inertia::render('Frota/Requests/Index', $props);
+        }
+        return Inertia::render('Admin/403');
+    }
 
     public function runGetRoutes(Request $request) {}
 
@@ -20,7 +71,7 @@ trait Requests
     public function runStore(Request $request): JsonResponse
     {
         if (!$this->validateDate($request->date, $request->time)) {
-            return response()->json(['error' => 'Você não pode solicitar um horário passado. rs(403-1)'], 403);
+            return response()->json(['error' => 'Você não pode solicitar um horário passado. reqs(403-1)'], 403);
         }
         if ($this->can('Solicitacao Criar')) {
             $request->merge(['user' => auth()->id()]);
@@ -33,11 +84,12 @@ trait Requests
             }
             return response()->json('Erro ao criar rota. reqs(500-1)', 500);
         }
-        return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqs(403-1)'], 403);
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqs(403-2)'], 403);
     }
 
     /**
      * @param $data
+     * @param Request $request
      * @return array
      */
     public function runMakeResponse($data, Request $request): array
@@ -82,6 +134,9 @@ trait Requests
 
     public function runUpdate(Request $request, $model)
     {
+        if (!$this->validateDate($request->date, $request->time)) {
+            return response()->json(['error' => 'Você não pode solicitar um horário passado. requ(403-1)'], 403);
+        }
         if ((int)getKeyValue($request->_checker, 'route_edit') === $request->id) {
             $request->merge(['to', $request->branch]);
             $request->merge(['passengers', json_encode($request->passengers)]);

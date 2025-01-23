@@ -75,11 +75,13 @@ function setNewColorText(color, value, mode = '', active) {
                     </li>
 
                     <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
-                        :class="linksStyles(route().current('frota.*'))" v-if="has(usePage().props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar',
-                            'Carro Editar', 'Carro Ver', 'Carro Criar', 'Carro Apagar',
-                            'Ocorrencia Editar', 'Ocorrencia Ver', 'Ocorrencia Criar', 'Ocorrencia Apagar',
-                            'Solicitacao Editar', 'Solicitacao Ver', 'Solicitacao Criar', 'Solicitacao Apagar',
-                            'Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar'])
+                        :class="linksStyles(route().current('frota.*'))" v-if="has(usePage().props.auth.permissions,
+                            [
+                                'Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar',
+                                'Carro Editar', 'Carro Ver', 'Carro Criar', 'Carro Apagar',
+                                'Ocorrencia Editar', 'Ocorrencia Ver', 'Ocorrencia Criar', 'Ocorrencia Apagar',
+                                'Solicitacao Editar', 'Solicitacao Ver', 'Solicitacao Criar', 'Solicitacao Apagar',
+                                'Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar', 'Liberador'])
                             || has(usePage().props.auth.roles, ['Super Admin'])">
                         <Link
                             class="transition duration-200 hover:ease-in-out motion-reduce:transition-none md:px-2 w-full flex justify-center"

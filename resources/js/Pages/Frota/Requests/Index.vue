@@ -6,7 +6,7 @@ import VueMultiselect from 'vue-multiselect';
 import { Head } from '@inertiajs/vue3';
 import { toast } from '@/toast.ts';
 import axios from 'axios';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import moment from 'moment';
 import validate from '@/validates/indexSaveRoute.js';
 import validateUpRt from '@/validates/createUpdateRoute.js';
@@ -17,11 +17,28 @@ const props = defineProps({
     drivers: Object,
     branches: Object,
     timetables: Object,
-    routes: Object | null,
+    routes: Object,
     errors: Object
 });
 
-const routes = ref({});
+const filter = ref({
+    routes: false,
+    requests: false,
+})
+
+const routes = ref([]);
+
+const filteredRoutes = computed(() => {
+    return routes.value?.filter((i => {
+        if (filter.value.routes && !filter.value.requests) {
+            return !(i.local)
+        } else if (!filter.value.routes && filter.value.requests) {
+            return !(i.task)
+        } else {
+            return true
+        }
+    }))
+});
 
 const routeForm = ref({
     driver: '',
@@ -179,7 +196,7 @@ function resetForm() {
 
 function verifyDriverRoute() {
     routeForm.value.errors = []
-    routes.value = {};
+    routes.value = [];
     if (routeForm.value.date && routeForm.value.driver) {
         axios.post(route('frota.requests.get-routes-and-requests'), {
             driver: routeForm.value.driver.id,
@@ -486,7 +503,7 @@ function getRouteStatus(task, status) {
                             Enviar Solicitação
                         </button>
                     </div>
-                    
+
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2 mt-3"
                         v-if="routeForm?.driver?.id === routes[0]?.driver || routeForm?.driver?.id === routes[0]?.driver.id">
                         <p><span class="font-bold">Motorista:</span>
@@ -497,11 +514,41 @@ function getRouteStatus(task, status) {
                         </p>
                         <div class="p-2 rounded-lg overflow-y-auto"
                             :class="$page.props.app.settingsStyles.main.innerSection">
-                            <button @click="verifyDriverRoute"
-                                class="flex px-2 py-1.5 mb-1 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right">
-                                Recarregar Rotas
-                                <mdicon name="refresh" />
-                            </button>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
+
+                                <div class="grid grid-cols-1">
+                                    <p>Filtrar:</p>
+                                    <div class="inline-flex gap-1 my-1">
+                                        <div
+                                            class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 px-3 w-[135px]">
+                                            <input id="bordered-radio-1" type="checkbox" v-model="filter.routes"
+                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label for="bordered-radio-1"
+                                                class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                Agendados
+                                            </label>
+                                        </div>
+                                        <div
+                                            class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 px-3 w-[135px]">
+                                            <input checked id="bordered-radio-2" type="checkbox"
+                                                v-model="filter.requests"
+                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label for="bordered-radio-2"
+                                                class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                Solicitações
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="self-end w-full">
+                                    <button @click="verifyDriverRoute"
+                                        class="flex px-2 py-1.5 mb-1 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 self-end max-h-[38px] max-w-fit float-right">
+                                        Recarregar Rotas
+                                        <mdicon name="refresh" />
+                                    </button>
+                                </div>
+
+                            </div>
                             <table class="min-w-full" :class="$page.props.app.settingsStyles.main.body">
                                 <thead>
                                     <tr>
@@ -540,7 +587,7 @@ function getRouteStatus(task, status) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(r, i) in routes" :key="'route-' + i"
+                                    <tr v-for="(r, i) in filteredRoutes" :key="'route-' + i"
                                         :class="getRouteStatus(r.task, r.status) !== 'Confirmado' ? styles($page.props.app.settingsStyles.main.body) : ''">
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
@@ -587,6 +634,13 @@ function getRouteStatus(task, status) {
                                                 {{
                                                     getRouteStatus(r.task, r.status)
                                                 }}
+                                                <br>
+                                                <span class="text-[10px]">
+                                                    {{
+                                                        r.created_at ? moment(r.created_at).format('DD/MM/YYYY HH:mm:ss') :
+                                                            ''
+                                                    }}
+                                                </span>
                                             </p>
                                         </td>
                                         <td

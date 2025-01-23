@@ -41,6 +41,7 @@ return new class extends Migration {
             $table->time('duration')->nullable();
             $table->string('passengers', 510)->nullable();
             $table->integer('status')->default(0);
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 
