@@ -6,12 +6,14 @@ import VueMultiselect from 'vue-multiselect';
 import { Head, useForm } from '@inertiajs/vue3';
 import { toast } from '@/toast.ts';
 import axios from 'axios';
-import { computed, ref } from 'vue';
+import { computed, defineAsyncComponent, onMounted, onUpdated, ref } from 'vue';
 import moment from 'moment';
 import validate from '@/validates/indexSaveRoute.js';
 import validateUpRt from '@/validates/createUpdateRoute.js';
 import { getStyles, styles } from '@/contrasts';
 import has from '@/arrayHelpers';
+
+const ModalEvalueRequest = defineAsyncComponent(() => import('@/Pages/Frota/Components/ModalEvalueRequest.vue'))
 
 const props = defineProps({
     drivers: Object,
@@ -34,7 +36,7 @@ const filterRequests = useForm({
 })
 
 function filtering() {
-    filterRequests.post(route('frota.requests.index.filter'))
+    filterRequests.post(route('frota.requests.index'))
 }
 
 const routes = ref(props.requests);
@@ -64,11 +66,10 @@ const requestForm = ref({
 });
 
 const modal = ref({
-    editRoute: false,
-    editRequest: false
+    evalueRequest: false
 });
 
-const routeForEdition = ref({
+const requestForEvalue = ref({
     id: '',
     branch: '',
     currentBranch: '',
@@ -109,49 +110,23 @@ function branchName({ id, name }) {
     }
 }
 
-function saveRoute() {
-    requestForm.value.errors = []
-    let val = validate(requestForm.value)
+function setRouteToEdit(request) {
+    console.log(request)
+    requestForEvalue.value._checker = request._checker
+    requestForEvalue.value.branch = request.branch
+    requestForEvalue.value.date = request.date
+    requestForEvalue.value.driver = request.driver
+    requestForEvalue.value.duration = request.duration
+    requestForEvalue.value.id = request.id
+    requestForEvalue.value.local = request.local
+    requestForEvalue.value.obs = request.obs
+    requestForEvalue.value.passengers = Object.values(JSON.parse(request.passengers) ?? [])
+    requestForEvalue.value.status = request.status
+    requestForEvalue.value.errors = []
+    requestForEvalue.value.time = request.time
+    requestForEvalue.value.to = request.to
 
-    if (val._run &&
-        validateDate(requestForm.value.date)
-    ) {
-        axios.post(route('frota.requests.store'), {
-            driver: requestForm.value.driver?.id,
-            date: requestForm.value.date,
-            time: requestForm.value.time,
-            duration: requestForm.value.duration,
-            branch: requestForm.value.branch?.id,
-            local: requestForm.value.local,
-            _checker: routes.value[0]?._checker ?? null,
-            passengers: requestForm.value.passengers
-        })
-            .then((r) => {
-                toast.success(r.data.message, { duration: 5000 })
-                verifyDriverRoute()
-                resetForm()
-            })
-            .catch((e) => {
-                if (e.response?.status === 503) {
-                    toast.error(e.response.data)
-                    requestForm.value.errors = e.response.data
-                } else if (e.response?.status === 403) {
-                    toast.error(e.response.data.error)
-                } else if (e.response?.status === 422) {
-                    toast.error('Todos os campos são obrigatórios.')
-                    requestForm.value.errors = e.response.data.errors
-                } else {
-                    toast.error('Foram encontrados erros ao processar sua solicitação');
-                }
-            })
-    } else {
-        if (!validateDate(requestForm.value.date)) {
-            toast.error('Não é possível criar/adicionar a agenda para datas passadas.')
-        } else {
-            requestForm.value.errors = val
-            toast.error('Preencha todos os campos para prosseguir.')
-        }
-    }
+    modal.value.evalueRequest = true
 }
 
 function resetForm() {
@@ -161,6 +136,8 @@ function resetForm() {
     requestForm.value.passengers = []
 }
 
+
+//todo escoder botão se não validado os requisitos
 function verifyDriverRoute() {
     requestForm.value.errors = []
     routes.value = [];
@@ -186,46 +163,6 @@ function verifyDriverRoute() {
     }
 }
 
-function updateRoute() {
-    let val = validateUpRt(routeForEdition.value, ['driver'])
-    if (val._run) {
-        axios.put(route('frota.routes.route.update', routeForEdition.value.id), {
-            id: routeForEdition.value.id,
-            branch: routeForEdition.value.branch,
-            currentBranch: routeForEdition.value.currentBranch,
-            time: routeForEdition.value.time,
-            duration: routeForEdition.value.duration,
-            passengers: routeForEdition.value.passengers,
-            local: routeForEdition.value.local,
-            _checker: routeForEdition.value._checker
-        })
-            .then(() => {
-                verifyDriverRoute();
-                modal.value.editRoute = false;
-                routeForEdition.value.time = ''
-                routeForEdition.value.branch = ''
-                routeForEdition.value.local = ''
-                routeForEdition.value.duration = ''
-                routeForEdition.value.passengers = []
-            })
-            .catch((e) => {
-                if (e.response?.status === 403) {
-                    toast.error(e.response.data.error)
-                    routeForEdition.value.errors = e.response.data.error
-                } else if (e.response?.status === 422) {
-                    toast.error(e.response.data.message)
-                    routeForEdition.value.errors = e.response.data.errors
-                } else if (e.response?.status === 503) {
-                    toast.error(e.response.data)
-                    routeForEdition.value.errors = e.response.data
-                }
-            })
-    } else {
-        routeForEdition.value.errors = val
-        toast.error('Preencha todos os campos para atualizar a rota');
-    }
-}
-
 function getRouteStatus(task, status) {
     if (task) {
         return 'Confirmado'
@@ -246,6 +183,11 @@ function getRouteStatus(task, status) {
             return 'Erro'
     }
 }
+
+onUpdated(() => {
+    console.log('atualizado...')
+    routes.value = props.requests
+})
 
 </script>
 
@@ -320,7 +262,7 @@ function getRouteStatus(task, status) {
                                     Data*
                                 </label>
                                 <input type="date" v-model="filterRequests.date" :disabled="!filterRequests.type"
-                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-700"
+                                    class="rounded border border-black h-[42px] mt-[3.2px] text-gray-700"
                                     :class="!filterRequests.type ? 'bg-gray-400' : ''">
 
                                 <div v-if="filterRequests.errors?.date"
@@ -330,26 +272,19 @@ function getRouteStatus(task, status) {
                             </div>
                             <div class="grid grid-cols-1 col-span-6 md:col-span-2">
                                 <button type="button" @click="filtering"
-                                    class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline w-full max-w-[300px] mt-5">
+                                    class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline w-full max-w-[300px] mt-6">
                                     Filtrar
                                 </button>
                             </div>
 
                         </div>
                     </div>
-                    <!-- {{ filteredRoutes }} -->
-                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2 mt-3">
+                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mt-3">
 
                         <div class="rounded-lg overflow-y-auto"
                             :class="$page.props.app.settingsStyles.main.innerSection">
 
-                            <button @click="verifyDriverRoute"
-                                class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right mb-1.5">
-                                Recarregar Solicitações
-                                <mdicon name="refresh" />
-                            </button>
-
-                            <table class="min-w-full" :class="$page.props.app.settingsStyles.main.body">
+                            <table class="min-w-full mt-3" :class="$page.props.app.settingsStyles.main.body">
                                 <thead>
                                     <tr>
                                         <th
@@ -366,7 +301,11 @@ function getRouteStatus(task, status) {
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Passageiros
+                                            Motorista
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Ocupantes
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
@@ -406,6 +345,10 @@ function getRouteStatus(task, status) {
                                             {{ r.local ?? r.branch.name }}
                                             <mdicon name="circle" class="float-right text-red-500"
                                                 v-if="r.to === 1 || r.b === 1" />
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            {{ r.driver.user.name }}
                                         </td>
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
@@ -453,126 +396,19 @@ function getRouteStatus(task, status) {
                                         </td>
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                            <button @click="setRouteToEdit(r)" v-if="moment(moment(requestForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
-                                                moment(moment(requestForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))
-                                                && (has($page.props.auth.permissions, ['Agenda Editar', 'Agenda Apagar']) || has($page.props.auth.roles, ['Super Admin']))
-                                                && r.task">
-                                                <mdicon name="pencil"
+                                            <button @click="setRouteToEdit(r)"
+                                                v-if="(has($page.props.auth.permissions, ['Liberador']) || has($page.props.auth.roles, ['Super Admin']))">
+                                                <mdicon name="arrow-up-down" title="Avaliar"
                                                     class="hover:text-green-500 dark:hover:text-blue-300" />
                                             </button>
-                                            <button @click="setRequestToEdit(r)" v-else-if="moment(moment(requestForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
-                                                moment(moment(requestForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))
-                                                && (has($page.props.auth.permissions, ['Solicitacao Editar', 'Solicitacao Apagar']) || has($page.props.auth.roles, ['Super Admin']))
-                                                && r.user?.id === $page.props.auth.user.id">
-                                                <mdicon name="hand-wash"
-                                                    class="hover:text-green-500 dark:hover:text-blue-300" />
-                                            </button>
-                                            <span v-else>-</span>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <!--Modal editar rota-->
-                    <div class="fixed inset-0 flex items-center justify-center overflow-hidden mx-1"
-                        :class="modal.editRoute ? 'block' : 'hidden'">
-                        <div class="fixed inset-0 transition-opacity">
-                            <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
-                        </div>
-                        <div v-if="routeForEdition"
-                            class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600 p-4">
-
-                            <div class="overflow-x-auto grid grid-cols-3 gap-3">
-
-                                <div class="col-span-3 md:col-span-1">
-                                    <label class="text-sm">
-                                        Hora
-                                    </label>
-                                    <VueMultiselect v-model="routeForEdition.time" :options="$page.props.timetables"
-                                        :multiple="false" :close-on-select="true" selectedLabel="atual"
-                                        placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
-
-                                    <div v-if="routeForEdition.errors?.time"
-                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                        <small v-for="error in routeForEdition.errors?.time">{{ error }}</small>
-                                    </div>
-                                </div>
-
-                                <div class="col-span-3 md:col-span-2">
-                                    <label class="text-sm">
-                                        Unidade
-                                    </label>
-                                    <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
-                                        :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
-                                        track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
-                                        @select="$page.props.errors.date = null" :custom-label="branchName" />
-
-                                    <div v-if="routeForEdition.errors?.branch"
-                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                        <small v-for="error in routeForEdition.errors?.branch">{{ error }}</small>
-                                    </div>
-                                </div>
-
-                                <div class="col-span-3" v-if="routeForEdition.branch?.id === 1">
-                                    <label class="text-sm">
-                                        Local*
-                                    </label>
-                                    <input type="text" v-model="routeForEdition.local"
-                                        class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
-
-                                    <div v-if="routeForEdition.errors?.local"
-                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                        <small v-for="error in routeForEdition.errors?.local">{{ error }}</small>
-                                    </div>
-                                </div>
-
-                                <div class="col-span-3 md:col-span-1">
-                                    <label class="text-sm">
-                                        Duração*
-                                    </label>
-                                    <input type="time" v-model="routeForEdition.duration"
-                                        class="w-full rounded border h-[41px] mt-0.5 text-gray-700">
-
-                                    <div v-if="routeForEdition.errors?.duration"
-                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                        <small v-for="error in routeForEdition.errors?.duration">{{ error }}</small>
-                                    </div>
-                                </div>
-
-                                <div class="col-span-3 mb-4 -mt-2">
-                                    <span v-for="(p, i) in routeForEdition.passengers" :key="'ps_' + i"
-                                        class=" inline-flex">
-                                        {{ p }}
-                                        <button @click="setEditPassenger(true, p)">
-                                            <mdicon name="close" class="text-red-400" />
-                                        </button>
-                                    </span>
-                                </div>
-
-                                <div class="h-[10rem] mx-2 col-span-2 mt-2">
-                                    <div class="text-center mt-3" v-if="routeForEdition.errors?._checker">
-                                        <span class="border border-red-500 bg-red-400 rounded max-w-fit px-3">
-                                            {{ routeForEdition.errors?._checker[0] }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1">
-                                <button type="button"
-                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                    @click="updateRoute()">
-                                    Salvar
-                                </button>
-                                <button type="button"
-                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                    @click="modal.editRoute = false, routeForEdition = {}">
-                                    Fechar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <!--Modal avaliar solicitação-->
+                    <ModalEvalueRequest v-if="modal.evalueRequest" :request="requestForEvalue"></ModalEvalueRequest>
 
                 </div>
             </template>

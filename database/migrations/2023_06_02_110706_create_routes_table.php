@@ -13,13 +13,18 @@ return new class extends Migration {
         Schema::create('routes', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('task');
+            $table->unsignedBigInteger('task')->nullable();
             $table->foreign('task')
                 ->references('id')
                 ->on('tasks');
 
             $table->unsignedBigInteger('user');
             $table->foreign('user')
+                ->references('id')
+                ->on('users');
+
+            $table->unsignedBigInteger('mediator')->nullable();
+            $table->foreign('mediator')
                 ->references('id')
                 ->on('users');
 
@@ -37,6 +42,9 @@ return new class extends Migration {
             $table->time('duration')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();
+            $table->text('obs')->nullable();
+            $table->integer('status')->default(0);
+            $table->integer('type')->default(0);
         });
     }
 

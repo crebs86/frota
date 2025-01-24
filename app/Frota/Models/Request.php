@@ -13,7 +13,7 @@ class Request extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user', 'driver', 'mediator', 'to', 'local', 'date', 'time', 'duration', 'passengers', 'status'];
+    protected $fillable = ['driver', 'user', 'mediator', 'to', 'local', 'vacancy', 'date', 'time', 'duration', 'passengers', 'status', 'obs'];
 
     public $timestamps = false;
 

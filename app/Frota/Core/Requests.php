@@ -49,8 +49,11 @@ trait Requests
                             }
                             return $q;
                         })
+                        ->select('id', 'driver', 'to', 'local', 'date', 'time', 'duration', 'obs', 'passengers', 'status', 'created_at')
                         ->with('branch', 'driver')
-                        ->get()->toArray()
+                        ->get()->each(function ($item){
+                            $item->_checker = setGetKey($item->id, 'request_evaluate');
+                        })->toArray()
                 ],
                 $props
             ));
@@ -76,6 +79,7 @@ trait Requests
         if ($this->can('Solicitacao Criar')) {
             $request->merge(['user' => auth()->id()]);
             $request->merge(['to' => $request->branch]);
+            $request->merge(['local' => $request->branch !== 1 ? null : $request->local]);
             $request->merge(['passengers' => json_encode($request->passengers)]);
             if (RequestModel::create($request->all())) {
                 return response()->json([

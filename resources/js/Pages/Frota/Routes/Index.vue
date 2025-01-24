@@ -3,13 +3,15 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import VueMultiselect from 'vue-multiselect';
-import {Head, Link, usePage} from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
-import {toast} from '@/toast'
-import {ref} from 'vue';
+import { toast } from '@/toast'
+import { defineAsyncComponent, ref } from 'vue';
 import moment from 'moment';
 import axios from 'axios';
 import validate from '@/validates/indexSaveRoute'
+
+const ModalRequest = defineAsyncComponent(() => import('@/Pages/Frota/Components/ModalRequest.vue'))
 
 const filter = ref({
     date: '',
@@ -20,7 +22,7 @@ const filter = ref({
     local: '',
     _checker: ''
 });
-//filter.value._che
+
 const routeForEdition = ref({
     id: '',
     branch: '',
@@ -89,7 +91,7 @@ const data = ref({
     timetables: ''
 });
 
-function branchName({id, name}) {
+function branchName({ id, name }) {
     if (id === 1) {
         return `${id ? id : ''} - Não Cadastrado`
     } else {
@@ -234,19 +236,17 @@ function setRouteToEdit(route) {
 
 <template>
 
-    <Head title="Filtrar Rotas"/>
+    <Head title="Filtrar Rotas" />
 
     <AuthenticatedLayout>
 
         <template #inner_menu>
-            <FrotaMenu/>
+            <FrotaMenu />
         </template>
         <SubSection>
             <template #header>
                 Rotas
-                <Link :href="route('frota.routes.create')" class="mt-0.5">
-                    <mdicon name="plus"/>
-                </Link>
+                <mdicon name="plus" class="mt-0.5" />
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.66)]">
@@ -255,28 +255,27 @@ function setRouteToEdit(route) {
                         <div class="relative z-0 mb-6 w-full group">
                             <div>&nbsp;</div>
                             <input type="date" name="name" id="name" v-model="filter.date"
-                                   class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                   :class="page.props.errors.date ? 'border-red-600' : ''" required placeholder=" "
-                                   @change="results = {}, $page.props.errors.date = null"/>
+                                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-300 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                :class="page.props.errors.date ? 'border-red-600' : ''" required placeholder=" "
+                                @change="results = {}, $page.props.errors.date = null" />
                             <label for="name"
-                                   class="absolute text-lg duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                                class="absolute text-lg duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-300 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                 Data*
                             </label>
                         </div>
                         <div class="relative z-10 mb-6 w-full md:col-span-2">
                             <div>Unidade</div>
                             <VueMultiselect v-model="filter.branch" :options="$page.props.branches" :multiple="false"
-                                            :close-on-select="true" placeholder="Unidade" label="name" track-by="id"
-                                            selectLabel="Selecionar" deselectLabel="Remover"
-                                            @select="clean('branch'), $page.props.errors.date = null"/>
+                                :close-on-select="true" placeholder="Unidade" label="name" track-by="id"
+                                selectLabel="Selecionar" deselectLabel="Remover"
+                                @select="clean('branch'), $page.props.errors.date = null" />
                         </div>
                         <div class="relative z-10 mb-6 w-full md:col-span-2">
                             <div>Motorista</div>
                             <VueMultiselect v-model="filter.driver" :options="$page.props.drivers" :multiple="false"
-                                            :close-on-select="true" placeholder="Motorista" :custom-label="drivers"
-                                            track-by="id"
-                                            selectLabel="Selecionar" deselectLabel="Remover"
-                                            @select="clean('driver'), $page.props.errors.date = null"/>
+                                :close-on-select="true" placeholder="Motorista" :custom-label="drivers" track-by="id"
+                                selectLabel="Selecionar" deselectLabel="Remover"
+                                @select="clean('driver'), $page.props.errors.date = null" />
                         </div>
 
                         <div v-if="$page.props.errors.date" class="text-sm text-red-500 md:col-span-5">
@@ -284,16 +283,16 @@ function setRouteToEdit(route) {
                         </div>
                         <div>
                             <button type="button" @click="filtering" :disabled="filter.processing"
-                                    class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline"
-                                    :class="filter.processing ? 'bg-yellow-300 text-yellow-600' : ''">
+                                class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline"
+                                :class="filter.processing ? 'bg-yellow-300 text-yellow-600' : ''">
                                 Filtrar
                             </button>
                         </div>
                     </div>
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2"
-                         v-if="results && filter.driver && (filter.driver.id === results?.driver)">
+                        v-if="results && filter.driver && (filter.driver.id === results?.driver)">
                         <div class="p-2 rounded-lg overflow-y-auto"
-                             :class="$page.props.app.settingsStyles.main.innerSection">
+                            :class="$page.props.app.settingsStyles.main.innerSection">
 
                             <button
                                 v-if="(moment(moment(results.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
@@ -301,232 +300,10 @@ function setRouteToEdit(route) {
                                 @click="verifyDriverRoute()"
                                 class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right">
                                 Editar/Adicionar Rotas
-                                <mdicon name="text-box-edit"/>
+                                <mdicon name="text-box-edit" />
                             </button>
                             <table class="min-w-full">
                                 <thead>
-                                <tr>
-                                    <th
-                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                        Hora
-                                    </th>
-                                    <th
-                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                        Unidade
-                                    </th>
-                                    <th
-                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                        Saída
-                                    </th>
-                                    <th
-                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                        Chegada
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="(r, i) in results.routes" :key="'route-' + i">
-                                    <td
-                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        {{ r.time }}
-                                    </td>
-                                    <td
-                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        {{ r.branch.name }}
-                                    </td>
-                                    <td
-                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        <p class="mx-auto text-sm px-2 rounded-md border  w-min"
-                                           :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
-                                            {{
-                                                r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') :
-                                                    'pendente'
-                                            }}
-                                        </p>
-                                    </td>
-                                    <td
-                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        <p class="mx-auto text-sm px-2 rounded-md border  w-min"
-                                           :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
-                                            {{
-                                                r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
-                                                    'pendente'
-                                            }}
-                                        </p>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2"
-                         v-if="results && filter.branch && (filter.branch.id === results[0]?.to)">
-                        <div class="p-2 rounded-lg overflow-y-auto"
-                             :class="$page.props.app.settingsStyles.main.innerSection">
-                            <table class="min-w-full">
-                                <thead>
-                                <tr>
-                                    <th
-                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                        Hora
-                                    </th>
-                                    <th
-                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                        Motorista
-                                    </th>
-                                    <th
-                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                        Saída
-                                    </th>
-                                    <th
-                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                        Chegada
-                                    </th>
-                                    <th
-                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                        Ações
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="(r, i) in results" :key="'route-branch-' + i">
-                                    <td
-                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        {{ r.time }}
-                                    </td>
-                                    <td
-                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        {{ r.task_data.driver.user.name }}
-                                    </td>
-                                    <td
-                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        <p class="mx-auto text-sm px-2 rounded-md border  w-min"
-                                           :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
-                                            {{
-                                                r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') :
-                                                    'pendente'
-                                            }}
-                                        </p>
-                                    </td>
-                                    <td
-                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        <p class="mx-auto text-sm px-2 rounded-md border  w-min"
-                                           :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
-                                            {{
-                                                r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
-                                                    'pendente'
-                                            }}
-                                        </p>
-                                    </td>
-                                    <td
-                                        class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                        <Link
-                                            v-if="(moment(moment(results.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD'))
-                                                    || (moment(moment(results.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD')))) && (has($page.props.auth.permissions, ['Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar']) || has($page.props.auth.roles, ['Super Admin']))"
-                                            :href="route('frota.routes.driver.edit', [filter.date, r.task_data?.driver?.id])">
-                                            <button
-                                                class="px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200">
-                                                Editar Rota
-                                            </button>
-                                        </Link>
-                                        <span v-else>-</span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <!-- modal -->
-                <div class="fixed z-50 inset-0 flex items-center justify-center overflow-hidden mx-1"
-                     :class="modal.byDriver ? 'block' : 'hidden'">
-                    <div class="fixed inset-0 transition-opacity">
-                        <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
-                    </div>
-                    <div v-if="data?.timetables && data?.branches"
-                         class="bg-white rounded-lg text-left overflow-hidden overflow-y-scroll shadow-xl transform transition-all w-11/12 md:max-w-[1024px] max-h-[90%] dark:bg-gray-600">
-                        <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
-                                Editando Rota de:
-                                <span class="font-bold underline">
-                                    {{ filter.driver?.user?.name ?? '' }}
-                                </span>
-                            </h3>
-                            <div class="mt-2 overflow-auto">
-                                <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
-                                    <div class="mb-6 w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-4">
-
-                                        <div class="mx-2 grid grid-cols-1">
-                                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                                Data
-                                            </label>
-                                            <input type="date" v-model="filter.date" @change="verifyDriverRoute"
-                                                   class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
-
-                                            <div v-if="filter.errors?.date"
-                                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                                <small v-for="error in filter.errors?.date">{{ error }}</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="mx-2 col-span-2 md:col-span-1" v-if="data?.timetables !== ''">
-                                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                                Hora
-                                            </label>
-                                            <VueMultiselect v-model="filter.time" :options="data?.timetables"
-                                                            :multiple="false" :close-on-select="true"
-                                                            selectedLabel="atual"
-                                                            placeholder="Hora" selectLabel="Selecionar"
-                                                            deselectLabel="Remover"/>
-
-                                            <div v-if="filter.errors?.time"
-                                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                                <small v-for="error in filter.errors?.time">{{ error }}</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="mx-2 col-span-2" v-if="data?.branches !== ''">
-                                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                                Unidade
-                                            </label>
-                                            <VueMultiselect v-model="filter.branch" :options="data?.branches"
-                                                            :multiple="false" :close-on-select="true"
-                                                            selectedLabel="atual"
-                                                            placeholder="Unidade" :custom-label="branchName"
-                                                            track-by="id"
-                                                            label="time" selectLabel="Selecionar"
-                                                            deselectLabel="Remover"/>
-
-                                            <div v-if="filter.errors?.branch"
-                                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                                <small v-for="error in filter.errors?.branch">{{ error }}</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="mx-2 col-span-4 mt-2" v-if="filter.branch?.id === 1">
-                                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                                Local*
-                                            </label>
-                                            <input type="text" v-model="filter.local"
-                                                   class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
-
-                                            <div v-if="filter.errors?.local"
-                                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                                <small v-for="error in filter.errors?.local">{{ error }}</small>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    <button type="button" @click="saveRoute"
-                                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
-                                        Criar/Adicionar
-                                    </button>
-                                </div>
-
-                                <table class="min-w-full">
-                                    <thead>
                                     <tr>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
@@ -544,36 +321,10 @@ function setRouteToEdit(route) {
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
                                             Chegada
                                         </th>
-                                        <th
-                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Ações
-                                        </th>
                                     </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr v-if="loading">
-                                        <td colspan="4">
-                                            <div class="shadow rounded-md p-4 max-w-sm w-full mx-auto">
-                                                <div class="animate-pulse flex space-x-4">
-                                                    <div class="rounded-full bg-slate-700 h-10 w-10"></div>
-                                                    <div class="flex-1 space-y-6 py-1">
-                                                        <div class="h-2 bg-slate-700 rounded"></div>
-                                                        <div class="space-y-3">
-                                                            <div class="grid grid-cols-3 gap-4">
-                                                                <div class="h-2 bg-slate-700 rounded col-span-2">
-                                                                </div>
-                                                                <div class="h-2 bg-slate-700 rounded col-span-1">
-                                                                </div>
-                                                            </div>
-                                                            <div class="h-2 bg-slate-700 rounded"></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr v-for="(r, i) in results.routes" :key="'route-' + i"
-                                        v-if="results?.routes?.length > 0">
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(r, i) in results.routes" :key="'route-' + i">
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                             {{ r.time }}
@@ -585,7 +336,7 @@ function setRouteToEdit(route) {
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                             <p class="mx-auto text-sm px-2 rounded-md border  w-min"
-                                               :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                                :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
                                                 {{
                                                     r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') :
                                                         'pendente'
@@ -595,7 +346,72 @@ function setRouteToEdit(route) {
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                             <p class="mx-auto text-sm px-2 rounded-md border  w-min"
-                                               :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                                :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                                {{
+                                                    r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
+                                                        'pendente'
+                                                }}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2"
+                        v-if="results && filter.branch && (filter.branch.id === results[0]?.to)">
+                        <div class="p-2 rounded-lg overflow-y-auto"
+                            :class="$page.props.app.settingsStyles.main.innerSection">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Hora
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Motorista
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Saída
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Chegada
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Ações
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(r, i) in results" :key="'route-branch-' + i">
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            {{ r.time }}
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            {{ r.task_data.driver.user.name }}
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                                :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                                {{
+                                                    r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') :
+                                                        'pendente'
+                                                }}
+                                            </p>
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                                :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
                                                 {{
                                                     r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
                                                         'pendente'
@@ -604,34 +420,213 @@ function setRouteToEdit(route) {
                                         </td>
                                         <td
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                            <button @click="setRouteToEdit(r)" v-if="!r.started_at">
-                                                <mdicon name="pencil"
-                                                        class="hover:text-green-500 dark:hover:text-gray-400"/>
+                                            <Link
+                                                v-if="(moment(moment(results.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD'))
+                                                    || (moment(moment(results.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD')))) && (has($page.props.auth.permissions, ['Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar']) || has($page.props.auth.roles, ['Super Admin']))"
+                                                :href="route('frota.routes.driver.edit', [filter.date, r.task_data?.driver?.id])">
+                                            <button
+                                                class="px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200">
+                                                Editar Rota
                                             </button>
-                                            <mdicon name="cancel" v-else
-                                                    class="hover:text-green-500 dark:hover:text-gray-400"/>
+                                            </Link>
+                                            <span v-else>-</span>
                                         </td>
                                     </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- modal -->
+                <div class="fixed z-50 inset-0 flex items-center justify-center overflow-hidden mx-1"
+                    :class="modal.byDriver ? 'block' : 'hidden'">
+                    <div class="fixed inset-0 transition-opacity">
+
+                        <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
+                    </div>
+                    <div v-if="data?.timetables && data?.branches"
+                        class="bg-white rounded-lg text-left overflow-hidden overflow-y-scroll shadow-xl transform transition-all w-11/12 md:max-w-[1024px] max-h-[90%] dark:bg-gray-600">
+                        <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+                                Editando Rota de:
+                                <span class="font-bold underline">
+                                    {{ filter.driver?.user?.name ?? '' }}
+                                </span>
+                            </h3>
+                            <div class="mt-2 overflow-auto">
+                                <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
+                                    <div class="mb-6 w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-4">
+
+                                        <div class="mx-2 grid grid-cols-1">
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                Data
+                                            </label>
+                                            <input type="date" v-model="filter.date" @change="verifyDriverRoute"
+                                                class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
+
+                                            <div v-if="filter.errors?.date"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in filter.errors?.date">{{ error }}</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="mx-2 col-span-2 md:col-span-1" v-if="data?.timetables !== ''">
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                Hora
+                                            </label>
+                                            <VueMultiselect v-model="filter.time" :options="data?.timetables"
+                                                :multiple="false" :close-on-select="true" selectedLabel="atual"
+                                                placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
+
+                                            <div v-if="filter.errors?.time"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in filter.errors?.time">{{ error }}</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="mx-2 col-span-2" v-if="data?.branches !== ''">
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                Unidade
+                                            </label>
+                                            <VueMultiselect v-model="filter.branch" :options="data?.branches"
+                                                :multiple="false" :close-on-select="true" selectedLabel="atual"
+                                                placeholder="Unidade" :custom-label="branchName" track-by="id"
+                                                label="time" selectLabel="Selecionar" deselectLabel="Remover" />
+
+                                            <div v-if="filter.errors?.branch"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in filter.errors?.branch">{{ error }}</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="mx-2 col-span-4 mt-2" v-if="filter.branch?.id === 1">
+                                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                Local*
+                                            </label>
+                                            <input type="text" v-model="filter.local"
+                                                class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
+
+                                            <div v-if="filter.errors?.local"
+                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                                <small v-for="error in filter.errors?.local">{{ error }}</small>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <button type="button" @click="saveRoute"
+                                        class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                                        Criar/Adicionar
+                                    </button>
+                                </div>
+
+                                <table class="min-w-full">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                                Hora
+                                            </th>
+                                            <th
+                                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                                Unidade
+                                            </th>
+                                            <th
+                                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                                Saída
+                                            </th>
+                                            <th
+                                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                                Chegada
+                                            </th>
+                                            <th
+                                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                                Ações
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="loading">
+                                            <td colspan="4">
+                                                <div class="shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                                                    <div class="animate-pulse flex space-x-4">
+                                                        <div class="rounded-full bg-slate-700 h-10 w-10"></div>
+                                                        <div class="flex-1 space-y-6 py-1">
+                                                            <div class="h-2 bg-slate-700 rounded"></div>
+                                                            <div class="space-y-3">
+                                                                <div class="grid grid-cols-3 gap-4">
+                                                                    <div class="h-2 bg-slate-700 rounded col-span-2">
+                                                                    </div>
+                                                                    <div class="h-2 bg-slate-700 rounded col-span-1">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="h-2 bg-slate-700 rounded"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr v-for="(r, i) in results.routes" :key="'route-' + i"
+                                            v-if="results?.routes?.length > 0">
+                                            <td
+                                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                                {{ r.time }}
+                                            </td>
+                                            <td
+                                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                                {{ r.branch.name }}
+                                            </td>
+                                            <td
+                                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                                <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                                    :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                                    {{
+                                                        r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') :
+                                                            'pendente'
+                                                    }}
+                                                </p>
+                                            </td>
+                                            <td
+                                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                                <p class="mx-auto text-sm px-2 rounded-md border  w-min"
+                                                    :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                                    {{
+                                                        r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
+                                                            'pendente'
+                                                    }}
+                                                </p>
+                                            </td>
+                                            <td
+                                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                                <button @click="setRouteToEdit(r)" v-if="!r.started_at">
+                                                    <mdicon name="pencil"
+                                                        class="hover:text-green-500 dark:hover:text-gray-400" />
+                                                </button>
+                                                <mdicon name="cancel" v-else
+                                                    class="hover:text-green-500 dark:hover:text-gray-400" />
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                         <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                             <button type="button"
-                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                    @click="modal.byDriver = false">
+                                class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                @click="modal.byDriver = false">
                                 Fechar
                             </button>
                         </div>
                     </div>
 
                     <div class="fixed inset-0 flex items-center justify-center overflow-hidden mx-1"
-                         :class="modal.editRoute ? 'block' : 'hidden'">
+                        :class="modal.editRoute ? 'block' : 'hidden'">
                         <div class="fixed inset-0 transition-opacity">
                             <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
                         </div>
                         <div v-if="routeForEdition"
-                             class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
+                            class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600">
                             <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                                     Editando Rota de:
@@ -643,13 +638,11 @@ function setRouteToEdit(route) {
                                     <div class="z-10 w-full">
                                         <div>Unidade</div>
                                         <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
-                                                        :multiple="false" :close-on-select="true" placeholder="Unidade"
-                                                        label="name"
-                                                        track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
-                                                        :custom-label="branchName"
-                                                        @select="$page.props.errors.date = null"/>
+                                            :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
+                                            track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
+                                            :custom-label="branchName" @select="$page.props.errors.date = null" />
                                         <div v-if="routeForEdition.error?.branch"
-                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                             <small v-for="error in routeForEdition.error?.branch">{{ error }}</small>
                                         </div>
                                     </div>
@@ -659,11 +652,10 @@ function setRouteToEdit(route) {
                                             Hora
                                         </label>
                                         <VueMultiselect v-model="routeForEdition.time" :options="data?.timetables"
-                                                        :multiple="false" :close-on-select="true" selectedLabel="atual"
-                                                        placeholder="Hora" selectLabel="Selecionar"
-                                                        deselectLabel="Remover"/>
+                                            :multiple="false" :close-on-select="true" selectedLabel="atual"
+                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
                                         <div v-if="routeForEdition.error?.time"
-                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                             <small v-for="error in routeForEdition.error?.time">{{ error }}</small>
                                         </div>
                                     </div>
@@ -673,10 +665,10 @@ function setRouteToEdit(route) {
                                             Local*
                                         </label>
                                         <input type="text" v-model="routeForEdition.local"
-                                               class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
+                                            class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
 
                                         <div v-if="routeForEdition.error?.local"
-                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                             <small v-for="error in routeForEdition.error?.local">{{ error }}</small>
                                         </div>
                                     </div>
@@ -687,13 +679,13 @@ function setRouteToEdit(route) {
                             </div>
                             <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1">
                                 <button type="button"
-                                        class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                        @click="updateRoute()">
+                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    @click="updateRoute()">
                                     Salvar
                                 </button>
                                 <button type="button"
-                                        class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                        @click="modal.editRoute = false, routeForEdition = {}">
+                                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    @click="modal.editRoute = false, routeForEdition = {}">
                                     Fechar
                                 </button>
                             </div>
@@ -701,7 +693,10 @@ function setRouteToEdit(route) {
                     </div>
 
                 </div>
+                <!-- modal add route -->
 
+                <!-- modal request -->
+                <ModalRequest v-if="false"></ModalRequest>
             </template>
         </SubSection>
     </AuthenticatedLayout>

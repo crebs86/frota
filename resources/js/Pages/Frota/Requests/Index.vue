@@ -472,7 +472,7 @@ function getRouteStatus(task, status) {
                                     <label class="text-sm col-span-6">
                                         Incluir Passageiro*
                                     </label>
-                                    <div class="inline-flex col-span-6">
+                                    <div class="inline-flex col-span-6 gap-1">
                                         <input type="text" v-model="passengersModel"
                                             class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700" />
                                         <button type="button" @click="setPassenger(false)"
