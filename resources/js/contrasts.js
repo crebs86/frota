@@ -18,12 +18,12 @@ function styles(style) {
 
 /**
  *
- * @param {int} task
+ * @param {int} type
  * @param {string} status
  * @returns
  */
-function getStyles(task, status) {
-    if (task) {
+function getStyles(type, status) {
+    if (type === 0) {
         return "bg-green-500 border-green-800 text-green-800";
     }
     switch (status) {
@@ -42,4 +42,8 @@ function getStyles(task, status) {
     }
 }
 
-export { styles, getStyles };
+function getDefaultButtonStyles() {
+//todo
+}
+
+export {styles, getStyles};

@@ -29,6 +29,7 @@ Route::prefix('/frota')->middleware(
     Route::post('/tarefas/minhas/filtrar', [RoutesController::class, 'myRoutesByDate'])->name('my-routes-bydate');
     Route::post('/tarefas/filtrar', [RoutesController::class, 'filter'])->name('tasks.filter');
     Route::post('/tarefas', [RoutesController::class, 'filterRoutes'])->name('tasks.filter-routes');
+    Route::get('/editarRota/{route}', [RoutesController::class, 'getRouteDetails'])->name('tasks.get-route-details');
     Route::post('/tarefas/criarRota', [RoutesController::class, 'routeStore'])->name('tasks.route.store');
     Route::get('rotas/{date}/{driver}/editar', [RoutesController::class, 'edit'])->name('routes.driver.edit');
     Route::put('rotas/{route}/atualizar', [RoutesController::class, 'routeUpdate'])->name('routes.route.update');

@@ -72,6 +72,14 @@ class RoutesController extends Controller
         return response()->json(['error' => 'Você não tem permissão para usar este recurso. fr(403-1)'], 403);
     }
 
+    public function getRouteDetails(Request $request): JsonResponse
+    {
+        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
+            return response()->json(Route::select('obs')->find($request->route));
+        }
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. grd(403-1)'], 403);
+    }
+
     public function filter(Request $request): JsonResponse
     {
         if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Tarefa Ver')) {
@@ -97,7 +105,7 @@ class RoutesController extends Controller
 
     public function routeUpdate(Request $request, Route $route): JsonResponse
     {
-        if ((int) getKeyValue($request->_checker, 'route_edit') !== (int) $route->task) {
+        if ((int)getKeyValue($request->_checker, 'route_edit') !== (int)$route->task) {
             return response()->json(['error' => 'Erro na utilização da aplicação. ru(403-1)'], 403);
         }
 

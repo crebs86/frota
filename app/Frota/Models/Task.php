@@ -15,7 +15,15 @@ class Task extends Model
 
     public function routes()
     {
-        return $this->hasMany(Route::class, 'task', 'id')->select('id', 'task', 'to', 'time', 'passengers', 'started_at', 'ended_at', 'duration')->orderBy('time')->with('branch', 'carsLog');
+        return $this->hasMany(Route::class, 'task', 'id')
+            ->where(function ($query) {
+                if (request()->route()->getName() === "frota.tasks.filter-routes") {
+                    return $query->where('type', 0);
+                }
+                return $query;
+            })
+            ->select('id', 'task', 'to', 'time', 'passengers', 'started_at', 'ended_at', 'duration', 'status', 'type')
+            ->orderBy('time')->with('branch');
     }
 
     public function driver()

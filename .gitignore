@@ -19,6 +19,10 @@
 /app/Http/Controllers/Admin/*
 !/app/Http/Controllers/Admin/UserController.php
 
+!/app/Traits
+/app/Traits/*
+!/app/Traits/Helpers.php
+
 !/app/Providers
 /app/Providers/*
 !/app/Providers/AppServiceProvider.php
@@ -40,6 +44,7 @@
 !/resources/js
 /resources/js/*
 !/resources/js/contrasts.js
+!/resources/js/helpers.js
 !/resources/js/validates
 
 !/resources/js/Components

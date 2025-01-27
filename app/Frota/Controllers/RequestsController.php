@@ -47,9 +47,7 @@ class RequestsController extends Controller
     public function getRoutesAndRequests(Request $request): JsonResponse
     {
         if ($this->can('Solicitacao Apagar', 'Solicitacao Criar', 'Solicitacao Editar', 'Solicitacao Ver', 'Liberador')) {
-            $fr = $this->runMakeResponse($this->runFilterRoutes($request)[0], $request);
-
-            return response()->json($fr);
+            return response()->json($this->runFilterRoutes($request));
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqc(403-1)'], 403);
     }

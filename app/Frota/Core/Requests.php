@@ -11,23 +11,25 @@ use Illuminate\Http\Request;
 use App\Frota\Models\Timetable;
 use Illuminate\Http\JsonResponse;
 use App\Frota\Models\Request as RequestModel;
+use Inertia\Response;
 
 trait Requests
 {
     use Routes, Helpers;
 
-    public function runIndex($request)
+    public function runIndex($request): Response
     {
         $props = [
             'drivers' => Driver::with('user')->select('id')->get(),
             'branches' => Branch::select('id', 'name')->get(),
-            'timetables' => Arr::pluck(Timetable::all(['time']), 'time')
+            'timetables' => Arr::pluck(Timetable::all(['time']), 'time'),
+            'liberator' => $this->can('Liberador') && !$this->hasRole('Super Admin')
         ];
 
         $date = $request->date ?? now()->format('Y-m-d');
 
         if ($this->can('Liberador') && !$this->hasRole('Super Admin')) {
-            return Inertia::render('Frota/Requests/Admin', array_merge_recursive(
+            return Inertia::render('Frota/Requests/Index', array_merge_recursive(
                 [
                     'requests' => RequestModel::where(
                         function ($q) use ($date, $request) {
@@ -51,7 +53,7 @@ trait Requests
                         })
                         ->select('id', 'driver', 'to', 'local', 'date', 'time', 'duration', 'obs', 'passengers', 'status', 'created_at')
                         ->with('branch', 'driver')
-                        ->get()->each(function ($item){
+                        ->get()->each(function ($item) {
                             $item->_checker = setGetKey($item->id, 'request_evaluate');
                         })->toArray()
                 ],
@@ -65,7 +67,9 @@ trait Requests
         return Inertia::render('Admin/403');
     }
 
-    public function runGetRoutes(Request $request) {}
+    public function runGetRoutes(Request $request)
+    {
+    }
 
     /**
      * @param Request $request

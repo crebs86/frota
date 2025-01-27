@@ -24,6 +24,7 @@ use Illuminate\Http\RedirectResponse;
 trait Routes
 {
     use Helpers;
+
     /**
      * @param Request $request
      * @return Response|RedirectResponse
@@ -81,7 +82,7 @@ trait Routes
     public function runMyRoutes(Request $request): Response
     {
         $request->merge(['driver' => auth()->id()]);
-        $request->date ?? $request->merge(['date' => date('Y-m-d')]);
+            $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
         $cars = Car::all(['id', 'modelo', 'placa']);
         $cars->each(function ($car) {
@@ -213,27 +214,33 @@ trait Routes
      */
     private function runRoutePersist($task, Request $request): JsonResponse
     {
-        $request->validate(
-            [
-                'time' => [
-                    Rule::unique('routes')->where(function ($q) use ($request, $task) {
-                        return $q->where([
-                            'time' => $request->time,
-                            'task' => $task['id']
-                        ]);
-                    })
-                ]
-            ],
-            [
-                'time.unique' => 'Já existe uma agenda neste horário para este motorista.'
-            ]
-        );
+        $response = '';
+        $unique = Route::where([
+            'time' => $request->time,
+            'task' => $task['id'],
+        ])->select('type')->get();
+
+        if ($unique->count() > 0) {
+            $unique->each(function ($item) use (&$response) {
+                if ($item->type === 0) {
+                    $response = [['message' => 'Já existe uma agenda neste horário para este motorista.', 'errors' => ["time" => ['Já existe uma agenda neste horário para este motorista.']]], 422];
+                } else {
+                    $response = [['message' => 'Existe uma solicitação pendente neste horário para este motorista.', 'errors' => ["time" => ['Existe uma solicitação pendente neste horário para este motorista.']]], 409];
+                }
+            });
+            if ($response[1] === 422 || ($response[1] === 409 && $request->ignore === false)) {
+                return response()->json($response[0], $response[1]);
+            }
+        }
+
         $route = Route::create([
             'task' => $task['id'],
             'user' => auth()->id(),
             'to' => $request->branch,
             'date' => $task['date'],
             'time' => $request->time,
+            'type' => $request->type ?? 0,
+            'obs' => $request->obs,
             'duration' => $request->duration,
             'passengers' => json_encode($request->passengers),
         ]);
@@ -260,6 +267,7 @@ trait Routes
      */
     public function runRouteUpdate(Request $request, Route $route): JsonResponse
     {
+        $t = $this;
         if (!$this->validateDate($route->date, $request->time)) {
             return response()->json(['error' => 'Não é possível atualizar uma rota passada. rru(403-1)'], 403);
         }
@@ -269,19 +277,30 @@ trait Routes
 
         $request->merge(['to' => $request->branch['id']]);
 
+        $response = '';
+        $unique = Route::where([
+            'time' => $request->time,
+            'task' => $route->task
+        ])->select('type')->where('id', '<>', $route->id)->get();
+
+        //todo remover linhas duplicadas
+        if ($unique->count() > 0) {
+            $unique->each(function ($item) use (&$response) {
+                if ($item->type === 0) {
+                    $response = [['message' => 'Já existe uma agenda neste horário para este motorista.', 'errors' => ["time" => ['Já existe uma agenda neste horário para este motorista.']]], 422];
+                } else {
+                    $response = [['message' => 'Existe uma solicitação pendente neste horário para este motorista.', 'errors' => ["time" => ['Existe uma solicitação pendente neste horário para este motorista.']]], 409];
+                }
+            });
+            if ($response[1] === 422 || ($response[1] === 409 && $request->ignore === false)) {
+                return response()->json($response[0], $response[1]);
+            }
+        }
+
         $request->validate(
             [
                 'to' => 'required|integer|exists:branches,id',
-                'time' => [
-                    'required',
-                    'date_format:H:i:s',
-                    Rule::unique('routes')->where(function ($q) use ($request, $route) {
-                        return $q->where([
-                            'time' => $request->time,
-                            'task' => $route->task
-                        ])->where('id', '<>', $route->id);
-                    })
-                ],
+                'time' => 'required|date_format:H:i:s',
                 'passengers' => 'required|array',
                 'duration' => 'required|date_format:H:i',
                 'local' => 'required_if:to,==,1|string|nullable|max:255',
@@ -289,7 +308,7 @@ trait Routes
             [
                 'to.*' => 'Informe uma unidade para a rota.',
                 'time.required' => 'Selecione um horário para a rota.',
-                'time.unique' => 'Já existe uma agenda neste horário para este motorista.',
+                'time.date_format' => 'Formato da hora inválido.',
                 'duration.required' => 'Selecione um horário para a rota.',
                 'duration.date_format' => 'Duração inválida.',
                 'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
@@ -300,7 +319,8 @@ trait Routes
             'time' => $request->time,
             'to' => $request->branch['id'],
             'duration' => $request->duration,
-            'passengers' => json_encode($request->passengers)
+            'passengers' => json_encode($request->passengers),
+            'obs' => $request->obs
         ])) {
 
             if ($request->currentBranch['id'] === 1 && $request->branch['id'] === 1) {
@@ -318,6 +338,7 @@ trait Routes
 
             return response()->json('A rota foi atualizada.');
         }
+        return response()->json(['error' => 'Erro ao atualizar a rota.'], 503);
     }
 
     /**
