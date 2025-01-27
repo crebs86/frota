@@ -111,6 +111,6 @@ trait Helpers
      */
     function validateDate($date, $time): bool
     {
-        return preg_replace('/\D/', '', $date . ' ' . $time) > preg_replace('/\D/', '', now()->format('H:i:s'));
+        return preg_replace('/\D/', '', $date . ' ' . $time) > preg_replace('/\D/', '', now()->format('Y-m-d H:i:s'));
     }
 }

@@ -82,7 +82,7 @@ trait Routes
     public function runMyRoutes(Request $request): Response
     {
         $request->merge(['driver' => auth()->id()]);
-            $request->date ?? $request->merge(['date' => date('Y-m-d')]);
+        $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
         $cars = Car::all(['id', 'modelo', 'placa']);
         $cars->each(function ($car) {
@@ -144,8 +144,10 @@ trait Routes
     private function runGetTaskByDriver(Request $request): array
     {
         $task = Task::select('id', 'driver', 'date')
-            ->where('date', $request->date)
-            ->where('driver', $request->driver)
+            ->where([
+                'date' => $request->date,
+                'driver' => $request->driver
+            ])
             ->with('routes')
             ->first();
 
@@ -172,7 +174,7 @@ trait Routes
             'branch.*' => 'Informe uma unidade para a rota.',
             'time.required' => 'Selecione um horário para a rota.',
             'time.date_format' => 'Selecione um horário na lista.',
-            'duration.required' => 'Selecione um horário para a rota.',
+            'duration.required' => 'Informe uma duração.',
             'duration.date_format' => 'Duração inválida.',
             'date.*' => 'A data não foi informada.',
             'driver.*' => 'Selecione um motorista para fazer a rota.',
@@ -182,7 +184,6 @@ trait Routes
         if (!$this->validateDate($request->date, $request->time)) {
             return response()->json(['error' => 'Você não pode agendar um horário passado.'], 403);
         }
-
         if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar')) {
 
             $task = $this->runGetTaskByDriver($request);

@@ -17,8 +17,10 @@ class Task extends Model
     {
         return $this->hasMany(Route::class, 'task', 'id')
             ->where(function ($query) {
-                if (request()->route()->getName() === "frota.tasks.filter-routes") {
+                if (request()->route()->getName() === "frota.tasks.filter-routes" || request()->route()->getName() === "frota.tasks.filter") {
                     return $query->where('type', 0);
+                } elseif (false) {
+                    return $query->where('type', '<>', 0);
                 }
                 return $query;
             })
