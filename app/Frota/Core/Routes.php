@@ -268,7 +268,6 @@ trait Routes
      */
     public function runRouteUpdate(Request $request, Route $route): JsonResponse
     {
-        $t = $this;
         if (!$this->validateDate($route->date, $request->time)) {
             return response()->json(['error' => 'Não é possível atualizar uma rota passada. rru(403-1)'], 403);
         }

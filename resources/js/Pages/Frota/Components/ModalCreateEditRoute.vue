@@ -10,10 +10,13 @@ const emit = defineEmits([
     'verifyDriverRoute'
 ])
 
+const loading = ref(false)
+
 const props = defineProps({
     data: Object,
     filter: Object | String,
-    results: Object
+    results: Object,
+    loading: Boolean
 })
 
 const modal = ref({
@@ -42,7 +45,8 @@ const routeForEdition = ref({
     obs: '',
     passengers: [],
     duration: '',
-    error: ''
+    error: '',
+    errors: []
 });
 
 const passengersModel = ref('')
@@ -59,7 +63,22 @@ function setPassenger(remove = false, passenger = null) {
     }
 }
 
+const passengersEditModel = ref('')
+
+function setPassengerEdit(remove = false, passenger = null) {
+    routeForEdition.value.errors.passengers = ''
+    if (remove) {
+        routeForEdition.value.passengers.splice(routeForEdition.value.passengers.indexOf(passenger), 1)
+    } else if (passengersEditModel.value) {
+        routeForEdition.value.passengers.push(passengersEditModel.value)
+        passengersEditModel.value = ''
+    } else {
+        routeForEdition.value.errors.passengers = 'Vazio.'
+    }
+}
+
 function saveRoute() {
+    props.loading.value = false
     filter.value.errors = '';
     let val = validate(filter.value, ['driver'])
 
@@ -95,6 +114,7 @@ function saveRoute() {
                     }
                 }
             })
+            .finally(() => props.loading.value = false)
     } else {
         filter.value.errors = val
         console.log(val)
@@ -103,6 +123,7 @@ function saveRoute() {
 }
 
 function updateRoute() {
+    props.loading.value = true
     routeForEdition.value.error = ''
     if (routeForEdition.value.branch && routeForEdition.value.time) {
         axios.put(route('frota.routes.route.update', routeForEdition.value.id), {
@@ -117,9 +138,10 @@ function updateRoute() {
             _checker: filter.value._checker,
         })
             .then(() => {
-                verifyDriverRoute();
+                emit('verifyDriverRoute');
                 modal.value.editRoute = false;
                 routeForEdition.value = {};
+                toast.success(r.data)
             })
             .catch((e) => {
                 if (e.response?.status === 403) {
@@ -135,6 +157,7 @@ function updateRoute() {
                     filter.value.errors = e.response.data
                 }
             })
+            .finally(() => props.loading.value = false)
     } else {
         toast.error('Preencha todos os campos para atualizar a rota');
     }
@@ -154,6 +177,9 @@ function setRouteToEdit(route) {
     routeForEdition.value.branch = route.branch
     routeForEdition.value.currentBranch = route.branch
     routeForEdition.value.time = route.time
+    routeForEdition.value.duration = route.duration
+    routeForEdition.value.passengers = Object.values(JSON.parse(route.passengers) ?? [])
+    routeForEdition.value.obs = route.obs
     if (route.branch.id === 1) {
         routeForEdition.value.local = route.branch.name
     } else {
@@ -178,9 +204,9 @@ onMounted(() => {
             class="bg-white rounded-lg text-left overflow-hidden overflow-y-scroll shadow-xl transform transition-all w-11/12 md:max-w-[1024px] max-h-[90%] dark:bg-gray-600">
             <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
-                    Editando Rota de:
+                    Rota de:
                     <span class="font-bold underline">
-                        {{ filter.driver?.user?.name ?? '' }}
+                        {{ props.filter?.driver?.user?.name ?? '' }}
                     </span>
                 </h3>
                 <div class="mt-2 overflow-auto">
@@ -188,7 +214,7 @@ onMounted(() => {
                         <div class="mb-6 w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-4 gap-1">
 
                             <div class="grid grid-cols-1 col-span-4 md:col-span-1">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm text-gray-500 dark:text-gray-300">
                                     Data*
                                 </label>
                                 <input type="date" v-model="filter.date" @change="verifyDriverRoute"
@@ -201,7 +227,7 @@ onMounted(() => {
                             </div>
 
                             <div class="col-span-4 md:col-span-1" v-if="props.data?.timetables !== ''">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm text-gray-500 dark:text-gray-300">
                                     Hora*
                                 </label>
                                 <VueMultiselect v-model="filter.time" :options="props.data?.timetables"
@@ -215,7 +241,7 @@ onMounted(() => {
                             </div>
 
                             <div class="col-span-4 md:col-span-2" v-if="props.data?.branches !== ''">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm text-gray-500 dark:text-gray-300">
                                     Unidade*
                                 </label>
                                 <VueMultiselect v-model="filter.branch" :options="props.data?.branches"
@@ -230,7 +256,7 @@ onMounted(() => {
                             </div>
 
                             <div class="col-span-4 mt-2" v-if="filter.branch?.id === 1">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm text-gray-500 dark:text-gray-300">
                                     Local*
                                 </label>
                                 <input type="text" v-model="filter.local"
@@ -242,7 +268,7 @@ onMounted(() => {
                                 </div>
                             </div>
                             <div class="col-span-6 md:col-span-2 text-left -mt-1.5 md:mt-0">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm text-gray-500 dark:text-gray-300">
                                     Duração (h)*
                                 </label>
                                 <input type="time" v-model="filter.duration"
@@ -326,7 +352,7 @@ onMounted(() => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-if="loading">
+                            <tr v-if="props.loading">
                                 <td colspan="4">
                                     <div class="shadow rounded-md p-4 max-w-sm w-full mx-auto">
                                         <div class="animate-pulse flex space-x-4">
@@ -404,12 +430,14 @@ onMounted(() => {
                     <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                         Editando Rota de:
                         <span class="font-bold underline">
-                            {{ filter.driver?.user?.name ?? '' }}
+                            {{ props.filter?.driver?.user?.name ?? '' }}
                         </span> em {{ moment(filter.date).format('DD/MM/YYYY') }}
                     </h3>
-                    <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2">
-                        <div class="z-10 w-full">
-                            <div>Unidade</div>
+                    <div class="grid grid-cols-4 gap-1">
+                        <div class="col-span-4 md:col-span-2">
+                            <label class="text-sm text-gray-500 dark:text-gray-300">
+                                Unidade
+                            </label>
                             <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
                                 :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
                                 track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
@@ -420,8 +448,8 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="mx-2 col-span-2 md:col-span-1" v-if="props.data?.timetables !== ''">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                        <div class="col-span-4 md:col-span-2" v-if="props.data?.timetables !== ''">
+                            <label class="text-sm text-gray-500 dark:text-gray-300">
                                 Hora
                             </label>
                             <VueMultiselect v-model="routeForEdition.time" :options="props.data?.timetables"
@@ -433,8 +461,8 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="mx-2 col-span-2 mt-2" v-if="routeForEdition.branch?.id === 1">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                        <div class="col-span-4" v-if="routeForEdition.branch?.id === 1">
+                            <label class="text-sm text-gray-500 dark:text-gray-300">
                                 Local*
                             </label>
                             <input type="text" v-model="routeForEdition.local"
@@ -446,8 +474,57 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="h-[15rem]"></div>
+                        <div class="col-span-4 md:col-span-2">
+                            <label class="text-sm text-gray-500 dark:text-gray-300">
+                                Duração (h)*
+                            </label>
+                            <input type="time" v-model="routeForEdition.duration"
+                                class="h-[41px] w-full text-gray-800 rounded" />
 
+                            <div v-if="routeForEdition.errors?.duration"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                <small v-for="error in routeForEdition.errors?.duration">{{ error }}</small>
+                            </div>
+                        </div>
+                        <div class="col-span-4 md:col-span-2 grid grid-cols-1 md:mt-1">
+                            <label class="text-sm text-gray-500 dark:text-gray-300">
+                                Obs.:
+                            </label>
+                            <textarea class="rounded text-gray-600" v-model="routeForEdition.obs"></textarea>
+                            <div v-if="routeForEdition.errors?.obs"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                                <small v-for="error in routeForEdition.errors?.obs">{{ error }}</small>
+                            </div>
+                        </div>
+                        <div class="col-span-4 md:col-span-3 grid grid-cols-1">
+                            <label class="text-sm text-gray-500 dark:text-gray-300">
+                                Incluir Passageiro*
+                            </label>
+                            <div class="inline-flex">
+                                <input type="text" v-model="passengersEditModel"
+                                    class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700" />
+                                <button type="button" @click="setPassengerEdit(false)"
+                                    :disabled="passengersEditModel?.length < 4"
+                                    class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
+                                    :class="passengersEditModel?.length < 4 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                    Incluir
+                                </button>
+                            </div>
+                            <div v-if="routeForEdition.errors?.passengers"
+                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                                <small v-for="error in routeForEdition.errors?.passengers">{{ error }}</small>
+                            </div>
+                        </div>
+                        <div class="col-span-4 md:col-span-2">
+                            <div v-for="(p, i) in Object.values(routeForEdition.passengers ?? [])" :key="'pe_' + i"
+                                class="inline-flex w-full">
+                                {{ p }}
+                                <button @click="setPassengerEdit(true, p)">
+                                    <mdicon name="close" class="text-red-400" />
+                                </button>
+                            </div>
+                        </div>
+                        <div class="h-[6rem] col-span-2"></div>
                     </div>
                 </div>
                 <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1">
@@ -459,7 +536,7 @@ onMounted(() => {
                     <button type="button"
                         class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                         @click="modal.editRoute = false, routeForEdition = {}">
-                        Fechar
+                        Cancelar
                     </button>
                 </div>
             </div>

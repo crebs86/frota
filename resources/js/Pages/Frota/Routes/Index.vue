@@ -97,6 +97,8 @@ function loadData() {
 }
 
 function verifyDriverRoute() {
+    openModal()
+    loadData()
     loading.value = true;
     filter.value.errors = '';
     results.value = {};
@@ -109,8 +111,6 @@ function verifyDriverRoute() {
                 if (r.data.length >= 1) {
                     results.value = r.data[0]
                     filter.value._checker = r.data[1]
-                    openModal()
-                    loadData()
                 }
             })
             .catch((e) => {
@@ -333,7 +333,7 @@ function verifyDriverRoute() {
                 </div>
                 <!-- modal add route -->
                 <CreateEditRoute :data="data" :filter="filter" :results="results" v-if="modal.byDriver"
-                    @verifyDriverRoute="verifyDriverRoute">
+                    :loading="loading" @verifyDriverRoute="verifyDriverRoute">
                     <template #close_button>
                         <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                             <button type="button"
