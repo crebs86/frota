@@ -1,0 +1,6 @@
+resources\js\Pages\Frota\Components\ModalEditRoute.vue
+    - criar os v-model ao carregar;
+    - dar opção de ignorar conflito;
+
+app\Frota\Core\Routes.php
+ - todo na função runRouteUpdate()
