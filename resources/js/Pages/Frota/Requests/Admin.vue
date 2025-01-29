@@ -163,27 +163,6 @@ function verifyDriverRoute() {
     }
 }
 
-function getRouteStatus(task, status) {
-    if (task) {
-        return 'Confirmado'
-    }
-    //0 Pendente; 1 Aprovado; 2 Negado; 3 em Avaliação; 4 Carona
-    switch (status) {
-        case 0:
-            return 'Pendente'
-        case 1:
-            return 'Aprovado'
-        case 2:
-            return 'Negado'
-        case 3:
-            return 'Em avaliação'
-        case 4:
-            return 'Carona'
-        default:
-            return 'Erro'
-    }
-}
-
 onUpdated(() => {
     console.log('atualizado...')
     routes.value = props.requests
@@ -225,11 +204,11 @@ onUpdated(() => {
                             </div>
                             <div class="col-span-4 md:col-span-2 mt-6 md:mt-0">
                                 <label class="text-sm">
-                                    Unidade*
+                                    Destino*
                                 </label>
                                 <VueMultiselect v-model="filterRequests.branch" :options="props.branches"
                                     :multiple="false" :close-on-select="true" selectedLabel="atual"
-                                    placeholder="Unidade" :custom-label="branchName" track-by="id" label="time"
+                                    placeholder="Destino" :custom-label="branchName" track-by="id" label="time"
                                     selectLabel="Selecionar" deselectLabel="Remover" />
                                 <div v-if="filterRequests.errors?.branch"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -297,7 +276,7 @@ onUpdated(() => {
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Unidade
+                                            Destino
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">

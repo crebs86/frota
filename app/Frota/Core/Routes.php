@@ -60,6 +60,7 @@ trait Routes
         $task = DB::table('tasks as t')
             ->select('r.id as route', 't.id as task', 't.date', 't.driver', 'r.time', 'r.started_at', 'r.ended_at', 'u.name', 'b.name as branch', 'r.to', 'r.duration')
             ->where('t.date', now()->format('Y-m-d'))
+            ->where('r.type', 0)
             ->join('routes as r', 't.id', 'r.task')
             ->join('drivers as d', 't.driver', 'd.id')
             ->join('users as u', 'u.id', 'd.id')
@@ -224,16 +225,16 @@ trait Routes
         if ($unique->count() > 0) {
             $unique->each(function ($item) use (&$response) {
                 if ($item->type === 0) {
-                    $response = [['message' => 'Já existe uma agenda neste horário para este motorista.', 'errors' => ["time" => ['Já existe uma agenda neste horário para este motorista.']]], 422];
+                    $response = [['message' => 'Já existe uma agenda neste horário para este motorista.', 'errors' => ["time" => ['Já existe uma agenda neste horário para este motorista.']]], 409];
                 } else {
                     $response = [['message' => 'Existe uma solicitação pendente neste horário para este motorista.', 'errors' => ["time" => ['Existe uma solicitação pendente neste horário para este motorista.']]], 409];
                 }
             });
-            if ($response[1] === 422 || ($response[1] === 409 && $request->ignore === false)) {
+
+            if ($response[1] === 409 && !$request->ignore) {
                 return response()->json($response[0], $response[1]);
             }
         }
-
         $route = Route::create([
             'task' => $task['id'],
             'user' => auth()->id(),
@@ -287,12 +288,12 @@ trait Routes
         if ($unique->count() > 0) {
             $unique->each(function ($item) use (&$response) {
                 if ($item->type === 0) {
-                    $response = [['message' => 'Já existe uma agenda neste horário para este motorista.', 'errors' => ["time" => ['Já existe uma agenda neste horário para este motorista.']]], 422];
+                    $response = [['message' => 'Já existe uma agenda neste horário para este motorista.', 'errors' => ["time" => ['Já existe uma agenda neste horário para este motorista.']]], 409];
                 } else {
                     $response = [['message' => 'Existe uma solicitação pendente neste horário para este motorista.', 'errors' => ["time" => ['Existe uma solicitação pendente neste horário para este motorista.']]], 409];
                 }
             });
-            if ($response[1] === 422 || ($response[1] === 409 && $request->ignore === false)) {
+            if ($response[1] === 409 && $request->ignore === false) {
                 return response()->json($response[0], $response[1]);
             }
         }
@@ -581,63 +582,4 @@ trait Routes
         ]);
     }
 
-    /**
-     * @param array $tasks
-     * @return array
-     */
-    private function runSetAllRoutesRealBranch(array $tasks)
-    {
-        $t = [];
-
-        /**
-         * Renomeia o nome da branch para local não cadastrado
-         */
-        foreach ($tasks as $c => $v) {
-            $vv = (array)$v;
-            foreach ($vv as $value) {
-                if ($vv['to'] === 1) {
-                    $t[$c] = $vv;
-                    $t[$c]['branch'] = $this->runGetRealBranch($vv['route']);
-                } else {
-                    $t[$c] = $vv;
-                }
-            }
-        }
-        return $t;
-    }
-
-    /**
-     * @param array $task
-     * @return array
-     */
-    private function runSetRealBranch(array $task)
-    {
-        $t = [];
-
-        /**
-         * Renomeia o nome da branch para local não cadastrado
-         */
-        foreach ($task as $key => $value) {
-            if ($key === 'routes') {
-                foreach ($value as $k => $v) {
-                    $t[$key][$k] = $v;
-                    if ($v['to'] === 1) {
-                        $t[$key][$k]['branch']['name'] = $this->runGetRealBranch($v['id']);
-                    }
-                }
-            } else {
-                $t[$key] = $value;
-            }
-        }
-        return $t;
-    }
-
-    /**
-     * @param int $loose
-     * @return string
-     */
-    private function runGetRealBranch(int $loose): string
-    {
-        return RealBranch::select('name')->find($loose)?->name ?? 'Erro...';
-    }
 }

@@ -19,7 +19,7 @@ class Task extends Model
             ->where(function ($query) {
                 if (request()->route()->getName() === "frota.tasks.filter-routes" || request()->route()->getName() === "frota.tasks.filter") {
                     return $query->where('type', 0);
-                } elseif (false) {
+                } elseif (request()->route()->getName() === "frota.requests.evaluate") {
                     return $query->where('type', '<>', 0);
                 }
                 return $query;

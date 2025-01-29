@@ -223,10 +223,10 @@ onMounted(() => {
 
                             <div class="mx-2">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
-                                    Unidade*
+                                    Destino*
                                 </label>
                                 <VueMultiselect v-model="routeForm.branch" :options="props.branches" :multiple="false"
-                                    :close-on-select="true" selectedLabel="atual" placeholder="Unidade"
+                                    :close-on-select="true" selectedLabel="atual" placeholder="Destino"
                                     :custom-label="branchName" track-by="id" label="time" selectLabel="Selecionar"
                                     deselectLabel="Remover" />
 
@@ -274,7 +274,8 @@ onMounted(() => {
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Unidade</th>
+                                            Destino
+                                        </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
                                             Saída
@@ -350,9 +351,9 @@ onMounted(() => {
                                 </h3>
                                 <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-2">
                                     <div class="mx-2 col-span-2 md:col-span-1">
-                                        <div>Unidade</div>
+                                        <div>Destino</div>
                                         <VueMultiselect v-model="routeForEdition.branch" :options="props.branches"
-                                            :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
+                                            :multiple="false" :close-on-select="true" placeholder="Destino" label="name"
                                             :custom-label="branchName" track-by="id" selectLabel="Selecionar"
                                             deselectLabel="Remover" @select="$page.props.errors.date = null" />
 

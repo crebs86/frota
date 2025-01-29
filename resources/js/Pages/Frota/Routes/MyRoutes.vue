@@ -614,11 +614,11 @@ onMounted(() => {
                                             </div>
 
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
-                                                Unidade de Destino
+                                                Destino
                                             </label>
                                             <VueMultiselect v-model="singleRouteModel.branch" :options="branches"
                                                 :multiple="false" :close-on-select="true" selectedLabel="atual"
-                                                placeholder="Unidade" :custom-label="branchName" track-by="id"
+                                                placeholder="Destino" :custom-label="branchName" track-by="id"
                                                 label="time" selectLabel="Selecionar" deselectLabel="Remover"
                                                 class="max-w-[450px]" v-if="branches.length > 0" />
                                             <div v-if="singleRouteModel.errors?.branch"

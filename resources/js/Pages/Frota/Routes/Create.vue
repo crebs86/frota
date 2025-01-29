@@ -224,10 +224,10 @@ function setRouteToEdit(route) {
 
                             <div class="col-span-4 md:col-span-2 mt-3 md:mt-0" v-if="routeForm.date">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
-                                    Unidade*
+                                    Destino*
                                 </label>
                                 <VueMultiselect v-model="routeForm.branch" :options="props.branches" :multiple="false"
-                                                :close-on-select="true" selectedLabel="atual" placeholder="Unidade"
+                                                :close-on-select="true" selectedLabel="atual" placeholder="Destino"
                                                 :custom-label="branchName" track-by="id" label="time"
                                                 selectLabel="Selecionar"
                                                 deselectLabel="Remover"/>
@@ -325,7 +325,7 @@ function setRouteToEdit(route) {
                                                 v-if="validateDate(routeForm?.date)"
                                                 :disabled="passengersModel?.length < 3"
                                                 class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
-                                                :class="passengersModel?.length < 4 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                                :class="passengersModel?.length < 3 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
                                             Incluir
                                         </button>
                                     </div>
@@ -377,7 +377,7 @@ function setRouteToEdit(route) {
                                     </th>
                                     <th
                                         class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                        Unidade
+                                        Destino
                                     </th>
                                     <th
                                         class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">

@@ -3,7 +3,6 @@
 namespace App\Frota\Controllers;
 
 use App\Frota\Core\Requests;
-use App\Frota\Models\Request as RequestModel;
 use App\Frota\Models\Route;
 use App\Frota\Requests\RequestRequest;
 use App\Traits\ACL;
@@ -20,19 +19,6 @@ class RequestsController extends Controller
     {
         return $this->runIndex($request);
     }
-
-    /*     public function getRoutes()
-    {
-        if ($this->can('Solicitacao Criar', 'Solicitacao Ver', 'Solicitacao Apagar', 'Solicitacao Editar', 'Liberador')) {
-            return Inertia::render('Frota/Requests/Index', [
-                'drivers' => Driver::with('user')->select('id')->get(),
-                'branches' => Branch::select('id', 'name')->get(),
-                'timetables' => Arr::pluck(Timetable::all(['time']), 'time'),
-                'routes' => []
-            ]);
-        }
-        return Inertia::render('Admin/403');
-    } */
 
     public function store(RequestRequest $request)
     {
@@ -59,5 +45,13 @@ class RequestsController extends Controller
             return $this->runUpdate($request, $route);
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqc(403-2)'], 403);
+    }
+
+    public function getRequestsToEvaluate(Request $request)
+    {
+        if ($this->can('Liberador')) {
+            return $this->runGetRequestsToEvaluate($request);
+        }
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqe(403-1)'], 403);
     }
 }

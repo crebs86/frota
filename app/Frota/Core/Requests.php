@@ -3,15 +3,17 @@
 namespace App\Frota\Core;
 
 use Inertia\Inertia;
+use Inertia\Response;
 use App\Models\Branch;
 use App\Traits\Helpers;
+use App\Frota\Models\Task;
 use Illuminate\Support\Arr;
 use App\Frota\Models\Driver;
 use Illuminate\Http\Request;
 use App\Frota\Models\Timetable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use App\Frota\Models\Request as RequestModel;
-use Inertia\Response;
 
 trait Requests
 {
@@ -65,10 +67,6 @@ trait Requests
             return Inertia::render('Frota/Requests/Index', $props);
         }
         return Inertia::render('Admin/403');
-    }
-
-    public function runGetRoutes(Request $request)
-    {
     }
 
     /**
@@ -153,5 +151,37 @@ trait Requests
             }
         }
         return response()->json(['error' => 'Erro na utilização da aplicação. rup(403-1)'], 403);
+    }
+
+    public function runGetRequestsToEvaluate(Request $request)
+    {
+        return response()->json($this->runGetRequests($request));
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function runGetRequests(Request $request): array
+    {
+        $date = $request->date ?? now()->format('Y-m-d');
+        $driver = $request->driver ?? null;
+
+        $task = DB::table('tasks as t')
+            ->select('r.id as route', 't.id as task', 't.date', 't.driver', 'r.time', 'r.started_at', 'r.ended_at', 'u.name', 'b.name as branch', 'r.to', 'r.duration', 'r.passengers', 'r.type', 'r.status')
+            ->where('t.date', now()->format('Y-m-d'))
+            ->where('r.type', '<>', 0)
+            ->join('routes as r', 't.id', 'r.task')
+            ->join('drivers as d', 't.driver', 'd.id')
+            ->join('users as u', 'u.id', 'd.id')
+            ->join('branches as b', 'b.id', 'r.to')
+            ->orderBy('r.time')
+            ->get();
+
+        if ($task->count() > 0) {
+            return $this->runSetAllRoutesRealBranch($task->toArray());
+        }
+
+        return [];
     }
 }

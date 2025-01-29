@@ -5,10 +5,6 @@ const props = defineProps({
     request: Object
 })
 
-function driverName({ id, user }) {
-    return `${id ? id : ''} - ${user?.name ? user.name : ''}`
-}
-
 function branchName({ id, name }) {
     if (id === 1) {
         return `${id ? id : ''} - Não Cadastrado`
@@ -44,10 +40,10 @@ function branchName({ id, name }) {
 
                 <div class="col-span-3 md:col-span-2">
                     <label class="text-sm">
-                        Unidade
+                        Destino
                     </label>
                     <VueMultiselect v-model="props.request.branch" :options="$page.props.branches" :multiple="false"
-                        :close-on-select="true" placeholder="Unidade" label="name" track-by="id"
+                        :close-on-select="true" placeholder="Destino" label="name" track-by="id"
                         selectLabel="Selecionar" deselectLabel="Remover" @select="$page.props.errors.date = null"
                         :custom-label="branchName" />
 

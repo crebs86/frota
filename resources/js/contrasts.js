@@ -43,7 +43,28 @@ function getStyles(type, status) {
 }
 
 function getDefaultButtonStyles() {
-//todo
+    //todo
 }
 
-export {styles, getStyles};
+function getRouteStatus(type, status) {
+    if (type) {
+        return "Confirmado";
+    }
+    //0 Pendente; 1 Aprovado; 2 Negado; 3 em Avaliação; 4 Carona
+    switch (status) {
+        case 0:
+            return "Pendente";
+        case 1:
+            return "Aprovado";
+        case 2:
+            return "Negado";
+        case 3:
+            return "Em avaliação";
+        case 4:
+            return "Carona";
+        default:
+            return "Erro";
+    }
+}
+
+export { styles, getStyles, getRouteStatus };

@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Models\Setting;
+use App\Frota\Models\RealBranch;
 use Illuminate\Database\Eloquent\Model;
 
 trait Helpers
@@ -112,5 +113,65 @@ trait Helpers
     function validateDate($date, $time): bool
     {
         return preg_replace('/\D/', '', $date . ' ' . $time) > preg_replace('/\D/', '', now()->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * @param array $task
+     * @return array
+     */
+    private function runSetRealBranch(array $task)
+    {
+        $t = [];
+
+        /**
+         * Renomeia o nome da branch para local não cadastrado
+         */
+        foreach ($task as $key => $value) {
+            if ($key === 'routes') {
+                foreach ($value as $k => $v) {
+                    $t[$key][$k] = $v;
+                    if ($v['to'] === 1) {
+                        $t[$key][$k]['branch']['name'] = $this->runGetRealBranch($v['id']);
+                    }
+                }
+            } else {
+                $t[$key] = $value;
+            }
+        }
+        return $t;
+    }
+
+    /**
+     * @param int $loose
+     * @return string
+     */
+    private function runGetRealBranch(int $loose): string
+    {
+        return RealBranch::select('name')->find($loose)?->name ?? 'Erro...';
+    }
+
+    /**
+     * @param array $tasks
+     * @return array
+     */
+    private function runSetAllRoutesRealBranch(array $tasks)
+    {
+        $t = [];
+
+        /**
+         * Renomeia o nome da branch para local não cadastrado
+         */
+        foreach ($tasks as $c => $v) {
+            $vv = (array)$v;
+            foreach ($vv as $value) {
+                if ($vv['to'] === 1) {
+                    $t[$c] = $vv;
+                    $t[$c]['branch'] = $this->runGetRealBranch($vv['route']);
+                } else {
+                    $t[$c] = $vv;
+                }
+            }
+        }
+        return $t;
     }
 }

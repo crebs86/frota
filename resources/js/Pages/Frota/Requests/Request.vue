@@ -30,7 +30,9 @@ const requestForm = ref({
     duration: '',
     passengers: [],
     type: 1,
-    _checker: ''
+    _checker: '',
+    ignore: false,
+    ignoreQuestion: false
 });
 
 const routeForEdition = ref({
@@ -170,12 +172,14 @@ function saveRequest() {
             local: requestForm.value.local,
             type: requestForm.value.type,
             _checker: requestForm.value._checker,
-            passengers: requestForm.value.passengers
+            passengers: requestForm.value.passengers,
+            ignore: requestForm.value.ignore
         })
             .then((r) => {
                 toast.success(r.data.message, { duration: 5000 })
                 verifyDriverRoute()
                 resetForm()
+                requestForm.value.ignoreQuestion = false
             })
             .catch((e) => {
                 if (e.response?.status === 503) {
@@ -184,6 +188,10 @@ function saveRequest() {
                 } else if (e.response?.status === 403) {
                     toast.error(e.response.data.error)
                 } else if (e.response?.status === 422) {
+                    toast.error('Todos os campos são obrigatórios.')
+                    requestForm.value.errors = e.response.data.errors
+                } else if (e.response?.status === 409) {
+                    requestForm.value.ignoreQuestion = true
                     toast.error('Todos os campos são obrigatórios.')
                     requestForm.value.errors = e.response.data.errors
                 } else {
@@ -225,7 +233,8 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
+    <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.75)]">
+        <h2 class="text-xl text-center">Solicitar Carro</h2>
         <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded" v-if="requestForm.date">
             <div class="relative w-full z-auto min-h-fit grid grid-cols-4 gap-3">
                 <div class="col-span-4 md:col-span-2 h-12">
@@ -244,10 +253,10 @@ onBeforeMount(() => {
 
                 <div class="col-span-4 md:col-span-2" v-if="validateDate(requestForm.date)">
                     <label class="text-sm">
-                        Unidade*
+                        Destino*
                     </label>
                     <VueMultiselect v-model="requestForm.branch" :options="props.branches" :multiple="false"
-                        :close-on-select="true" selectedLabel="atual" placeholder="Unidade" :custom-label="branchName"
+                        :close-on-select="true" selectedLabel="atual" placeholder="Destino" :custom-label="branchName"
                         track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
                     <div v-if="requestForm.errors?.branch"
                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -297,6 +306,10 @@ onBeforeMount(() => {
                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                         <small v-for="error in requestForm.errors?.time">{{ error }}</small>
                     </div>
+                    <div v-if="requestForm.ignoreQuestion">
+                        <label for="_ignore" class="p-1.5 text-amber-500 font-bold">Ignorar conflito.</label>
+                        <input type="checkbox" id="_ignore" v-model="requestForm.ignore" class="text-red-400" />
+                    </div>
                 </div>
 
                 <div class="col-span-6 md:col-span-2 text-left" v-if="validateDate(requestForm.date)">
@@ -319,9 +332,9 @@ onBeforeMount(() => {
                             <input type="text" v-model="passengersModel"
                                 class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700" />
                             <button type="button" @click="setPassenger(false)" v-if="validateDate(requestForm.date)"
-                                :disabled="passengersModel?.length < 4"
+                                :disabled="passengersModel?.length < 3"
                                 class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
-                                :class="passengersModel?.length < 4 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                :class="passengersModel?.length < 3 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
                                 Incluir
                             </button>
                         </div>
@@ -347,7 +360,7 @@ onBeforeMount(() => {
             </button>
         </div>
         <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2 mt-3"
-            v-if="requestForm?.driver?.id === routes?.driver">
+            v-if="requestForm?.driver && (requestForm?.driver?.id === routes?.driver && routes?.driver != null)">
             <p><span class="font-bold">Motorista:</span>
                 {{ requestForm?.driver?.id === routes[0]?.driver ? requestForm?.driver?.user?.name : '' }}
             </p>
@@ -398,7 +411,7 @@ onBeforeMount(() => {
                             </th>
                             <th
                                 class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Unidade
+                                Destino
                             </th>
                             <th
                                 class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
