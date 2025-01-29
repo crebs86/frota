@@ -282,9 +282,10 @@ function setRouteToEdit(route) {
                                     <small v-for="error in routeForm.errors?.time">{{ error }}</small>
                                 </div>
                                 <div v-if="routeForm.ignoreQuestion">
-                                    <label for="_ignore" class="p-1.5 text-amber-500 font-bold">Ignorar conflito e agendar</label>
+                                    <label for="_ignore" class="p-1.5 text-amber-500 font-bold">Ignorar conflito e
+                                        agendar</label>
                                     <input type="checkbox" id="_ignore" v-model="routeForm.ignore"
-                                           class="text-red-400" />
+                                           class="text-red-400"/>
                                 </div>
                             </div>
 
@@ -301,29 +302,7 @@ function setRouteToEdit(route) {
                                     <small v-for="error in routeForm.errors?.duration">{{ error }}</small>
                                 </div>
                             </div>
-                            <div class="col-span-6 md:col-span-4 -mt-1 md:mt-0" v-if="validateDate(routeForm?.date)">
-                                <div class="grid grid-cols-6">
-                                    <label class="text-sm text-gray-500 dark:text-gray-400 col-span-6">
-                                        Incluir Passageiro*
-                                    </label>
-                                    <div class="inline-flex col-span-6">
-                                        <input type="text" v-model="passengersModel"
-                                               class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700"/>
-                                        <button type="button" @click="setPassenger(false)"
-                                                v-if="validateDate(routeForm?.date)"
-                                                :disabled="passengersModel?.length < 4"
-                                                class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
-                                                :class="passengersModel?.length < 4 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
-                                            Incluir
-                                        </button>
-                                    </div>
-                                    <div v-if="routeForm.errors?.passengers"
-                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
-                                        <small v-for="error in routeForm.errors?.passengers">{{ error }}</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-span-6 md:col-span-2 grid grid-cols-1 -mt-1.5 md:mt-0"
+                            <div class="col-span-6 grid grid-cols-1 -mt-1.5 md:mt-0"
                                  v-if="validateDate(routeForm?.date)">
                                 <label class="text-sm text-gray-500 dark:text-gray-400 col-span-6">
                                     Obs.:
@@ -334,13 +313,38 @@ function setRouteToEdit(route) {
                                     <small v-for="error in routeForm.errors?.obs">{{ error }}</small>
                                 </div>
                             </div>
-                            <div class="col-span-4 mb-4 -mt-2" v-if="validateDate(routeForm?.date)">
-                                <span v-for="(p, i) in routeForm.passengers" :key="'p_' + i" class=" inline-flex">
-                                    {{ p }}
-                                    <button @click="setPassenger(true, p)">
-                                        <mdicon name="close" class="text-red-400"/>
-                                    </button>
-                                </span>
+                            <div class="col-span-6 md:col-span-4 -mt-1 md:mt-0" v-if="validateDate(routeForm?.date)">
+                                <div class="grid grid-cols-6">
+                                    <label class="text-sm text-gray-500 dark:text-gray-400 col-span-6">
+                                        Incluir Passageiro*
+                                    </label>
+                                    <div class="inline-flex col-span-6 gap-3">
+                                        <input type="text" v-model="passengersModel"
+                                               class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700"/>
+                                        <button type="button" @click="setPassenger(false)"
+                                                v-if="validateDate(routeForm?.date)"
+                                                :disabled="passengersModel?.length < 3"
+                                                class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
+                                                :class="passengersModel?.length < 4 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                            Incluir
+                                        </button>
+                                    </div>
+                                    <div v-if="routeForm.errors?.passengers"
+                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                                        <small v-for="error in routeForm.errors?.passengers">{{ error }}</small>
+                                    </div>
+
+                                    <div class="col-span-4 mb-4" v-if="validateDate(routeForm?.date)">
+                                        <div v-for="(p, i) in routeForm.passengers" :key="'pre_' + i"
+                                             class="inline-flex w-full">
+                                            {{ p }}
+                                            <button @click="setPassenger(true, p)">
+                                                <mdicon name="close" class="text-red-400"/>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
 
@@ -452,8 +456,9 @@ function setRouteToEdit(route) {
                             </table>
                         </div>
                     </div>
-                    <ModalEditRoute v-if="modal.editRoute" :routeForEdition="routeForEdition"
-                                    :props="props"
+
+                    <ModalEditRoute v-if="modal.editRoute" :routeForEdition="routeForEdition" :isRequest="false"
+                                    :props="props" :driver="routeForm.driver" :drivers="props.drivers"
                                     :_checker="routeForm._checker" @routeUpdated="routeUpdated">
                         <template #close_button>
                             <button type="button"

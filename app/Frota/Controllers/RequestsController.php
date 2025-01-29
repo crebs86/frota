@@ -4,6 +4,7 @@ namespace App\Frota\Controllers;
 
 use App\Frota\Core\Requests;
 use App\Frota\Models\Request as RequestModel;
+use App\Frota\Models\Route;
 use App\Frota\Requests\RequestRequest;
 use App\Traits\ACL;
 use App\Traits\Helpers;
@@ -52,10 +53,10 @@ class RequestsController extends Controller
         return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqc(403-1)'], 403);
     }
 
-    public function update(RequestRequest $request, RequestModel $model)
+    public function update(RequestRequest $request, Route $route)
     {
-        if ($this->can('Solicitacao Editar') && $model->user === auth()->id() || $this->can('Agenda Editar', 'Liberador')) {
-            return $this->runUpdate($request, $model);
+        if ($this->can('Solicitacao Editar') && $route->user === auth()->id() || $this->can('Agenda Editar', 'Liberador')) {
+            return $this->runUpdate($request, $route);
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqc(403-2)'], 403);
     }

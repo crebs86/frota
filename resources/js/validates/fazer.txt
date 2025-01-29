@@ -4,3 +4,5 @@ resources\js\Pages\Frota\Components\ModalEditRoute.vue
 
 app\Frota\Core\Routes.php
  - todo na função runRouteUpdate()
+
+ certificar-se que http://127.0.0.1:8000/frota/solicitacoes enviará para os locais corretos de acordo com o isRequest

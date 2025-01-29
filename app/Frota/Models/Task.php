@@ -24,7 +24,7 @@ class Task extends Model
                 }
                 return $query;
             })
-            ->select('id', 'task', 'to', 'time', 'passengers', 'started_at', 'ended_at', 'duration', 'status', 'type')
+            ->select('id', 'task', 'to', 'time', 'passengers', 'started_at', 'ended_at', 'duration', 'status', 'type', 'obs')
             ->orderBy('time')->with('branch');
     }
 

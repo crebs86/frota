@@ -25,8 +25,6 @@ const props = defineProps({
 });
 
 
-
-
 const routeForEdition = ref({
     id: '',
     branch: '',
@@ -50,8 +48,6 @@ const routeRequestEdition = ref({
     passengers: [],
     errors: []
 });
-
-
 
 
 const passengersRequestModel = ref('')
@@ -88,6 +84,7 @@ function setEditPassenger(remove = false, passenger = null) {
 function validateDate(date) {
     return moment(date).isSame(moment(), 'day') || moment(date).isAfter(moment(), 'day') || true
 }
+
 function updateRoute() {
     let val = validateUpRt(routeForEdition.value, ['driver'])
     if (val._run) {
