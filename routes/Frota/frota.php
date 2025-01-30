@@ -53,6 +53,7 @@ Route::prefix('/frota')->middleware(
 
     Route::match(['get', 'post'], '/solicitacoes', [RequestsController::class, 'index'])->name('requests.index');
     Route::match(['get', 'post'], '/solicitacoes/avaliar', [RequestsController::class, 'getRequestsToEvaluate'])->name('requests.evaluate');
+    Route::post('/solicitacoes/liberar', [RequestsController::class, 'allow'])->name('requests.allow');
     Route::post('/solicitacoes/criar', [RequestsController::class, 'store'])->name('requests.store');
     Route::put('/solicitacoes/{route}/update', [RequestsController::class, 'update'])->name('requests.update');
     Route::post('/solicitacoes/rotasESolicitacoes', [RequestsController::class, 'getRoutesAndRequests'])->name('requests.get-routes-and-requests');

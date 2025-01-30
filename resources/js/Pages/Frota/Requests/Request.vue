@@ -10,11 +10,11 @@ import { toast } from "@/toast";
 import validate from "@/validates/indexSaveRoute.js";
 import { branchName } from "@/helpers";
 
-const EditRoute = defineAsyncComponent(() => import('@/Pages/Frota/Components/ModalEditRoute.vue'))
+const EditRoute = defineAsyncComponent(() => import('@/Pages/Frota/Components/ModalEditRoute.vue'));
 
 const p = defineProps({
     props: Object
-})
+});
 
 const props = ref({});
 
@@ -30,6 +30,7 @@ const requestForm = ref({
     duration: '',
     passengers: [],
     type: 1,
+    obs: '',
     _checker: '',
     ignore: false,
     ignoreQuestion: false
@@ -50,7 +51,7 @@ const routeForEdition = ref({
 const filter = ref({
     routes: false,
     requests: false,
-})
+});
 
 const filteredRoutes = computed(() => {
     return routes.value?.routes?.filter((i => {
@@ -154,6 +155,7 @@ function resetForm() {
     requestForm.value.branch = ''
     requestForm.value.duration = ''
     requestForm.value.passengers = []
+    requestForm.value.obs = ''
 }
 
 function saveRequest() {
@@ -171,6 +173,7 @@ function saveRequest() {
             branch: requestForm.value.branch?.id,
             local: requestForm.value.local,
             type: requestForm.value.type,
+            obs: requestForm.value.obs,
             _checker: requestForm.value._checker,
             passengers: requestForm.value.passengers,
             ignore: requestForm.value.ignore
@@ -323,6 +326,16 @@ onBeforeMount(() => {
                         <small v-for="error in requestForm.errors?.duration">{{ error }}</small>
                     </div>
                 </div>
+                <div class="col-span-6 grid grid-cols-1 -mt-1.5 md:mt-0" v-if="validateDate(requestForm?.date)">
+                    <label class="text-sm text-gray-500 dark:text-gray-400 col-span-6">
+                        Obs.:
+                    </label>
+                    <textarea class="rounded text-gray-600" v-model="requestForm.obs"></textarea>
+                    <div v-if="requestForm.errors?.obs"
+                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                        <small v-for="error in requestForm.errors?.obs">{{ error }}</small>
+                    </div>
+                </div>
                 <div class="col-span-6 md:col-span-4" v-if="validateDate(requestForm.date)">
                     <div class="grid grid-cols-6">
                         <label class="text-sm col-span-6">
@@ -441,7 +454,7 @@ onBeforeMount(() => {
                     </thead>
                     <tbody class="border border-black">
                         <tr v-for="(r, i) in filteredRoutes" :key="'route-' + i"
-                            :class="getRouteStatus(r.type, r.status) !== 'Confirmado' ? styles($page.props.app.settingsStyles.main.body) : ''">
+                            :class="getRouteStatus(r.type, r.status) !== 'Confirmado' && getRouteStatus(r.type, r.status) !== 'Aprovado' ? styles($page.props.app.settingsStyles.main.body) : ''">
                             <td
                                 class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                 {{ r.time }}
@@ -499,7 +512,8 @@ onBeforeMount(() => {
                                 <button @click="setRouteToEdit(r)" v-if="moment(moment(requestForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
                                     moment(moment(requestForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))
                                     && (has($page.props.auth.permissions, ['Agenda Editar', 'Agenda Apagar']) || has($page.props.auth.roles, ['Super Admin']))
-                                    && r.type === 0">
+                                    && (r.type === 0
+                                        || r.type === 1 && getRouteStatus(r.type, r.status) === 'Aprovado')">
                                     <mdicon name="pencil" class="hover:text-green-500 dark:hover:text-blue-300" />
                                 </button>
                                 <button @click="setRouteToEdit(r)" v-else-if="moment(moment(requestForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||

@@ -54,4 +54,9 @@ class RequestsController extends Controller
         }
         return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqe(403-1)'], 403);
     }
+
+    public function allow(Request $request): JsonResponse
+    {
+        return $this->runAllow($request);
+    }
 }

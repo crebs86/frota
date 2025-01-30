@@ -1,7 +1,10 @@
 app\Frota\Core\Routes.php
  - todo na função runRouteUpdate()
 
-
-//todo redefinir ignorar conflito
-
 //todo marcação de rotas não listadas
+
+resources\js\Pages\Frota\Requests\Evaluate.vue
+//todo não permitir autorizar rotas passadas
+    criar campo de justificativa de negativa
+    criar lógica de carona
+    checkbox para ocultar botão de liberados

@@ -7,6 +7,7 @@ use Inertia\Response;
 use App\Models\Branch;
 use App\Traits\Helpers;
 use App\Frota\Models\Task;
+use App\Frota\Models\Route;
 use Illuminate\Support\Arr;
 use App\Frota\Models\Driver;
 use Illuminate\Http\Request;
@@ -164,24 +165,58 @@ trait Requests
      */
     private function runGetRequests(Request $request): array
     {
-        $date = $request->date ?? now()->format('Y-m-d');
+        $date = $request->date ?? now();
         $driver = $request->driver ?? null;
 
         $task = DB::table('tasks as t')
-            ->select('r.id as route', 't.id as task', 't.date', 't.driver', 'r.time', 'r.started_at', 'r.ended_at', 'u.name', 'b.name as branch', 'r.to', 'r.duration', 'r.passengers', 'r.type', 'r.status')
-            ->where('t.date', now()->format('Y-m-d'))
+            ->select('r.id as route', 't.id as task', 't.date', 't.driver', 'r.date as dt', 'r.time', 'u.name', 'b.name as branch', 'r.to', 'r.duration', 'r.passengers', 'r.type', 'r.status')
+            ->where(function ($q) use ($request, $date) {
+                if ($request->date) {
+                    return $q->where('t.date', $date);
+                } else {
+                    return $q->whereBetween('t.date', [$date->format('Y-m-d'), $date->addMonths(1)]);
+                }
+            })
             ->where('r.type', '<>', 0)
+            ->where(function ($q) use ($driver, $request) {
+                if ($driver && !$request->date) {
+                    return $q->where('driver', $driver);
+                } elseif (!$driver) {
+                    return $q->where('driver', '<>', null);
+                }
+                return $q->where('driver', $driver);
+            })
             ->join('routes as r', 't.id', 'r.task')
             ->join('drivers as d', 't.driver', 'd.id')
             ->join('users as u', 'u.id', 'd.id')
             ->join('branches as b', 'b.id', 'r.to')
+            ->orderBy('r.date')
             ->orderBy('r.time')
-            ->get();
+            ->limit($request->date ? 999999 : 100)
+            ->get()->each(function ($item) {
+                $item->_checker = setGetKey($item->route, 'request_evaluate');
+            });
 
         if ($task->count() > 0) {
             return $this->runSetAllRoutesRealBranch($task->toArray());
         }
 
         return [];
+    }
+
+    public function runAllow(Request $request): JsonResponse
+    {
+        if ((int)getKeyValue($request->_checker, 'request_evaluate') === (int) $request->route) {
+            $route = Route::select('status', 'id')->find($request->route);
+            if ($route->status === 1 && !$request->type) {
+                return response()->json('Esta rota já foi aprovada. rev(404-1)', 404);
+            }
+            if ($route->update([
+                'status' => $request->type ? 2 : 1
+            ])) {
+                return response()->json('A rota foi autorizada.', 200);
+            }
+        }
+        return response()->json('Erro na utilização da aplicação. rev(403-1)', 403);
     }
 }
