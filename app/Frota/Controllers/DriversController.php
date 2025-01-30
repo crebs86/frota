@@ -44,7 +44,7 @@ class DriversController extends Controller
                     ->whereKeyNot(
                         Arr::pluck(
                             Driver::withTrashed()->get(['id'])
-                        ->toArray(), 'id'))
+                                ->toArray(), 'id'))
                     ->get(),
                 'garages' => Garage::with('branch')->select('id')->get(),
                 'cars' => Car::select('id', 'placa', 'modelo')->get(),
@@ -56,12 +56,12 @@ class DriversController extends Controller
     /**
      * @param DriverRequest $driverRequest
      * @param Driver $driver
-     * 
-     * @return Response
+     *
+     * @return Response|RedirectResponse
      */
     public function store(DriverRequest $driverRequest, Driver $driver): Response|RedirectResponse
     {
-        if ($this->can('Motorista Criar')) {
+        if ($this->can('Motorista Criar', 'Combustivel Administrar')) {
             if ($d = $driver->create($driverRequest->validated())) {
 
                 $user = User::find($driverRequest->id);
@@ -82,6 +82,7 @@ class DriversController extends Controller
         if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar')) {
             return $this->showUserPage();
         }
+        return Inertia::render('Admin/403');
     }
 
     /**
@@ -92,12 +93,14 @@ class DriversController extends Controller
         if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar')) {
             return $this->showUserPage($this->can('Motorista Editar'));
         }
+        return Inertia::render('Admin/403');
     }
 
     /**
+     * @param bool $canEdit
      * @return Response
      */
-    public function showUserPage($canEdit = false): Response
+    public function showUserPage(bool $canEdit = false): Response
     {
         if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar', 'Motorista Criar')) {
             $driver = Driver::where('id', request('driver'))->with('user', 'garage', 'car')->withTrashed()->first();
@@ -120,13 +123,13 @@ class DriversController extends Controller
     /**
      * @param DriverRequest $request
      * @param Driver $driver
-     * 
-     * @return Response
+     *
+     * @return Response|RedirectResponse
      */
     public function update(DriverRequest $request, Driver $driver): Response|RedirectResponse
     {
         if ($this->can('Motorista Editar')) {
-            if ((int) getKeyValue($request->_checker, 'edit_driver') === (int) $request->driver->id) {
+            if ((int)getKeyValue($request->_checker, 'edit_driver') === (int)$request->driver->id) {
                 if ($this->can('Motorista Editar')) {
                     if ($driver->update($request->validated())) {
                         if ($request->deleted_at) {
