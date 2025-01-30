@@ -5,6 +5,6 @@ app\Frota\Core\Routes.php
 
 resources\js\Pages\Frota\Requests\Evaluate.vue
 //todo não permitir autorizar rotas passadas
-    criar campo de justificativa de negativa
     criar lógica de carona
-    checkbox para ocultar botão de liberados
+    checkbox para ocultar liberados
+    não lançar justificativa na tabela se não preenchida.

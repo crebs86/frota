@@ -2,11 +2,11 @@
 
 namespace App\Frota\Core;
 
+use App\Frota\Models\Justification;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Branch;
 use App\Traits\Helpers;
-use App\Frota\Models\Task;
 use App\Frota\Models\Route;
 use Illuminate\Support\Arr;
 use App\Frota\Models\Driver;
@@ -20,6 +20,10 @@ trait Requests
 {
     use Routes, Helpers;
 
+    /**
+     * @param $request
+     * @return Response
+     */
     public function runIndex($request): Response
     {
         $props = [
@@ -139,6 +143,11 @@ trait Requests
         return collect(array_merge_recursive($a, $rm))->sortBy('time')->values()->all();
     }
 
+    /**
+     * @param Request $request
+     * @param $model
+     * @return JsonResponse
+     */
     public function runUpdate(Request $request, $model)
     {
         if (!$this->validateDate($request->date, $request->time)) {
@@ -204,19 +213,64 @@ trait Requests
         return [];
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function runAllow(Request $request): JsonResponse
     {
-        if ((int)getKeyValue($request->_checker, 'request_evaluate') === (int) $request->route) {
+        if ((int)getKeyValue($request->_checker, 'request_evaluate') === (int)$request->route) {
             $route = Route::select('status', 'id')->find($request->route);
             if ($route->status === 1 && !$request->type) {
                 return response()->json('Esta rota já foi aprovada. rev(404-1)', 404);
             }
+
+            $status = $route->status;
             if ($route->update([
                 'status' => $request->type ? 2 : 1
             ])) {
-                return response()->json('A rota foi autorizada.', 200);
+                if ($request->type && $status === 1) {
+                    $this->storeJustification((int)$route->id, $request->justification);
+                } elseif ($status === 2 && !$request->type) {
+                    $this->removeJustification((int)$route->id);
+                }
+                return response()->json($request->type ? 'A rota foi autorizada.' : 'A solicitação foi marcada como negada.', 200);
             }
         }
         return response()->json('Erro na utilização da aplicação. rev(403-1)', 403);
+    }
+
+    /**
+     * @param int $route
+     * @param string $justification
+     * @return void
+     */
+    private function storeJustification(int $route, string $justification = ''): void
+    {
+        if ($this->checkConflictJustification($route)) {
+            Justification::insert([
+                'user' => auth()->id(),
+                'route' => $route,
+                'justification' => $justification ?? 'Negado',
+            ]);
+        }
+    }
+
+    /**
+     * @param int $route
+     * @return bool
+     */
+    private function checkConflictJustification(int $route): bool
+    {
+        return Justification::find($route)?->count() < 1;
+    }
+
+    /**
+     * @param int $route
+     * @return void
+     */
+    private function removeJustification(int $route): void
+    {
+        Justification::find($route)?->delete();
     }
 }
