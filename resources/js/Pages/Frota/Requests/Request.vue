@@ -299,7 +299,7 @@ onBeforeMount(() => {
 
                 <div class="col-span-6 md:col-span-2" v-if="validateDate(requestForm.date)">
                     <label class="text-sm">
-                        Hora*
+                        Hora da Chegada no Destino*
                     </label>
                     <VueMultiselect v-model="requestForm.time" :options="props.timetables" :multiple="false"
                         :close-on-select="true" selectedLabel="atual" placeholder="Hora" selectLabel="Selecionar"
@@ -317,7 +317,7 @@ onBeforeMount(() => {
 
                 <div class="col-span-6 md:col-span-2 text-left" v-if="validateDate(requestForm.date)">
                     <label class="text-sm">
-                        Duração (h)*
+                        Tempo de Permanência no Destino (h)*
                     </label>
                     <input type="time" v-model="requestForm.duration" class="h-[41px] w-full text-gray-800 rounded" />
 
@@ -420,7 +420,7 @@ onBeforeMount(() => {
                         <tr>
                             <th
                                 class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Hora
+                                Chegada Prevista
                             </th>
                             <th
                                 class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
@@ -432,7 +432,7 @@ onBeforeMount(() => {
                             </th>
                             <th
                                 class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Duração
+                                Tempo de Permanência
                             </th>
                             <th
                                 class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">

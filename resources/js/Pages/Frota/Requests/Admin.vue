@@ -272,7 +272,7 @@ onUpdated(() => {
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Hora
+                                            Chegada Prevista
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
@@ -288,7 +288,7 @@ onUpdated(() => {
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Duração
+                                            Tempo de Permanência
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">

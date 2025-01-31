@@ -129,7 +129,7 @@ onMounted(() => {
                     </div>
                     <div class="grid grid-cols-1 col-span-2 md:col-span-1">
                         <label class="text-sm text-gray-500 dark:text-gray-400">
-                            Hora
+                            Hora da Chegada no Destino*
                         </label>
                         <input type="time" v-model="fill.hora"
                             class="rounded border border-black h-[41px] mt-0.5 text-gray-700" />

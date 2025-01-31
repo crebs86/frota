@@ -1,7 +1,7 @@
 <script setup>
 import VueMultiselect from "vue-multiselect";
 import { onMounted, ref } from "vue";
-import { branchName } from "@/helpers";
+import { branchName, drivers } from "@/helpers";
 import validateUpRt from "@/validates/createUpdateRoute";
 import axios from "axios";
 import { toast } from "@/toast";
@@ -17,10 +17,6 @@ const props = defineProps({
 const emit = defineEmits(['routeUpdated'])
 
 const passengersEditModel = ref('')
-
-function drivers(id) {
-    return id.user.name;
-}
 
 function setEditPassenger(remove = false, passenger = null) {
     props.routeForEdition.errors.passengers = ''
@@ -113,7 +109,7 @@ onMounted(() => {
             <div class="overflow-x-auto grid grid-cols-3 gap-3">
                 <div class="col-span-3 md:col-span-1">
                     <label class="text-sm">
-                        Hora
+                        Hora da Chegada no Destino*
                     </label>
                     <VueMultiselect v-model="props.routeForEdition.time" :options="$page.props.timetables"
                         :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Hora"
@@ -159,7 +155,7 @@ onMounted(() => {
 
                 <div class="col-span-3 md:col-span-1 md:-mt-0.5">
                     <label class="text-sm">
-                        Duração*
+                        Tempo de Permanência no Destino*
                     </label>
                     <input type="time" v-model="props.routeForEdition.duration"
                         class="w-full rounded border h-[41px] mt-0.5 text-gray-700">
@@ -215,6 +211,14 @@ onMounted(() => {
                                 {{ error }}
                             </small>
                         </div>
+<!--                         <div class="col-span-4 mb-4 -mt-2" v-if="validateDate(props.routeForEdition.date)">
+                            <span v-for="(p, i) in props.routeForEdition.passengers" :key="'p_' + i" class=" inline-flex mx-4">
+                                {{ p }}
+                                <button @click="setPassenger(true, p)">
+                                    <mdicon name="close" class="text-red-400" />
+                                </button>
+                            </span>
+                        </div> -->
                     </div>
                 </div>
 

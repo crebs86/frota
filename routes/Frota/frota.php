@@ -16,7 +16,8 @@ Route::prefix('/frota')->middleware(
     getSettingMustVerifyEmail() ? ['auth', 'verified'] : ['auth']
 )->name('frota.')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/loadData', [HomeController::class, 'loadData'])->name('load-data');
+    Route::get('/carregar/dados', [HomeController::class, 'loadData'])->name('load-data');
+    Route::get('/carregar/motoristas', [HomeController::class, 'loadDrivers'])->name('load-drivers');
     Route::get('/carregarUnidades', [HomeController::class, 'loadBranches'])->name('load-branches');
 
     Route::resource('/rotas', RoutesController::class, ['names' => 'routes'])->parameter('rotas', 'route')->withTrashed(['show', 'edit', 'update', 'restore']);

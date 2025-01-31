@@ -240,11 +240,11 @@ function saveSingleRoute() {
                 }
             })
             .finally(() => {
-/*                 singleRouteModel.value.branch = ''
-                singleRouteModel.value.km = ''
-                singleRouteModel.value.obs = ''
-                singleRouteModel.value.local = ''
-                singleRouteModel.value.errors = '' */
+                /*                 singleRouteModel.value.branch = ''
+                                singleRouteModel.value.km = ''
+                                singleRouteModel.value.obs = ''
+                                singleRouteModel.value.local = ''
+                                singleRouteModel.value.errors = '' */
             })
     } else {
         toast.error('Preencha todos os campos.')
@@ -428,7 +428,7 @@ onMounted(() => {
                                             </div>
 
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
-                                                Hora
+                                                Hora da Chegada no Destino*
                                             </label>
                                             <input type="time" v-model="routeModel.started_at"
                                                 class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">
@@ -507,7 +507,7 @@ onMounted(() => {
                                             </div>
 
                                             <label class="text-sm text-gray-500 dark:text-gray-400">
-                                                Hora
+                                                Hora da Chegada no Destino*
                                             </label>
                                             <input type="time" v-model="routeModel.started_at"
                                                 class="rounded border border-black h-[41px] w-full max-w-[450px] mt-0.5 text-gray-700">

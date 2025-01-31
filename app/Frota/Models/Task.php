@@ -17,8 +17,12 @@ class Task extends Model
     {
         return $this->hasMany(Route::class, 'task', 'id')
             ->where(function ($query) {
-                if (request()->route()->getName() === "frota.tasks.filter-routes" || request()->route()->getName() === "frota.tasks.filter") {
-                    return $query->where('type', 0);
+                if (request()->route()->getName() === "frota.tasks.filter-routes" || request()->route()->getName() === "frota.tasks.filter" || request()->route()->getName() === 'frota.routes.driver.edit') {
+                    return $query->where('type', 0)->orWhere([
+                        'type' => 1
+                    ])->where([
+                        'status' => 1
+                    ]);
                 } elseif (request()->route()->getName() === "frota.requests.evaluate") {
                     return $query->where('type', '<>', 0);
                 }

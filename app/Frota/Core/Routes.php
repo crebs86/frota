@@ -58,9 +58,18 @@ trait Routes
     {
         $allRoutes = [];
         $task = DB::table('tasks as t')
-            ->select('r.id as route', 't.id as task', 't.date', 't.driver', 'r.time', 'r.started_at', 'r.ended_at', 'u.name', 'b.name as branch', 'r.to', 'r.duration')
-            ->where('t.date', now()->format('Y-m-d'))
-            ->where('r.type', 0)
+            ->select('r.id as route', 't.id as task', 't.date', 't.driver', 'r.time', 'r.started_at', 'r.ended_at', 'u.name', 'b.name as branch', 'r.to', 'r.duration', 'r.status')
+            ->where([
+                'r.type' => 0,
+                't.date' => now()->format('Y-m-d')
+            ])
+            ->orWhere(function ($q) {
+                $q->where([
+                    'r.type' => 1,
+                    'r.status' => 1,
+                    't.date' => now()->format('Y-m-d')
+                ]);
+            })
             ->join('routes as r', 't.id', 'r.task')
             ->join('drivers as d', 't.driver', 'd.id')
             ->join('users as u', 'u.id', 'd.id')
@@ -278,18 +287,23 @@ trait Routes
 
         $request->merge(['to' => $request->branch['id']]);
 
+        $unique = DB::table('tasks as t')
+            ->select('r.type', 'r.status', 't.id', 'r.task')
+            ->where([
+                'driver' => $request->driver,
+                't.date' => $request->date,
+                'r.time' => $request->time
+            ])->join('routes as r', 't.id', '=', 'r.task')
+            ->get();
+
         $response = '';
-        $unique = Route::where([
-            'time' => $request->time,
-            'task' => $route->task
-        ])->select('type')->where('id', '<>', $route->id)->get();
 
         //todo remover linhas duplicadas
         if ($unique->count() > 0) {
             $unique->each(function ($item) use (&$response) {
-                if ($item->type === 0) {
+                if ($item->type === 0 || $item->status === 1 && $item->type === 1) {
                     $response = [['message' => 'Já existe uma agenda neste horário para este motorista.', 'errors' => ["time" => ['Já existe uma agenda neste horário para este motorista.']]], 409];
-                } else {
+                } elseif ($item->type === 1 && $item->status === 0) {
                     $response = [['message' => 'Existe uma solicitação pendente neste horário para este motorista.', 'errors' => ["time" => ['Existe uma solicitação pendente neste horário para este motorista.']]], 409];
                 }
             });
@@ -310,38 +324,45 @@ trait Routes
                 'to.*' => 'Informe uma unidade para a rota.',
                 'time.required' => 'Selecione um horário para a rota.',
                 'time.date_format' => 'Formato da hora inválido.',
-                'duration.required' => 'Selecione um horário para a rota.',
+                'duration.required' => 'Selecione um período de permanência.',
                 'duration.date_format' => 'Duração inválida.',
                 'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
             ]
         );
-
-        if ($route->update([
-            'time' => $request->time,
-            'to' => $request->branch['id'],
-            'duration' => $request->duration,
-            'passengers' => json_encode($request->passengers),
-            'obs' => $request->obs
-        ])) {
-
-            if ($request->currentBranch['id'] === 1 && $request->branch['id'] === 1) {
-                RealBranch::find($route->id)->update([
-                    'name' => $request->local
-                ]);
-            } elseif ($request->currentBranch['id'] === 1 && $request->branch['id'] !== 1) {
-                RealBranch::find($route->id)?->delete();
-            } elseif ($request->currentBranch['id'] !== 1 && $request->branch['id'] === 1) {
-                RealBranch::create([
-                    'route' => $route->id,
-                    'name' => $request->local
-                ]);
+        if (Task::select('driver')->find($route->task)?->driver === $request->driver) {
+            if ($route->update([
+                'time' => $request->time,
+                'to' => $request->branch['id'],
+                'duration' => $request->duration,
+                'passengers' => json_encode($request->passengers),
+                'obs' => $request->obs
+            ])) {
+                $this->setRealBranch($request, $route);
+                return response()->json('A rota foi atualizada.');
             }
-
-            return response()->json('A rota foi atualizada.');
+        } else {
+            dd();
         }
         return response()->json(['error' => 'Erro ao atualizar a rota.'], 503);
     }
 
+    private function checkIfHasTask($request) {}
+
+    private function setRealBranch($request, $route)
+    {
+        if ($request->currentBranch['id'] === 1 && $request->branch['id'] === 1) {
+            RealBranch::find($route->id)->update([
+                'name' => $request->local
+            ]);
+        } elseif ($request->currentBranch['id'] === 1 && $request->branch['id'] !== 1) {
+            RealBranch::find($route->id)?->delete();
+        } elseif ($request->currentBranch['id'] !== 1 && $request->branch['id'] === 1) {
+            RealBranch::create([
+                'route' => $route->id,
+                'name' => $request->local
+            ]);
+        }
+    }
     /**
      * @param Request $request
      * @return JsonResponse
@@ -581,5 +602,4 @@ trait Routes
             'carro_favorito' => $car
         ]);
     }
-
 }

@@ -21,7 +21,17 @@ class HomeController extends Controller
     public function index()
     {
         if ($this->can('Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar', 'Carro Editar', 'Carro Ver', 'Carro Criar', 'Carro Apagar', 'Ocorrencia Editar', 'Ocorrencia Ver', 'Ocorrencia Criar', 'Ocorrencia Apagar', 'Solicitacao Editar', 'Solicitacao Ver', 'Solicitacao Criar', 'Solicitacao Apagar', 'Tarefa Editar', 'Tarefa Ver', 'Tarefa Criar', 'Tarefa Apagar', 'Liberador')) {
-            $routes = Route::where('date', now()->format('Y-m-d'))
+            $routes = Route::where([
+                'date' => now()->format('Y-m-d'),
+                'type' => 0
+            ])
+                ->orWhere(function ($q) {
+                    return $q->where([
+                        'type' => 1,
+                        'status' => 1,
+                        'date' => now()->format('Y-m-d')
+                    ]);
+                })
                 ->select('started_at', 'ended_at')
                 ->get();
             return Inertia::render('Frota/Home', [
@@ -46,5 +56,10 @@ class HomeController extends Controller
     public function loadBranches(): JsonResponse
     {
         return response()->json(Branch::select('id', 'name')->get());
+    }
+
+    public function loadDrivers()
+    {
+        return response()->json(Driver::select('id')->with('user')->get());
     }
 }

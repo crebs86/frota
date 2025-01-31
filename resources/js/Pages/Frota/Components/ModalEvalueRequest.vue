@@ -30,7 +30,7 @@ function branchName({ id, name }) {
 
                 <div class="col-span-3 md:col-span-1">
                     <label class="text-sm">
-                        Hora
+                        Hora da Chegada no Destino*
                     </label>
                     <VueMultiselect v-model="props.request.time" :options="$page.props.timetables" :multiple="false"
                         :close-on-select="true" selectedLabel="atual" placeholder="Hora" selectLabel="Selecionar"
@@ -72,7 +72,7 @@ function branchName({ id, name }) {
 
                 <div class="col-span-3 md:col-span-1">
                     <label class="text-sm">
-                        Duração*
+                        Tempo de Permanência no Destino*
                     </label>
                     <input type="time" v-model="props.request.duration"
                         class="w-full rounded border h-[41px] mt-0.5 text-gray-700">

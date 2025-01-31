@@ -236,7 +236,7 @@ onMounted(() => {
 
                             <div class="col-span-4 md:col-span-1" v-if="props.data?.timetables !== ''">
                                 <label class="text-sm text-gray-500 dark:text-gray-300">
-                                    Hora*
+                                    Hora da Chegada no Destino*
                                 </label>
                                 <VueMultiselect v-model="filter.time" :options="props.data?.timetables"
                                     :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Hora"
@@ -283,7 +283,7 @@ onMounted(() => {
                             </div>
                             <div class="col-span-6 md:col-span-2 text-left -mt-1.5 md:mt-0">
                                 <label class="text-sm text-gray-500 dark:text-gray-300">
-                                    Duração (h)*
+                                    Tempo de Permanência no Destino (h)*
                                 </label>
                                 <input type="time" v-model="filter.duration"
                                     class="h-[41px] w-full text-gray-800 rounded" />
@@ -347,7 +347,7 @@ onMounted(() => {
                             <tr>
                                 <th
                                     class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                    Hora
+                                    Chegada Prevista
                                 </th>
                                 <th
                                     class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
@@ -466,7 +466,7 @@ onMounted(() => {
 
                         <div class="col-span-4 md:col-span-2" v-if="props.data?.timetables !== ''">
                             <label class="text-sm text-gray-500 dark:text-gray-300">
-                                Hora
+                                Hora da Chegada no Destino*
                             </label>
                             <VueMultiselect v-model="routeForEdition.time" :options="props.data?.timetables"
                                 :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Hora"
@@ -492,7 +492,7 @@ onMounted(() => {
 
                         <div class="col-span-4 md:col-span-2">
                             <label class="text-sm text-gray-500 dark:text-gray-300">
-                                Duração (h)*
+                                Tempo de Permanência no Destino (h)*
                             </label>
                             <input type="time" v-model="routeForEdition.duration"
                                 class="h-[41px] w-full text-gray-800 rounded" />

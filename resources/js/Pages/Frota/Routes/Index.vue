@@ -201,7 +201,7 @@ function verifyDriverRoute() {
                                     <tr>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Hora
+                                            Chegada Destino
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
@@ -262,7 +262,7 @@ function verifyDriverRoute() {
                                     <tr>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Hora
+                                            Chegada Destino
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">

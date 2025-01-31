@@ -10,4 +10,8 @@ function branchName({id, name}) {
     }
 }
 
-export {driverName, branchName}
+function drivers(id) {
+    return id.user.name;
+}
+
+export {driverName, branchName, drivers}
