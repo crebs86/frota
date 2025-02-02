@@ -225,10 +225,15 @@ trait Requests
                 return response()->json('Esta rota já foi aprovada. rev(404-1)', 404);
             }
 
+            dd($route->driver, $request->driver, $request->type, $route);
+            if (!$request->type && (!$route->driver && !$request->driver)) {
+                return response()->json('Informe um motorista.', 422);
+            }
+
             $status = $route->status;
-            if ($route->update([
-                'status' => $request->type ? 2 : 1
-            ])) {
+            $update = !$route->driver && $request->driver ? ['status' => $request->type ? 2 : 1, 'driver' => $request->driver] : ['status' => $request->type ? 2 : 1];
+            dd($update);
+            if ($route->update($update)) {
                 if ($request->type && $status === 1) {
                     $this->storeJustification((int)$route->id, $request->justification);
                 } elseif ($status === 2 && !$request->type) {
