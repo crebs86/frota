@@ -16,19 +16,22 @@ class Task extends Model
     public function routes()
     {
         return $this->hasMany(Route::class, 'task', 'id')
+            ->where('date', request('date'))
             ->where(function ($query) {
-                if (request()->route()->getName() === "frota.tasks.filter-routes" || request()->route()->getName() === "frota.tasks.filter" || request()->route()->getName() === 'frota.routes.driver.edit') {
-                    return $query->where('type', 0)->orWhere([
-                        'type' => 1
-                    ])->where([
-                        'status' => 1
-                    ]);
+                if (request()->route()->getName() === "frota.tasks.filter-routes"
+                    || request()->route()->getName() === "frota.tasks.filter"
+                    || request()->route()->getName() === 'frota.routes.driver.edit'
+                    || request()->route()->getName() === 'frota.request.store') {
+                    return $query
+                        ->where('type', 0)
+                        ->orWhere(['type' => 1])
+                        ->where(['status' => 1]);
                 } elseif (request()->route()->getName() === "frota.requests.evaluate") {
                     return $query->where('type', '<>', 0);
                 }
                 return $query;
             })
-            ->select('id', 'task', 'to', 'time', 'passengers', 'started_at', 'ended_at', 'duration', 'status', 'type', 'obs')
+            ->select('id', 'task', 'to', 'time', 'passengers', 'started_at', 'ended_at', 'duration', 'status', 'type', 'obs', 'date')
             ->orderBy('time')->with('branch');
     }
 

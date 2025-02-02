@@ -35,7 +35,7 @@ class HomeController extends Controller
                 ->select('started_at', 'ended_at')
                 ->get();
             return Inertia::render('Frota/Home', [
-                'drivers_count' => Driver::count(),
+                'drivers_count' => Driver::where('id', '<>', 2)->count(),
                 'cars_count' => Car::count(),
                 'routes_count' => $routes->count(),
                 'exec_routes' => $routes->where('started_at', '<>', null)->where('ended_at', '<>', null)->count()
@@ -60,6 +60,6 @@ class HomeController extends Controller
 
     public function loadDrivers()
     {
-        return response()->json(Driver::select('id')->with('user')->get());
+        return response()->json(Driver::select('id')->where('id', '<>', 2)->with('user')->get());
     }
 }

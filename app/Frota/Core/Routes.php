@@ -92,7 +92,7 @@ trait Routes
     public function runMyRoutes(Request $request): Response
     {
         $request->merge(['driver' => auth()->id()]);
-        $request->date ?? $request->merge(['date' => date('Y-m-d')]);
+            $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
         $cars = Car::all(['id', 'modelo', 'placa']);
         $cars->each(function ($car) {
@@ -154,10 +154,15 @@ trait Routes
     private function runGetTaskByDriver(Request $request): array
     {
         $task = Task::select('id', 'driver', 'date')
-            ->where([
-                'date' => $request->date,
-                'driver' => $request->driver
-            ])
+            ->where(function ($q) use ($request) {
+                if (!$request->driver) {
+                    return $q->where('driver', '=', 2);
+                }
+                return $q->where([
+                    'date' => $request->date,
+                    'driver' => $request->driver
+                ]);
+            })
             ->with('routes')
             ->first();
 
@@ -173,12 +178,13 @@ trait Routes
      */
     public function runRouteStore(Request $request): JsonResponse
     {
+        $driverRequired = request()->route()->getName() === 'frota.request.store' ? 'nullable' : 'required';
         $request->validate([
             'branch' => 'required|integer|exists:branches,id',
             'time' => 'required|date_format:H:i:s',
             'duration' => 'required|date_format:H:i',
             'date' => 'required|date_format:Y-m-d',
-            'driver' => 'required|integer|exists:drivers,id',
+            'driver' => $driverRequired . '|integer|exists:drivers,id',
             'local' => 'required_if:branch,==,1|string|nullable|max:255'
         ], [
             'branch.*' => 'Informe uma unidade para a rota.',
@@ -192,30 +198,27 @@ trait Routes
         ]);
 
         if (!$this->validateDate($request->date, $request->time)) {
-            return response()->json(['error' => 'Você não pode agendar um horário passado.'], 403);
+            return response()->json(['error' => 'Você não pode agendar um horário passado. rrs(403-1)'], 403);
         }
         if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar')) {
 
             $task = $this->runGetTaskByDriver($request);
-
+            dd($task);
             if (count($task) === 0) {
                 $createTask = Task::create([
-                    'driver' => $request->driver,
+                    'driver' => $request->driver ?? 2,
                     'date' => $request->date
                 ])->toArray();
                 return $this->runRoutePersist($createTask, $request);
             } else {
-                /**
-                 * Verificar payload em edição de rota
-                 */
 
-                if ((int)getKeyValue($request->_checker, 'route_edit') === (int)$task[0]['id']) {
+                if ( request()->route()->getName() === 'frota.request.store' || (int)getKeyValue($request->_checker, 'route_edit') === (int)$task[0]['id']) {
                     return $this->runRoutePersist($task[0], $request);
                 }
-                return response()->json(['error' => 'Erro na utilização da aplicação.'], 403);
+                return response()->json(['error' => 'Erro na utilização da aplicação. rrs(403-2)'], 403);
             }
         }
-        return response()->json(['error' => 'Você não tem permissão para usar este recurso.'], 403);
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. rrs(403-3)'], 403);
     }
 
     /**
@@ -226,29 +229,31 @@ trait Routes
     private function runRoutePersist($task, Request $request): JsonResponse
     {
         $response = '';
-        $unique = Route::where([
-            'time' => $request->time,
-            'task' => $task['id'],
-        ])->select('type')->get();
+        if ($task) {
+            $unique = Route::where([
+                'time' => $request->time,
+                'task' => $task['id'],
+            ])->select('type')->get();
 
-        if ($unique->count() > 0) {
-            $unique->each(function ($item) use (&$response) {
-                if ($item->type === 0) {
-                    $response = [['message' => 'Já existe uma agenda neste horário para este motorista.', 'errors' => ["time" => ['Já existe uma agenda neste horário para este motorista.']]], 409];
-                } else {
-                    $response = [['message' => 'Existe uma solicitação pendente neste horário para este motorista.', 'errors' => ["time" => ['Existe uma solicitação pendente neste horário para este motorista.']]], 409];
+            if ($request->driver && $unique->count() > 0) {
+                $unique->each(function ($item) use (&$response) {
+                    if ($item->type === 0) {
+                        $response = [['message' => 'Já existe uma agenda neste horário para este motorista.', 'errors' => ["time" => ['Já existe uma agenda neste horário para este motorista.']]], 409];
+                    } else {
+                        $response = [['message' => 'Existe uma solicitação pendente neste horário para este motorista.', 'errors' => ["time" => ['Existe uma solicitação pendente neste horário para este motorista.']]], 409];
+                    }
+                });
+
+                if ($response[1] === 409 && !$request->ignore) {
+                    return response()->json($response[0], $response[1]);
                 }
-            });
-
-            if ($response[1] === 409 && !$request->ignore) {
-                return response()->json($response[0], $response[1]);
             }
         }
         $route = Route::create([
             'task' => $task['id'],
             'user' => auth()->id(),
             'to' => $request->branch,
-            'date' => $task['date'],
+            'date' => $task['date'] ?? $request->date,
             'time' => $request->time,
             'type' => $request->type ?? 0,
             'obs' => $request->obs,
@@ -278,7 +283,7 @@ trait Routes
      */
     public function runRouteUpdate(Request $request, Route $route): JsonResponse
     {
-        if (!$this->validateDate($route->date, $request->time)) {
+        if (!$this->validateDate($request->date, $request->time)) {
             return response()->json(['error' => 'Não é possível atualizar uma rota passada. rru(403-1)'], 403);
         }
         if ($route->started_at) {
@@ -316,6 +321,8 @@ trait Routes
             [
                 'to' => 'required|integer|exists:branches,id',
                 'time' => 'required|date_format:H:i:s',
+                'driver' => 'required|exists:drivers,id',
+                'date' => 'required|date_format:Y-m-d',
                 'passengers' => 'required|array',
                 'duration' => 'required|date_format:H:i',
                 'local' => 'required_if:to,==,1|string|nullable|max:255',
@@ -324,12 +331,14 @@ trait Routes
                 'to.*' => 'Informe uma unidade para a rota.',
                 'time.required' => 'Selecione um horário para a rota.',
                 'time.date_format' => 'Formato da hora inválido.',
+                'date.date_format' => 'Formato da data inválido.',
                 'duration.required' => 'Selecione um período de permanência.',
                 'duration.date_format' => 'Duração inválida.',
                 'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
             ]
         );
-        if (Task::select('driver')->find($route->task)?->driver === $request->driver) {
+        $t = Task::select('driver', 'date')->find($route->task);
+        if ($t && $t?->driver === $request->driver && $t?->date === $request->date) {
             if ($route->update([
                 'time' => $request->time,
                 'to' => $request->branch['id'],
@@ -341,28 +350,39 @@ trait Routes
                 return response()->json('A rota foi atualizada.');
             }
         } else {
-            dd();
+            if ($task = $this->checkReturnTask($request)) {
+                $route->update([
+                    'time' => $request->time,
+                    'date' => $request->date,
+                    'task' => $task->id,
+                    'to' => $request->branch['id'],
+                    'duration' => $request->duration,
+                    'passengers' => json_encode($request->passengers),
+                    'obs' => $request->obs
+                ]);
+                $this->setRealBranch($request, $route);
+                return response()->json('A rota foi atualizada.');
+            }
+            return response()->json(['error' => 'Erro ao atualizar a rota. rru(503-1)'], 503);
         }
-        return response()->json(['error' => 'Erro ao atualizar a rota.'], 503);
+        return response()->json(['error' => 'Erro ao atualizar a rota. rru(503-2)'], 503);
     }
 
-    private function checkIfHasTask($request) {}
-
-    private function setRealBranch($request, $route)
+    /**
+     * @param $request
+     * @return Task
+     */
+    private function checkReturnTask($request): Task
     {
-        if ($request->currentBranch['id'] === 1 && $request->branch['id'] === 1) {
-            RealBranch::find($route->id)->update([
-                'name' => $request->local
-            ]);
-        } elseif ($request->currentBranch['id'] === 1 && $request->branch['id'] !== 1) {
-            RealBranch::find($route->id)?->delete();
-        } elseif ($request->currentBranch['id'] !== 1 && $request->branch['id'] === 1) {
-            RealBranch::create([
-                'route' => $route->id,
-                'name' => $request->local
-            ]);
-        }
+        return Task::where([
+            'driver' => $request->driver,
+            'date' => $request->date,
+        ])->first() ?? Task::create([
+            'driver' => $request->driver,
+            'date' => $request->date,
+        ]);
     }
+
     /**
      * @param Request $request
      * @return JsonResponse
@@ -490,9 +510,8 @@ trait Routes
             } else {
                 return response()->json('Você não possui permissão para editar esta rota(2).', 403);
             }
-        } else {
-            return response()->json('Esta rota já foi finalizada.', 403);
         }
+        return response()->json('Esta rota já foi finalizada.', 403);
     }
 
     /**
@@ -518,9 +537,8 @@ trait Routes
                 $myRoutesByDate = $this->runGetTaskByDriver($request);
                 return response()->json($myRoutesByDate);
             }
-        } else {
-            return response()->json('Você não possui permissão para editar esta rota(3).', 403);
         }
+        return response()->json('Você não possui permissão para editar esta rota(3).', 403);
     }
 
     /**

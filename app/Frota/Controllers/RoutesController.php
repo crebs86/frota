@@ -153,11 +153,6 @@ class RoutesController extends Controller
         $this->runSetNewFavoriteCar($driver, $car);
     }
 
-    private function setRealBranch(array $task)
-    {
-        return $this->runSetRealBranch($task);
-    }
-
     private function getRealBranch(int $loose): string
     {
         return $this->runGetRealBranch($loose);

@@ -174,6 +174,7 @@ function setRouteToEdit(route) {
     routeForEdition.value.errors = []
     routeForEdition.value.currentBranch = route.branch
     routeForEdition.value.branch = route.branch
+    routeForEdition.value.date = route.date
     routeForEdition.value.time = route.time
     routeForEdition.value.duration = route.duration
     routeForEdition.value.obs = route.obs
@@ -204,56 +205,8 @@ function setRouteToEdit(route) {
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
-                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded"
-                         v-if="routeForm.date">
-                        <div class="relative w-full z-auto min-h-fit grid grid-cols-4 gap-3">
-                            <div class="col-span-4 md:col-span-2 h-12">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
-                                    Selecione um motorista*
-                                </label>
-                                <VueMultiselect v-model="routeForm.driver" :options="props.drivers" :multiple="false"
-                                                :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
-                                                :custom-label="driverName" track-by="id" selectLabel="Selecionar"
-                                                @select="verifyDriverRoute" deselectLabel="Remover"/>
-
-                                <div v-if="routeForm.errors?.driver"
-                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.errors?.driver">{{ error }}</small>
-                                </div>
-                            </div>
-
-                            <div class="col-span-4 md:col-span-2 mt-3 md:mt-0" v-if="routeForm.date">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
-                                    Destino*
-                                </label>
-                                <VueMultiselect v-model="routeForm.branch" :options="props.branches" :multiple="false"
-                                                :close-on-select="true" selectedLabel="atual" placeholder="Destino"
-                                                :custom-label="branchName" track-by="id" label="time"
-                                                selectLabel="Selecionar"
-                                                deselectLabel="Remover"/>
-                                <div v-if="routeForm.errors?.branch"
-                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.errors?.branch">{{ error }}</small>
-                                </div>
-                            </div>
-
-                            <div class="col-span-4 -mt-2 md:mt-0" v-if="routeForm.date && routeForm.branch?.id === 1">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
-                                    Local*
-                                </label>
-                                <input type="text" v-model="routeForm.local"
-                                       class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700"/>
-
-                                <div v-if="routeForm.errors?.local"
-                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                                    <small v-for="error in routeForm.errors?.local">{{ error }}</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
-                        <div class="w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-6 gap-3">
+                        <div class="relative w-full z-auto min-h-fit grid grid-cols-6 gap-3">
 
                             <div class="grid grid-cols-1 col-span-6 md:col-span-2 h-12 mt-1 md:mt-0">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
@@ -268,12 +221,13 @@ function setRouteToEdit(route) {
                                 </div>
                             </div>
 
-                            <div class="col-span-6 md:col-span-2 mt-2 md:mt-0" v-if="validateDate(routeForm?.date)">
+                            <div class="col-span-6 md:col-span-2 mt-2 md:mt-0">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
                                     Hora da Chegada no Destino*
                                 </label>
                                 <VueMultiselect v-model="routeForm.time" :options="$page.props.timetables"
                                                 :multiple="false"
+                                                :disabled="!validateDate(routeForm?.date)"
                                                 :close-on-select="true" selectedLabel="atual" placeholder="Hora"
                                                 selectLabel="Selecionar" deselectLabel="Remover"/>
 
@@ -289,40 +243,89 @@ function setRouteToEdit(route) {
                                 </div>
                             </div>
 
-                            <div class="col-span-6 md:col-span-2 text-left -mt-1.5 md:mt-0"
-                                 v-if="validateDate(routeForm?.date)">
+                            <div class="col-span-6 md:col-span-2 text-left -mt-1.5 md:mt-0">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
-                                    Tempo de Permanência no Destino (h)*
+                                    Tempo de Permanência*
                                 </label>
                                 <input type="time" v-model="routeForm.duration"
-                                       class="h-[41px] w-full text-gray-800 rounded"/>
+                                       class="h-[41px] w-full text-gray-800 rounded"
+                                       :class="!validateDate(routeForm?.date) ? 'bg-[#afb3b9]' : ''"
+                                       :disabled="!validateDate(routeForm?.date)"/>
 
                                 <div v-if="routeForm.errors?.duration"
                                      class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                     <small v-for="error in routeForm.errors?.duration">{{ error }}</small>
                                 </div>
                             </div>
-                            <div class="col-span-6 grid grid-cols-1 -mt-1.5 md:mt-0"
-                                 v-if="validateDate(routeForm?.date)">
+
+                            <div class="col-span-6 md:col-span-3 h-12">
+                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    Selecione um motorista*
+                                </label>
+                                <VueMultiselect v-model="routeForm.driver" :options="props.drivers" :multiple="false"
+                                                :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
+                                                :custom-label="driverName" track-by="id" selectLabel="Selecionar"
+                                                @select="verifyDriverRoute" deselectLabel="Remover"
+                                                :disabled="!validateDate(routeForm?.date)"/>
+
+                                <div v-if="routeForm.errors?.driver"
+                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border
+                                border-red-300 max-w-fit">
+                                    <small v-for="error in routeForm.errors?.driver">{{ error }}</small>
+                                </div>
+                            </div>
+
+                            <div class="col-span-6 md:col-span-3 mt-3 md:mt-0">
+                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    Destino*
+                                </label>
+                                <VueMultiselect v-model="routeForm.branch" :options="props.branches" :multiple="false"
+                                                :close-on-select="true" selectedLabel="atual" placeholder="Destino"
+                                                :custom-label="branchName" track-by="id" label="time"
+                                                selectLabel="Selecionar" :disabled="!validateDate(routeForm?.date)"
+                                                deselectLabel="Remover"/>
+                                <div v-if="routeForm.errors?.branch"
+                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small v-for="error in routeForm.errors?.branch">{{ error }}</small>
+                                </div>
+                            </div>
+
+                            <div class="col-span-6" v-if="routeForm.branch?.id === 1">
+                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    Local*
+                                </label>
+                                <input type="text" v-model="routeForm.local"
+                                       class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700"/>
+
+                                <div v-if="routeForm.errors?.local"
+                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small v-for="error in routeForm.errors?.local">{{ error }}</small>
+                                </div>
+                            </div>
+
+                            <div class="col-span-6 grid grid-cols-1 -mt-1.5 md:mt-0">
                                 <label class="text-sm text-gray-500 dark:text-gray-400 col-span-6">
                                     Obs.:
                                 </label>
-                                <textarea class="rounded text-gray-600" v-model="routeForm.obs"></textarea>
+                                <textarea class="rounded text-gray-600" v-model="routeForm.obs"
+                                          :class="!validateDate(routeForm?.date) ? 'bg-[#afb3b9]' : ''"
+                                          :disabled="!validateDate(routeForm?.date)"></textarea>
                                 <div v-if="routeForm.errors?.obs"
                                      class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
                                     <small v-for="error in routeForm.errors?.obs">{{ error }}</small>
                                 </div>
                             </div>
-                            <div class="col-span-6 md:col-span-4 -mt-1 md:mt-0" v-if="validateDate(routeForm?.date)">
+                            <div class="col-span-6 md:col-span-4 -mt-1 md:mt-0">
                                 <div class="grid grid-cols-6">
                                     <label class="text-sm text-gray-500 dark:text-gray-400 col-span-6">
                                         Incluir Passageiro*
                                     </label>
                                     <div class="inline-flex col-span-6 gap-3">
                                         <input type="text" v-model="passengersModel"
-                                               class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700"/>
+                                               class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700"
+                                               :class="!validateDate(routeForm?.date) ? 'bg-[#afb3b9]' : ''"
+                                               :disabled="!validateDate(routeForm?.date)"/>
                                         <button type="button" @click="setPassenger(false)"
-                                                v-if="validateDate(routeForm?.date)"
                                                 :disabled="passengersModel?.length < 3"
                                                 class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
                                                 :class="passengersModel?.length < 3 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
@@ -343,16 +346,15 @@ function setRouteToEdit(route) {
                                             </button>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
-
                         <button type="button" @click="saveRoute" v-if="validateDate(routeForm?.date)"
                                 class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline w-full max-w-[300px]">
                             Criar/Adicionar
                         </button>
                     </div>
+
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2"
                          v-if="routeForm?.driver?.id === routes?.driver && routes?.driver">
                         <p><span class="font-bold">Motorista:</span>

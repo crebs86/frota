@@ -43,7 +43,7 @@ function filterRequests() {
             requests.value = r.data
         })
         .catch((e) => {
-            console.log(e)
+            //console.log(e)
         })
         .finally()
 }
@@ -84,7 +84,7 @@ onBeforeMount(() => {
             requests.value = r.data
         })
         .catch((e) => {
-            console.log(e)
+            //console.log(e)
         })
         .finally()
 })
@@ -156,7 +156,7 @@ onBeforeMount(() => {
                                 {{ r.time }}
                             </td>
                             <td class="px-3 py-1.5 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                {{ driver(r.driver)[0].user.name }}
+                                {{ r.driver !== 2 ? driver(r.driver)[0].user.name : '-'}}
                             </td>
                             <td class="px-3 py-1.5 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center"
                                 :class="r.to === 1 || r.b === 1 ? 'underline underline-offset-8' : ''">

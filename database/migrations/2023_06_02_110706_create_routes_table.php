@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('routes', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('task')->nullable();
+            $table->unsignedBigInteger('task');
             $table->foreign('task')
                 ->references('id')
                 ->on('tasks');

@@ -1,10 +1,10 @@
 <script setup>
 import VueMultiselect from "vue-multiselect";
-import { onMounted, ref } from "vue";
-import { branchName, drivers } from "@/helpers";
+import {onMounted, ref} from "vue";
+import {branchName, drivers} from "@/helpers";
 import validateUpRt from "@/validates/createUpdateRoute";
 import axios from "axios";
-import { toast } from "@/toast";
+import {toast} from "@/toast";
 
 const props = defineProps({
     routeForEdition: Object,
@@ -40,6 +40,8 @@ function updateRoute() {
             branch: props.routeForEdition.branch,
             currentBranch: props.routeForEdition.currentBranch,
             time: props.routeForEdition.time,
+            date: props.routeForEdition.date,
+            driver: props.routeForEdition.driver.id,
             duration: props.routeForEdition.duration,
             passengers: props.routeForEdition.passengers,
             obs: props.routeForEdition.obs,
@@ -76,19 +78,20 @@ function updateRoute() {
 onMounted(() => {
     props.routeForEdition.ignore = false
     props.routeForEdition.ignoreQuestion = false
+    props.routeForEdition.driver = props.driver
     axios.get(route('frota.tasks.get-route-details', props.routeForEdition.id))
         .then((r) => {
             props.routeForEdition.obs = r.data.obs
         })
         .catch((e) => {
-            if (e.response?.status === 403) {
-                toast.error(e.response.data.error)
-                props.routeForEdition.errors = e.response.data.error
-            } else if (e.response?.status === 503) {
-                toast.error(e.response.data)
-                props.routeForEdition.errors = e.response.data
+                if (e.response?.status === 403) {
+                    toast.error(e.response.data.error)
+                    props.routeForEdition.errors = e.response.data.error
+                } else if (e.response?.status === 503) {
+                    toast.error(e.response.data)
+                    props.routeForEdition.errors = e.response.data
+                }
             }
-        }
         )
         .finally(() => {
 
@@ -104,129 +107,137 @@ onMounted(() => {
             <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
         </div>
         <div v-if="props.routeForEdition"
-            class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600 p-4">
+             class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600 p-4">
+            <div class="overflow-x-auto grid grid-cols-6 gap-3">
 
-            <div class="overflow-x-auto grid grid-cols-3 gap-3">
-                <div class="col-span-3 md:col-span-1">
+                <div class="grid grid-cols-1 col-span-6 md:col-span-2 h-12 mt-1 md:mt-0">
+                    <label class="text-sm">
+                        Data*
+                    </label>
+                    <input type="date" v-model="props.routeForEdition.date"
+                           class="rounded border border-black h-[41px] mt-[3px] text-gray-700">
+
+                    <div v-if="props.routeForEdition.errors?.date"
+                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                        <small v-for="error in props.routeForEdition.errors?.date">{{ error }}</small>
+                    </div>
+                </div>
+                <div class="col-span-6 md:col-span-2 mt-3 md:mt-0">
                     <label class="text-sm">
                         Hora da Chegada no Destino*
                     </label>
                     <VueMultiselect v-model="props.routeForEdition.time" :options="$page.props.timetables"
-                        :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Hora"
-                        selectLabel="Selecionar" deselectLabel="Remover" />
+                                    :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Hora"
+                                    selectLabel="Selecionar" deselectLabel="Remover"/>
                     <div v-if="props.routeForEdition.errors?.time"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                         <small v-for="error in props.routeForEdition.errors?.time">{{ error }}</small>
                     </div>
                     <div v-if="props.routeForEdition.ignoreQuestion">
                         <label for="_ignore" class="p-1.5 text-amber-500 font-bold">Ignorar conflito</label>
                         <input type="checkbox" id="_ignore" v-model="props.routeForEdition.ignore"
-                            class="text-red-400" />
+                               class="text-red-400"/>
                     </div>
                 </div>
-                <div class="col-span-3 md:col-span-2">
+
+                <div class="col-span-6 md:col-span-2 md:-mt-0.5">
+                    <label class="text-sm">
+                        Tempo de Permanência*
+                    </label>
+                    <input type="time" v-model="props.routeForEdition.duration"
+                           class="w-full rounded border h-[41px] mt-0.5 text-gray-700">
+
+                    <div v-if="props.routeForEdition.errors?.duration"
+                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                        <small v-for="error in props.routeForEdition.errors?.duration">{{ error }}</small>
+                    </div>
+                </div>
+                <div class="col-span-6 md:col-span-3">
                     <label class="text-sm">
                         Motorista
                     </label>
-                    <VueMultiselect v-model="props.driver" :options="props.drivers" :multiple="false"
-                        :close-on-select="true" placeholder="Motorista" :custom-label="drivers" selectLabel="Selecionar"
-                        deselectLabel="Remover" />
+                    <VueMultiselect v-model="props.routeForEdition.driver" :options="props.drivers" :multiple="false"
+                                    :close-on-select="true" placeholder="Motorista" :custom-label="drivers"
+                                    selectLabel="Selecionar"
+                                    deselectLabel="Remover"/>
 
                     <div v-if="props.routeForEdition.errors?.driver"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                         <small v-for="error in props.routeForEdition.errors?.driver">{{ error }}</small>
                     </div>
                 </div>
 
-                <div class="col-span-3 md:col-span-2">
+                <div class="col-span-6 md:col-span-3">
                     <label class="text-sm">
                         Destino
                     </label>
                     <VueMultiselect v-model="props.routeForEdition.branch" :options="$page.props.branches"
-                        :multiple="false" :close-on-select="true" placeholder="Destino" label="name" track-by="id"
-                        selectLabel="Selecionar" deselectLabel="Remover" @select="$page.props.errors.date = null"
-                        :custom-label="branchName" />
+                                    :multiple="false" :close-on-select="true" placeholder="Destino" label="name"
+                                    track-by="id"
+                                    selectLabel="Selecionar" deselectLabel="Remover"
+                                    @select="$page.props.errors.date = null"
+                                    :custom-label="branchName"/>
 
                     <div v-if="props.routeForEdition.errors?.branch"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                         <small v-for="error in props.routeForEdition.errors?.branch">{{ error }}</small>
                     </div>
                 </div>
 
-                <div class="col-span-3 md:col-span-1 md:-mt-0.5">
-                    <label class="text-sm">
-                        Tempo de Permanência no Destino*
-                    </label>
-                    <input type="time" v-model="props.routeForEdition.duration"
-                        class="w-full rounded border h-[41px] mt-0.5 text-gray-700">
-
-                    <div v-if="props.routeForEdition.errors?.duration"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                        <small v-for="error in props.routeForEdition.errors?.duration">{{ error }}</small>
-                    </div>
-                </div>
-
-                <div class="col-span-3" v-if="props.routeForEdition.branch?.id === 1">
+                <div class="col-span-6 md:col-span-3 place-content-center"
+                     v-if="props.routeForEdition.branch?.id === 1">
                     <label class="text-sm">
                         Local*
                     </label>
                     <input type="text" v-model="props.routeForEdition.local"
-                        class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
+                           class="w-full rounded border border-red-500 bg-red-100 h-[41px] mt-0.5 text-gray-700">
 
                     <div v-if="props.routeForEdition.errors?.local"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                         <small v-for="error in props.routeForEdition.errors?.local">{{ error }}</small>
                     </div>
                 </div>
 
-                <div class="col-span-3 grid grid-cols-1">
-                    <label class="text-sm text-gray-500 dark:text-gray-400 col-span-6">
+                <div class="col-span-6 md:col-span-3 grid grid-cols-1">
+                    <label class="text-sm">
                         Obs.:
                     </label>
                     <textarea class="rounded text-gray-600" v-model="props.routeForEdition.obs"></textarea>
                     <div v-if="props.routeForEdition.errors?.obs"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
                         <small v-for="error in props.routeForEdition.errors?.obs">{{ error }}</small>
                     </div>
                 </div>
 
-                <div class="col-span-3 md:col-span-3">
+                <div class="col-span-6 md:col-span-4">
                     <div class="grid grid-cols-6">
                         <label class="text-sm col-span-6">
                             Incluir Passageiro*
                         </label>
                         <div class="inline-flex col-span-6">
                             <input type="text" v-model="passengersEditModel"
-                                class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700 mr-2" />
+                                   class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700 mr-2"/>
                             <button type="button" @click="setEditPassenger(false)"
-                                :disabled="passengersEditModel?.length < 3"
-                                class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
-                                :class="passengersEditModel?.length < 3 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                    :disabled="passengersEditModel?.length < 3"
+                                    class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
+                                    :class="passengersEditModel?.length < 3 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
                                 Incluir
                             </button>
                         </div>
                         <div v-if="props.routeForEdition.errors?.passengers"
-                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
                             <small v-for="error in props.routeForEdition.errors?.passengers">
                                 {{ error }}
                             </small>
                         </div>
-<!--                         <div class="col-span-4 mb-4 -mt-2" v-if="validateDate(props.routeForEdition.date)">
-                            <span v-for="(p, i) in props.routeForEdition.passengers" :key="'p_' + i" class=" inline-flex mx-4">
-                                {{ p }}
-                                <button @click="setPassenger(true, p)">
-                                    <mdicon name="close" class="text-red-400" />
-                                </button>
-                            </span>
-                        </div> -->
                     </div>
                 </div>
 
-                <div class="col-span-4 md:col-span-2">
+                <div class="col-span-6 md:col-span-3">
                     <div v-for="(p, i) in props.routeForEdition.passengers" :key="'ps_' + i" class="inline-flex w-full">
                         {{ p }}
                         <button @click="setEditPassenger(true, p)">
-                            <mdicon name="close" class="text-red-400" />
+                            <mdicon name="close" class="text-red-400"/>
                         </button>
                     </div>
                 </div>
@@ -242,8 +253,8 @@ onMounted(() => {
 
             <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1">
                 <button type="button"
-                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
-                    @click="updateRoute()">
+                        class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                        @click="updateRoute()">
                     Salvar
                 </button>
                 <slot name="close_button"></slot>

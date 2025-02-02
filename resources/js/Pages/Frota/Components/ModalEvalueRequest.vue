@@ -72,7 +72,7 @@ function branchName({ id, name }) {
 
                 <div class="col-span-3 md:col-span-1">
                     <label class="text-sm">
-                        Tempo de Permanência no Destino*
+                        Tempo de Permanência*
                     </label>
                     <input type="time" v-model="props.request.duration"
                         class="w-full rounded border h-[41px] mt-0.5 text-gray-700">

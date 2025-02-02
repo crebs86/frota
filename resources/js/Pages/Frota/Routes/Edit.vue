@@ -437,7 +437,7 @@ onMounted(() => {
                                     <div class="col-span-6 md:col-span-2 text-left"
                                         v-if="validateDate(routeForEdition.date)">
                                         <label class="text-sm">
-                                            Tempo de Permanência no Destino (h)*
+                                            Tempo de Permanência*
                                         </label>
                                         <input type="time" v-model="routeForEdition.duration"
                                             class="h-[41px] w-full text-gray-800 rounded" />

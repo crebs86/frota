@@ -27,7 +27,7 @@ trait Requests
     public function runIndex($request): Response
     {
         $props = [
-            'drivers' => Driver::with('user')->select('id')->get(),
+            'drivers' => Driver::with('user')->where('id', '<>', 2)->select('id')->get(),
             'branches' => Branch::select('id', 'name')->get(),
             'timetables' => Arr::pluck(Timetable::all(['time']), 'time'),
             'liberator' => $this->can('Liberador') && !$this->hasRole('Super Admin')

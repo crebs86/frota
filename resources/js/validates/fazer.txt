@@ -13,16 +13,9 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
 //colocações do analista
 Assim que logar, já mostrar a tela com  as minhas solicitações pendentes e aprovadas. Mostrar em cima um botão de "nova solicitação". Não vejo necessidade do usuário ver as rotas dos motoristas, isso fica a cargo do gestor.
 
-O usuário não deveria se prender ao motorista, podendo utilizar o campo de observação para informar a preferência caso tenha.
-
-O campo de "hora" poderia ser "hora de chegada no destino".
 Importante informar um contato do passageiro, para que o motorista possa entrar em contato para combinar a hora para receber o passageiro.
-
-O campo "duração" poderia ser "tempo de permanência no destino"
 
 Não deveria ter um campo para informar onde o motorista irá receber o passageiro para levá-lo ao seu destino?
 
+//todo testar outros locais de agendar rota se a alteração na solicitação não ocasiona erros.
 
-//todo
-    app\Frota\Core\Routes.php
-    linha 344

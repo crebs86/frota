@@ -52,6 +52,8 @@ Route::prefix('/frota')->middleware(
     Route::post('/combustivel/carregarAbastecimentos', [FuelController::class, 'loadLastFill'])->name('load-last-fill');
     Route::post('/combustivel/informarAbastecimento', [FuelController::class, 'insertFill'])->name('insert-fill');
 
+
+    Route::post('/solicitacoes/solicitarRota', [RoutesController::class, 'routeStore'])->name('request.store');
     Route::match(['get', 'post'], '/solicitacoes', [RequestsController::class, 'index'])->name('requests.index');
     Route::match(['get', 'post'], '/solicitacoes/avaliar', [RequestsController::class, 'getRequestsToEvaluate'])->name('requests.evaluate');
     Route::post('/solicitacoes/liberar', [RequestsController::class, 'allow'])->name('requests.allow');

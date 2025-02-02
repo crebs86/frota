@@ -141,6 +141,28 @@ trait Helpers
         return $t;
     }
 
+
+    /**
+     * @param $request
+     * @param $route
+     * @return void
+     */
+    private function setRealBranch($request, $route): void
+    {
+        if ($request->currentBranch['id'] === 1 && $request->branch['id'] === 1) {
+            RealBranch::find($route->id)->update([
+                'name' => $request->local
+            ]);
+        } elseif ($request->currentBranch['id'] === 1 && $request->branch['id'] !== 1) {
+            RealBranch::find($route->id)?->delete();
+        } elseif ($request->currentBranch['id'] !== 1 && $request->branch['id'] === 1) {
+            RealBranch::create([
+                'route' => $route->id,
+                'name' => $request->local
+            ]);
+        }
+    }
+
     /**
      * @param int $loose
      * @return string
@@ -154,7 +176,7 @@ trait Helpers
      * @param array $tasks
      * @return array
      */
-    private function runSetAllRoutesRealBranch(array $tasks)
+    private function runSetAllRoutesRealBranch(array $tasks): array
     {
         $t = [];
 
