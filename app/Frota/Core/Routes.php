@@ -92,7 +92,7 @@ trait Routes
     public function runMyRoutes(Request $request): Response
     {
         $request->merge(['driver' => auth()->id()]);
-            $request->date ?? $request->merge(['date' => date('Y-m-d')]);
+        $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
         $cars = Car::all(['id', 'modelo', 'placa']);
         $cars->each(function ($car) {
@@ -185,7 +185,9 @@ trait Routes
             'duration' => 'required|date_format:H:i',
             'date' => 'required|date_format:Y-m-d',
             'driver' => $driverRequired . '|integer|exists:drivers,id',
-            'local' => 'required_if:branch,==,1|string|nullable|max:255'
+            'local' => 'required_if:branch,==,1|string|nullable|max:255',
+            'passengers' => 'required|array',
+            'duration' => 'required|date_format:H:i',
         ], [
             'branch.*' => 'Informe uma unidade para a rota.',
             'time.required' => 'Selecione um horário para a rota.',
@@ -194,7 +196,8 @@ trait Routes
             'duration.date_format' => 'Duração inválida.',
             'date.*' => 'A data não foi informada.',
             'driver.*' => 'Selecione um motorista para fazer a rota.',
-            'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.'
+            'local.required_if' => 'O campo Local é obrigatório quando unidade Não Cadastrada.',
+            'passengers.required' => 'Informe pelo menos um passageiro com contato.'
         ]);
 
         if (!$this->validateDate($request->date, $request->time)) {
@@ -203,7 +206,7 @@ trait Routes
         if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar')) {
 
             $task = $this->runGetTaskByDriver($request);
-            dd($task);
+
             if (count($task) === 0) {
                 $createTask = Task::create([
                     'driver' => $request->driver ?? 2,
@@ -212,7 +215,7 @@ trait Routes
                 return $this->runRoutePersist($createTask, $request);
             } else {
 
-                if ( request()->route()->getName() === 'frota.request.store' || (int)getKeyValue($request->_checker, 'route_edit') === (int)$task[0]['id']) {
+                if (request()->route()->getName() === 'frota.request.store' || (int)getKeyValue($request->_checker, 'route_edit') === (int)$task[0]['id']) {
                     return $this->runRoutePersist($task[0], $request);
                 }
                 return response()->json(['error' => 'Erro na utilização da aplicação. rrs(403-2)'], 403);
@@ -298,7 +301,8 @@ trait Routes
                 'driver' => $request->driver,
                 't.date' => $request->date,
                 'r.time' => $request->time
-            ])->join('routes as r', 't.id', '=', 'r.task')
+            ])->where('r.id', '<>', $request->id)
+            ->join('routes as r', 't.id', '=', 'r.task')
             ->get();
 
         $response = '';
@@ -312,7 +316,7 @@ trait Routes
                     $response = [['message' => 'Existe uma solicitação pendente neste horário para este motorista.', 'errors' => ["time" => ['Existe uma solicitação pendente neste horário para este motorista.']]], 409];
                 }
             });
-            if ($response[1] === 409 && $request->ignore === false) {
+            if ($response[1] === 409 && !$request->ignore) {
                 return response()->json($response[0], $response[1]);
             }
         }

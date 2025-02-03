@@ -9,7 +9,7 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import moment from 'moment';
 import validateESR from '@/validates/editSaveRoute';
-import { drivers } from '@/helpers';
+import { branchName, drivers } from '@/helpers';
 import { validateDate } from '@/validates/validates';
 
 const props = defineProps({
@@ -26,9 +26,14 @@ const _drivers = ref([]);
 const routeForm = ref({
     time: '',
     branch: '',
+    duration: '',
     local: '',
-    errors: '',
-    _checker: ''
+    _checker: '',
+    errors: {},
+    ignore: false,
+    ignoreQuestion: false,
+    passengers: [],
+    obs: ''
 });
 
 const modal = ref({
@@ -44,21 +49,13 @@ const routeForEdition = ref({
     duration: '',
     local: '',
     error: '',
-    errors: [],
+    errors: {},
     date: '',
     ignore: false,
     ignoreQuestion: false,
     passengers: [],
     obs: ''
 });
-
-function branchName({ id, name }) {
-    if (id === 1) {
-        return `${id ? id : ''} - Não Cadastrado`
-    } else {
-        return `${id ? id : ''} - ${name ? name : ''}`
-    }
-}
 
 function saveRoute() {
     routeForm.value.errors = ''
@@ -73,6 +70,8 @@ function saveRoute() {
             passengers: routeForm.value.passengers,
             obs: routeForm.value.obs,
             duration: routeForm.value.duration,
+            ignore: routeForm.value.ignore,
+            obs: routeForm.value.obs,
             _checker: routeForm.value._checker
         })
             .then((r) => {
@@ -84,19 +83,20 @@ function saveRoute() {
                 if (e.response?.status === 500) {
                     toast.error(e.response.data)
                     routeForm.value.errors = e.response.data
-                }
-                if (e.response?.status === 403) {
+                } else if (e.response?.status === 403) {
                     toast.error(e.response.data.error)
                     routeForm.value.errors = e.response.data.error
-                }
-                if (e.response?.status === 422) {
+                } else if (e.response?.status === 409) {
+                    routeForm.value.ignoreQuestion = true
+                    toast.error('Agenda em conflito.')
+                    routeForm.value.errors = e.response.data.errors
+                } else if (e.response?.status === 422) {
                     toast.error(e.response.data.message)
                     routeForm.value.errors = e.response.data.errors
                 }
             })
     } else {
         routeForm.value.errors = val
-        console.log(val)
     }
 }
 
@@ -147,6 +147,14 @@ function updateRoute() {
 function resetForm() {
     routeForm.value.time = ''
     routeForm.value.branch = ''
+    routeForm.value.duration = ''
+    routeForm.value.local = ''
+    routeForm.value._checker = ''
+    routeForm.value.errors = {}
+    routeForm.value.ignore = false
+    routeForm.value.ignoreQuestion = false
+    routeForm.value.passengers = []
+    routeForm.value.obs = ''
 }
 
 function verifyDriverRoute() {
@@ -176,12 +184,14 @@ function verifyDriverRoute() {
 
 function setRouteToEdit(route) {
     loadDrivers()
+    resetPassengerEditModel()
     modal.value.editRoute = true
     routeForEdition.value.id = route.id
     routeForEdition.value.driver = props.driverRoutes?.driver
     routeForEdition.value.branch = route.branch
     routeForEdition.value.currentBranch = route.branch
     routeForEdition.value.time = route.time
+    routeForEdition.value.duration = route.duration
     routeForEdition.value.date = props.driverRoutes?.date
     routeForEdition.value.obs = route.obs
     routeForEdition.value.passengers = Object.values(JSON.parse(route.passengers) ?? [])
@@ -201,18 +211,57 @@ function loadDrivers() {
     }
 }
 
+const passengersModel = ref({
+    passenger: '',
+    contact: ''
+})
 
-const passengersModel = ref('')
+function resetPassengerModel() {
+    passengersModel.value = {
+        passenger: '',
+        contact: ''
+    }
+}
 
-function setPassenger(remove = false, passenger = null) {
-    routeForEdition.value.ignoreQuestion = false
-    routeForEdition.value.ignore = false
+function setPassenger(remove = false, passenger = null, edit = false) {
+    routeForm.value.errors.passengers = ''
+    if (remove) {
+        routeForm.value.passengers.splice(routeForm.value.passengers.indexOf(passenger), 1)
+    } else if (edit) {
+        passengersModel.value.contact = passenger.contact
+        passengersModel.value.passenger = passenger.passenger
+        routeForm.value.passengers.splice(routeForm.value.passengers.indexOf(passenger), 1)
+    } else if (passengersModel.value) {
+        routeForm.value.passengers.push(passengersModel.value)
+        resetPassengerModel()
+    } else {
+        routeForm.value.errors.passengers = 'Vazio.'
+    }
+}
+
+const passengersEditModel = ref({
+    passenger: '',
+    contact: ''
+})
+
+function resetPassengerEditModel() {
+    passengersEditModel.value = {
+        passenger: '',
+        contact: ''
+    }
+}
+
+function setEditPassenger(remove = false, passenger = null, edit = false) {
     routeForEdition.value.errors.passengers = ''
     if (remove) {
         routeForEdition.value.passengers.splice(routeForEdition.value.passengers.indexOf(passenger), 1)
-    } else if (passengersModel.value) {
-        routeForEdition.value.passengers.push(passengersModel.value)
-        passengersModel.value = ''
+    } else if (edit) {
+        passengersEditModel.value.contact = passenger.contact
+        passengersEditModel.value.passenger = passenger.passenger
+        routeForEdition.value.passengers.splice(routeForEdition.value.passengers.indexOf(passenger), 1)
+    } else if (passengersEditModel.value) {
+        routeForEdition.value.passengers.push(passengersEditModel.value)
+        resetPassengerEditModel()
     } else {
         routeForEdition.value.errors.passengers = 'Vazio.'
     }
@@ -242,9 +291,9 @@ onMounted(() => {
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.33)]">
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
 
-                        <div class="w-full z-auto grid grid-cols-1 md:grid-cols-2">
+                        <div class="w-full z-auto grid grid-cols-1 md:grid-cols-6 gap-2">
 
-                            <div class="mx-2 mb-3 pr-3 w-full z-auto col-span-2 md:col-span-1">
+                            <div class="w-full z-auto col-span-6 md:col-span-3">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
                                     Motorista
                                 </label>
@@ -253,7 +302,7 @@ onMounted(() => {
                                     :value="props.driverRoutes?.driver?.user?.name" readonly />
                             </div>
 
-                            <div class="mx-2 mb-3 w-full z-auto pr-3 pl-0.5">
+                            <div class="w-full z-auto col-span-6 md:col-span-3">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
                                     Data
                                 </label>
@@ -262,7 +311,7 @@ onMounted(() => {
                                     readonly>
                             </div>
 
-                            <div class="mx-2 mb-3 col-span-2 md:col-span-1">
+                            <div class="col-span-6 md:col-span-3">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
                                     Hora da Chegada no Destino*
                                 </label>
@@ -271,13 +320,33 @@ onMounted(() => {
                                     selectLabel="Selecionar" deselectLabel="Remover" />
 
                                 <div v-if="routeForm.errors?.time"
-                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit flex">
                                     <small v-for="error in routeForm.errors?.time">{{ error }}</small>
+                                </div>
+                                <div v-if="routeForm.ignoreQuestion">
+                                    <label for="_ignore" class="p-1.5 text-amber-500 font-bold">
+                                        Ignorar conflito e agendar
+                                    </label>
+                                    <input type="checkbox" id="_ignore" v-model="routeForm.ignore"
+                                        class="text-red-400" />
                                 </div>
                             </div>
 
-                            <div class="mx-2">
+                            <div class="text-left col-span-6 md:col-span-3">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    Tempo de Permanência*
+                                </label>
+                                <input type="time" v-model="routeForm.duration"
+                                    class="h-[41px] w-full text-gray-800 rounded" />
+
+                                <div v-if="routeForm.errors?.duration"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small v-for="error in routeForm.errors?.duration">{{ error }}</small>
+                                </div>
+                            </div>
+
+                            <div class="col-span-6 md:col-span-3">
+                                <label class="text-sm">
                                     Destino*
                                 </label>
                                 <VueMultiselect v-model="routeForm.branch" :options="props.branches" :multiple="false"
@@ -291,7 +360,18 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <div class="mx-2 col-span-2 mt-2" v-if="routeForm.branch?.id === 1">
+                            <div class="grid grid-cols-1 col-span-6 md:col-span-3">
+                                <label class="text-sm text-gray-500 dark:text-gray-400 col-span-6">
+                                    Obs.:
+                                </label>
+                                <textarea class="rounded text-gray-600" v-model="routeForm.obs"></textarea>
+                                <div v-if="routeForm.errors?.obs"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                                    <small v-for="error in routeForm.errors?.obs">{{ error }}</small>
+                                </div>
+                            </div>
+
+                            <div class="col-span-6" v-if="routeForm.branch?.id === 1">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
                                     Local*
                                 </label>
@@ -304,6 +384,48 @@ onMounted(() => {
                                 </div>
                             </div>
 
+                            <div class="col-span-6 grid grid-cols-8">
+                                <div class="col-span-6 grid grid-cols-4 gap-2">
+                                    <div class="col-span-5 md:col-span-2">
+                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                            Passageiro*
+                                        </label>
+                                        <input type="text" v-model="passengersModel.passenger"
+                                            class="w-full rounded border border-black h-[41px] text-gray-700" />
+                                    </div>
+                                    <div class="col-span-5 md:col-span-2">
+                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                            Contato*
+                                        </label>
+                                        <input type="text" v-model="passengersModel.contact"
+                                            class="w-full rounded border border-black h-[41px] text-gray-700" />
+                                    </div>
+                                </div>
+                                <button type="button" @click="setPassenger(false)"
+                                    :disabled="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8"
+                                    class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:-mb-[1px]"
+                                    :class="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                    Incluir
+                                </button>
+
+                                <div v-if="routeForm.errors?.passengers"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                                    <small v-for="error in routeForm.errors?.passengers">{{ error }}</small>
+                                </div>
+
+                                <div class="col-span-4 mb-4">
+                                    <div v-for="(p, i) in routeForm.passengers" :key="'pre_' + i"
+                                        class="inline-flex w-full">
+                                        {{ p.passenger }}: {{ p.contact }}
+                                        <button @click="setPassenger(true, p)">
+                                            <mdicon name="close" class="text-red-400" />
+                                        </button>
+                                        <button @click="setPassenger(false, p, true)">
+                                            <mdicon name="pencil" class="text-blue-400" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <button type="button" @click="saveRoute"
@@ -427,7 +549,13 @@ onMounted(() => {
                                         <VueMultiselect v-model="routeForEdition.time" :options="$page.props.timetables"
                                             :multiple="false" :close-on-select="true" selectedLabel="atual"
                                             placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
-
+                                        <div v-if="routeForEdition.ignoreQuestion">
+                                            <label for="_ignore" class="p-1.5 text-amber-500 font-bold">
+                                                Ignorar conflito e agendar
+                                            </label>
+                                            <input type="checkbox" id="_ignore" v-model="routeForEdition.ignore"
+                                                class="text-red-400" />
+                                        </div>
                                         <div v-if="routeForEdition.errors?.time"
                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                             <small v-for="error in routeForEdition.errors?.time">{{ error }}</small>
@@ -499,50 +627,53 @@ onMounted(() => {
                                             <small v-for="error in routeForEdition.errors?.obs">{{ error }}</small>
                                         </div>
                                     </div>
-                                    <div class="col-span-6" v-if="validateDate(routeForEdition.date)">
-                                        <div class="grid grid-cols-6">
-                                            <label class="text-sm col-span-6">
-                                                Incluir Passageiro*
-                                            </label>
-                                            <div class="inline-flex col-span-6 gap-1">
-                                                <input type="text" v-model="passengersModel"
-                                                    class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700" />
-                                                <button type="button" @click="setPassenger(false)"
-                                                    v-if="validateDate(routeForEdition.date)"
-                                                    :disabled="passengersModel?.length < 3"
-                                                    class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
-                                                    :class="passengersModel?.length < 3 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
-                                                    Incluir
-                                                </button>
+                                    <div class="col-span-6 grid grid-cols-8" v-if="validateDate(routeForEdition.date)">
+                                        <div class="col-span-6 grid grid-cols-4 gap-2">
+                                            <div class="col-span-5 md:col-span-2">
+                                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                    Passageiro*
+                                                </label>
+                                                <input type="text" v-model="passengersEditModel.passenger"
+                                                    class="w-full rounded border border-black h-[41px] text-gray-700" />
                                             </div>
-                                            <div v-if="routeForEdition.errors?.passengers"
-                                                class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
-                                                <small v-for="error in routeForEdition.errors?.passengers">
-                                                    {{ error }}
-                                                </small>
+                                            <div class="col-span-5 md:col-span-2">
+                                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                                    Contato*
+                                                </label>
+                                                <input type="text" v-model="passengersEditModel.contact"
+                                                    class="w-full rounded border border-black h-[41px] text-gray-700" />
+                                            </div>
+                                        </div>
+                                        <button type="button" @click="setEditPassenger(false)"
+                                            :disabled="passengersEditModel.passenger.length < 3 || passengersEditModel.contact.length < 8"
+                                            class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:-mb-[1px]"
+                                            :class="passengersEditModel.passenger.length < 3 || passengersEditModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                            Incluir
+                                        </button>
+
+                                        <div v-if="routeForEdition.errors?.passengers"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                                            <small v-for="error in routeForEdition.errors?.passengers">{{ error
+                                                }}</small>
+                                        </div>
+
+                                        <div class="col-span-4 mb-4" v-if="validateDate(routeForEdition?.date)">
+                                            <div v-for="(p, i) in routeForEdition.passengers" :key="'pre_' + i"
+                                                class="inline-flex w-full">
+                                                {{ p.passenger }}: {{ p.contact }}
+                                                <button @click="setEditPassenger(true, p)">
+                                                    <mdicon name="close" class="text-red-400" />
+                                                </button>
+                                                <button @click="setEditPassenger(false, p, true)">
+                                                    <mdicon name="pencil" class="text-blue-400" />
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-span-2 mb-4 -mt-2" v-if="validateDate(routeForEdition.date)">
-                                        <span v-for="(p, i) in routeForEdition.passengers" :key="'p_' + i"
-                                            class=" inline-flex mx-4">
-                                            {{ p }}
-                                            <button @click="setPassenger(true, p)">
-                                                <mdicon name="close" class="text-red-400" />
-                                            </button>
-                                        </span>
-                                    </div>
-                                    <div class="h-[6rem]"></div>
+
                                 </div>
                             </div>
                             <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 gap-1 grid grid-cols-1 md:flex text-center">
-                                <div v-if="routeForEdition.ignoreQuestion" class="my-auto">
-                                    <label for="_ignore" class="p-1.5 text-amber-500 font-bold">
-                                        Ignorar conflito.
-                                    </label>
-                                    <input type="checkbox" id="_ignore" v-model="routeForEdition.ignore"
-                                        class="text-red-400" />
-                                </div>
                                 <button type="button"
                                     class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
                                     @click="updateRoute()">

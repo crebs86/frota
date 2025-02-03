@@ -20,3 +20,7 @@ Não deveria ter um campo para informar onde o motorista irá receber o passagei
 //todo testar outros locais de agendar rota se a alteração na solicitação não ocasiona erros.
 
 //todo adicionar ou criar rota para motorista em que foi aprovada a solicitação
+
+//todo validar em back passageiro e telefone
+
+//todo terminar inserção de passageiro/contato nas telas de .../frota/solicitacoes
