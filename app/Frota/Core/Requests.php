@@ -15,6 +15,7 @@ use App\Frota\Models\Timetable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Frota\Models\Request as RequestModel;
+use App\Frota\Models\Task;
 
 trait Requests
 {
@@ -181,9 +182,9 @@ trait Requests
             ->select('r.id as route', 't.id as task', 't.date', 't.driver', 'r.date as dt', 'r.time', 'u.name', 'b.name as branch', 'r.to', 'r.duration', 'r.passengers', 'r.type', 'r.status')
             ->where(function ($q) use ($request, $date) {
                 if ($request->date) {
-                    return $q->where('t.date', $date);
+                    return $q->where('r.date', $date);
                 } else {
-                    return $q->whereBetween('t.date', [$date->format('Y-m-d'), $date->addMonths(1)]);
+                    return $q->whereBetween('r.date', [$date->format('Y-m-d'), $date->addMonths(1)]);
                 }
             })
             ->where('r.type', '<>', 0)
@@ -220,19 +221,38 @@ trait Requests
     public function runAllow(Request $request): JsonResponse
     {
         if ((int)getKeyValue($request->_checker, 'request_evaluate') === (int)$request->route) {
-            $route = Route::select('status', 'id')->find($request->route);
+            $route = Route::select('status', 'id', 'task', 'date', 'time')->with('taskData')->find($request->route);
             if ($route->status === 1 && !$request->type) {
                 return response()->json('Esta rota já foi aprovada. rev(404-1)', 404);
             }
 
-            dd($route->driver, $request->driver, $request->type, $route);
-            if (!$request->type && (!$route->driver && !$request->driver)) {
+            if (!$request->type && (!$route->taskData?->driver && !$request->driver)) {
                 return response()->json('Informe um motorista.', 422);
             }
 
             $status = $route->status;
             $update = !$route->driver && $request->driver ? ['status' => $request->type ? 2 : 1, 'driver' => $request->driver] : ['status' => $request->type ? 2 : 1];
-            dd($update);
+            if (!$route->driver && $request->driver) {
+                if (
+                    $task = DB::table('tasks as t')
+                    ->where('t.driver', '<>', 2)
+                    ->where('driver', $request->driver)
+                    ->where('r.id', '<>', $route->id)
+                    ->where(['r.date' => $route->date, 'r.time' => $route->time])
+                    ->select('type', 'status')
+                    ->join('routes as r', 't.id', '=', 'r.task')
+                    ->first()
+                ) {
+                    if (!($task && $task->status != 2) || $request->ignore) {
+                        $update = ['status' => $request->type ? 2 : 1, 'task' => $this->getTask($request, $route)?->id];
+                    } else {
+                        return response()->json('Já existe uma agenda ou solicitação para este horário para este motorista.', 409);
+                    }
+                }
+            } else {
+                $update = ['status' => $request->type ? 2 : 1];
+            }
+dd('passou');
             if ($route->update($update)) {
                 if ($request->type && $status === 1) {
                     $this->storeJustification((int)$route->id, $request->justification);
@@ -243,6 +263,19 @@ trait Requests
             }
         }
         return response()->json('Erro na utilização da aplicação. rev(403-1)', 403);
+    }
+
+    private function getTask($request, $route)
+    {
+        if ($request->driver === 2) {
+            return Task::where('driver', 2)->first();
+        } else {
+            if ($task = Task::where(['driver' => $request->driver, 'date' => $route->date])->first()) {
+                return $task;
+            } else {
+                return Task::create(['driver' => $request->driver, 'date' => $route->date]);
+            }
+        }
     }
 
     /**

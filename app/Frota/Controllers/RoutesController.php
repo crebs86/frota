@@ -33,7 +33,7 @@ class RoutesController extends Controller
     public function create(): Response
     {
         return Inertia::render('Frota/Routes/Create', [
-            'drivers' => Driver::with('user')->select('id')->get(),
+            'drivers' => Driver::with('user')->where('id', '<>', 2)->select('id')->get(),
             'branches' => Branch::select('id', 'name')->get(),
             'timetables' => Arr::pluck(Timetable::all(['time']), 'time')
         ]);

@@ -252,11 +252,12 @@ trait Routes
                 }
             }
         }
+
         $route = Route::create([
             'task' => $task['id'],
             'user' => auth()->id(),
             'to' => $request->branch,
-            'date' => $task['date'] ?? $request->date,
+            'date' => $task['date'] && $task['driver'] != 2 ? $task['date'] : $request->date,
             'time' => $request->time,
             'type' => $request->type ?? 0,
             'obs' => $request->obs,
