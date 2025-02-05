@@ -26,7 +26,7 @@ class RoutesController extends Controller
     {
         return Inertia::render('Frota/Routes/Index', [
             'branches' => Branch::all(['id', 'name']),
-            'drivers' => Driver::select('id')->with('user')->get()->toArray()
+            'drivers' => Driver::select('id')->where('id', '<>', 2)->with('user')->get()->toArray()
         ]);
     }
 
