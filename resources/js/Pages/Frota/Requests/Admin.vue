@@ -58,7 +58,7 @@ const requestForm = ref({
     date: '',
     time: '',
     branch: '',
-    errors: [],
+    errors: {},
     local: '',
     duration: '',
     passengers: [],
@@ -77,7 +77,7 @@ const requestForEvalue = ref({
     local: '',
     duration: '',
     passengers: [],
-    errors: []
+    errors: {}
 });
 
 const passengersModel = ref('')

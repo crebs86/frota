@@ -221,7 +221,25 @@ trait Requests
     public function runAllow(Request $request): JsonResponse
     {
         if ((int)getKeyValue($request->_checker, 'request_evaluate') === (int)$request->route) {
+
             $route = Route::select('status', 'id', 'task', 'date', 'time')->with('taskData')->find($request->route);
+            $status = $route->status;
+
+            if ($request->type) {
+                if (!$request->justification) {
+                    return response()->json('Informe uma justificativa.', 422);
+                }
+                $route->update(['status' => 2]);
+                if ($status === 1) {
+                    $this->storeJustification((int)$route->id, $request->justification);
+                }
+                return response()->json('A solicitação foi marcada como negada.', 200);
+            }
+
+            if (!$this->validateDate($route->date, $route->time)) {
+                return response()->json('Não é possíovel autorizar uma solicitação passada.', 403);
+            }
+
             if ($route->status === 1 && !$request->type) {
                 return response()->json('Esta rota já foi aprovada. rev(404-1)', 404);
             }
@@ -230,9 +248,8 @@ trait Requests
                 return response()->json('Informe um motorista.', 422);
             }
 
-            $status = $route->status;
-            $update = !$route->driver && $request->driver ? ['status' => $request->type ? 2 : 1, 'driver' => $request->driver] : ['status' => $request->type ? 2 : 1];
-            if (!$route->driver && $request->driver) {
+            $update = $request->driver ? ['status' => $request->type ? 2 : 1, 'driver' => $request->driver] : ['status' => $request->type ? 2 : 1];
+            if ($request->driver) {
                 if (
                     $task = DB::table('tasks as t')
                     ->where('t.driver', '<>', 2)
@@ -246,17 +263,28 @@ trait Requests
                     if (!($task && $task->status != 2) || $request->ignore) {
                         $update = ['status' => $request->type ? 2 : 1, 'task' => $this->getTask($request, $route)?->id];
                     } else {
-                        return response()->json('Já existe uma agenda ou solicitação para este horário para este motorista.', 409);
+                        return response()->json('Já existe uma agenda ou solicitação para este horário para este motorista.(1)', 409);
                     }
+                }
+            } elseif (!$request->ignore) {
+                if (
+                    DB::table('tasks as t')
+                    ->where('t.driver', '<>', 2)
+                    ->where('driver', $route->taskData->driver)
+                    ->where('r.id', '<>', $route->id)
+                    ->where(['r.date' => $route->date, 'r.time' => $route->time])
+                    ->select('type', 'status')
+                    ->join('routes as r', 't.id', '=', 'r.task')
+                    ->get()->count() > 0
+                ) {
+                    return response()->json('Já existe uma agenda ou solicitação para este horário para este motorista.(2)', 409, ['_direct_allow' => true]);
                 }
             } else {
                 $update = ['status' => $request->type ? 2 : 1];
             }
-dd('passou');
+
             if ($route->update($update)) {
-                if ($request->type && $status === 1) {
-                    $this->storeJustification((int)$route->id, $request->justification);
-                } elseif ($status === 2 && !$request->type) {
+                if ($status === 2 && !$request->type) {
                     $this->removeJustification((int)$route->id);
                 }
                 return response()->json($request->type ? 'A rota foi autorizada.' : 'A solicitação foi marcada como negada.', 200);

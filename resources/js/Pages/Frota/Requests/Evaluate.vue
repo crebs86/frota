@@ -24,7 +24,8 @@ const filter = ref({
 
 const modal = ref({
     evaluate: false,
-    defineDriver: false
+    defineDriver: false,
+    directAllowConflict: false
 })
 
 const model = ref({
@@ -59,7 +60,7 @@ function allow(r, hasDriver = null) {
             route: r.route,
             _checker: r._checker,
             driver: hasDriver?.id,
-            ignore: modal.value.ignore
+            ignore: model.value.ignore
         })
             .then(() => {
                 requests.value[requests.value.indexOf(r)].status = 1
@@ -67,6 +68,7 @@ function allow(r, hasDriver = null) {
                     requests.value[requests.value.indexOf(r)].driver = hasDriver?.id
                 }
                 modal.value.defineDriver = false
+                modal.value.directAllowConflict = false
                 model.value.ignoreQuestion = false
                 model.value.ignore = false
                 toast.success('A solicitação foi aprovada.')
@@ -76,6 +78,16 @@ function allow(r, hasDriver = null) {
                 if (e.response.status === 409) {
                     model.value.ignoreQuestion = true
                     toast.error(e.response?.data)
+                    if (e.response.headers._direct_allow) {
+                        modal.value.directAllowConflict = true
+                        currentRequest.value = r
+                    }
+                } else if (e.response.status === 403) {
+                    toast.error(e.response?.data)
+                    if (e.response.headers._direct_allow) {
+                        modal.value.directAllowConflict = true
+                        currentRequest.value = r
+                    }
                 } else {
                     toast.error(e.response?.data ?? 'Erro')
                 }
@@ -107,6 +119,12 @@ function deny() {
             toast.error(e.response.data)
         })
         .finally()
+}
+
+function resetDirectAllow() {
+    modal.value.directAllowConflict = false
+    currentRequest.value = {}
+    model.value.ignore = false
 }
 
 function resetAllow() {
@@ -290,7 +308,8 @@ onBeforeMount(() => {
                 <label class="text-sm" for="justification">Selecione o motorista</label>
                 <VueMultiselect v-model="model.driverToRoute" :options="props.drivers" :multiple="false"
                     :close-on-select="true" placeholder="Motorista" :custom-label="driverName" track-by="id"
-                    selectLabel="Selecionar" deselectLabel="Remover" class="col-span-6 md:col-span-4" @select="model.ignoreQuestion = false" />
+                    selectLabel="Selecionar" deselectLabel="Remover" class="col-span-6 md:col-span-4"
+                    @select="model.ignoreQuestion = false" />
             </div>
             <div class="space-y-7 my-5">
                 <p>Data: {{ moment(currentRequest.dt).format('DD/MM/YYYY') }}</p>
@@ -313,6 +332,41 @@ onBeforeMount(() => {
                 <button type="button"
                     class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
                     @click="resetAllow()">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed inset-0 items-center justify-center overflow-hidden mx-1 z-50"
+        :class="modal.directAllowConflict ? 'flex' : 'hidden'">
+        <div class="fixed inset-0 transition-opacity">
+            <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
+        </div>
+        <div
+            class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[400px] dark:bg-gray-600 p-4">
+            <div class="space-y-7 my-5">
+                <p class="text-red-500">Já existe uma agenda ou solicitação para este horário para este motorista.</p>
+                <p>Data: {{ moment(currentRequest.dt).format('DD/MM/YYYY') }}</p>
+                <p>Hora: {{ currentRequest.time }}</p>
+                <p>Local: {{ currentRequest.branch }}</p>
+                <p>Motorista: {{ currentRequest.name }} </p>
+                <p>Passageiros: {{ JSON.parse(currentRequest?.passengers ?? '{}').length }}</p>
+                <div>
+                    <label for="_ignore" class="p-1.5 text-amber-500 font-bold">Ignorar conflito.</label>
+                    <input type="checkbox" id="_ignore" v-model="model.ignore" class="text-red-400" />
+                </div>
+            </div>
+            <div class="dark:bg-gray-500 px-4 py-3 sm:px-6 flex gap-1 justify-end">
+                <button type="button" :disabled="!model.ignore"
+                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 sm:ml-3 sm:w-auto sm:text-sm"
+                    :class="model.ignore ? 'bg-green-600  focus:ring-offset-2 focus:ring-green-500 hover:bg-green-700' : 'bg-gray-600  focus:ring-offset-2 focus:ring-gray-500 hover:bg-gray-700'"
+                    @click="allow(currentRequest)">
+                    Confirmar Solicitação
+                </button>
+                <button type="button"
+                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                    @click="resetDirectAllow()">
                     Fechar
                 </button>
             </div>

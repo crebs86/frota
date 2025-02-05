@@ -263,7 +263,7 @@ onMounted(() => {
                                 <label class="text-sm text-gray-500 dark:text-gray-300">
                                     Data*
                                 </label>
-                                <input type="date" v-model="filter.date" @change="verifyDriverRoute"
+                                <input type="date" v-model="filter.date" @change="emit('verifyDriverRoute')"
                                     class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
 
                                 <div v-if="filter.errors?.date"
