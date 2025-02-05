@@ -203,7 +203,7 @@ trait Routes
         if (!$this->validateDate($request->date, $request->time)) {
             return response()->json(['error' => 'Você não pode agendar um horário passado. rrs(403-1)'], 403);
         }
-        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar')) {
+        if ($this->can('Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar', 'Solicitacao Criar')) {
 
             $task = $this->runGetTaskByDriver($request);
 

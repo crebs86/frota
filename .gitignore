@@ -59,11 +59,16 @@
 !/resources/js/Components/Admin/Menus/Frota
 !/resources/js/Components/Admin/Menus/Frota/*
 
+
 !/resources/js/Layouts
 /resources/js/Layouts/*
 
 !/resources/js/Pages
 /resources/js/Pages/*
+
+!resources/js/Pages/Auth
+resources/js/Pages/Auth/*
+!resources/js/Pages/Auth/Login.vue
 
 !/resources/views/
 /resources/views/*
@@ -71,6 +76,7 @@
 !/resources/js/Components/Frota
 !/resources/js/Layouts/Frota
 !/resources/js/Layouts/AuthenticatedLayout.vue
+!/resources/js/Layouts/CustomBackgroundLayout.vue
 !/resources/js/Pages/Frota
 !/resources/views/Frota
 

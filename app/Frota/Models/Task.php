@@ -19,6 +19,7 @@ class Task extends Model
             ->where('date', request('date'))
             ->where(function ($query) {
                 if (request()->route()->getName() === "frota.tasks.filter-routes"
+                    || request()->route()->getName() === "frota.my-routes"
                     || request()->route()->getName() === "frota.tasks.filter"
                     || request()->route()->getName() === 'frota.routes.driver.edit'
                     || request()->route()->getName() === 'frota.request.store') {
@@ -26,6 +27,7 @@ class Task extends Model
                         ->where('type', 0)
                         ->orWhere(['type' => 1])
                         ->where(['status' => 1]);
+                //} elseif (request()->route()->getName() === "frota.my-routes") {
                 } elseif (request()->route()->getName() === "frota.requests.evaluate") {
                     return $query->where('type', '<>', 0);
                 }
