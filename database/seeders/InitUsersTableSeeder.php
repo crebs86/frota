@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -26,7 +27,7 @@ class InitUsersTableSeeder extends Seeder
             $cpf = $cpfAdministrador !== '' ? $cpfAdministrador :  $cpf;
         }
 
-
+        DB::table('drivers')->delete();
         DB::table('users')->delete();
 
         DB::table('users')->insert(array(
@@ -45,6 +46,35 @@ class InitUsersTableSeeder extends Seeder
                 'remember_token' => NULL,
                 'updated_at' => now(),
             ),
+            1 =>
+            array(
+                'branch_id' => NULL,
+                'cpf' => '00000000001',
+                'created_at' => now(),
+                'deleted_at' => NULL,
+                'email' => Str::random(5),
+                'email_verified_at' => now(),
+                'id' => 2,
+                'name' => '-',
+                'notes' => 'Default Driver',
+                'password' => bcrypt(Str::random(12)),
+                'remember_token' => NULL,
+                'updated_at' => now(),
+            ),
         ));
+
+        DB::table('drivers')->insert(
+            array(
+                0 =>
+                array(
+                    'id' => 2,
+                    'garagem_id' => NULL,
+                    'proprio' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'deleted_at' => now(),
+                ),
+            )
+        );
     }
 }
