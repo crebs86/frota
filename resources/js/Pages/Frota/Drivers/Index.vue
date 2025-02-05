@@ -34,18 +34,17 @@ import SubSection from '@/Components/Admin/SubSection.vue';
 
                     <div class="p-2 rounded-lg overflow-y-auto"
                         :class="$page.props.app.settingsStyles.main.innerSection">
-                        <table class="min-w-full">
+                        <table class="min-w-full" :class="$page.props.app.settingsStyles.main.body">
                             <thead>
                                 <tr>
                                     <th v-for=" (value, index) in ['Nome', 'Garagem', 'Carro Favorito', 'Servidor?'
                                         , 'Matrícula', 'Ativo', 'Ações']" :key="index + '' + value"
-                                        class="px-3 py-1.5 md:px-6 md:py-3 border-b-2 border-gray-300 text-left leading-4 tracking-wider"
-                                        :class="$page.props.app.settingsStyles.main.container">
+                                        class="px-3 py-1.5 md:px-6 md:py-3 border-b-2 border-gray-300 text-left leading-4 tracking-wider">
                                         {{ value }}
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody :class="$page.props.app.settingsStyles.main.body">
+                            <tbody>
                                 <tr v-for="( d, i ) in $page.props.drivers " :key="i">
                                     <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500">
                                         {{ d.user.name }}

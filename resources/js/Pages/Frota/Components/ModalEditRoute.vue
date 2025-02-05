@@ -227,7 +227,7 @@ onMounted(() => {
                 <div class="col-span-6 grid grid-cols-8">
                     <div class="col-span-6 grid grid-cols-4">
                         <div class="col-span-5 md:col-span-2">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                            <label class="text-sm">
                                 Passageiro*
                             </label>
                             <input type="text" v-model="passengersEditModel.passenger"
@@ -236,7 +236,7 @@ onMounted(() => {
                                 :disabled="!validateDate(props.routeForEdition.date)" />
                         </div>
                         <div class="col-span-5 md:col-span-2">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
+                            <label class="text-sm">
                                 Contato*
                             </label>
                             <input type="text" v-model="passengersEditModel.contact"

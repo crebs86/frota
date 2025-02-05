@@ -59,20 +59,20 @@ function setNewColorText(color, value, mode = '', active) {
                 id="navbarSupportedContent1" data-twe-collapse-item>
                 <!-- Logo -->
                 <a class="mb-4 me-5 ms-2 mt-3 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:mb-0 lg:mt-0"
-                    href="#">
+                    href="/">
                     <img src="/favicons/verde/routes.svg" style="height: 35px; color:green;" alt="Frota Inteligente"
                         loading="lazy" />
                 </a>
                 <!-- Left navigation links -->
                 <ul class="list-style-none me-auto flex flex-col ps-0 md:flex-row" data-twe-navbar-nav-ref>
-                    <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
+                    <!--                     <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
                         :class="linksStyles(route().current('dashboard'))">
                         <Link
                             class="transition duration-200 hover:ease-in-out motion-reduce:transition-none md:px-2 w-full flex justify-center"
                             :href="route('dashboard')" data-twe-nav-link-ref>
                         Painel
                         </Link>
-                    </li>
+                    </li> -->
 
                     <li class="md:min-w-16 py-1.5 mb-1.5 lg:mb-0 mx-0.5 text-center" data-twe-nav-item-ref
                         :class="linksStyles(route().current('frota.*'))" v-if="has(usePage().props.auth.permissions,

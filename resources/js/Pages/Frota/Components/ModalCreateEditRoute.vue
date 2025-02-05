@@ -260,7 +260,7 @@ onMounted(() => {
                         <div class="mb-6 w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-6 gap-2">
 
                             <div class="grid grid-cols-1 col-span-6 md:col-span-2">
-                                <label class="text-sm text-gray-500 dark:text-gray-300">
+                                <label class="text-sm">
                                     Data*
                                 </label>
                                 <input type="date" v-model="filter.date" @change="emit('verifyDriverRoute')"
@@ -273,7 +273,7 @@ onMounted(() => {
                             </div>
 
                             <div class="col-span-6 md:col-span-2" v-if="props.data?.timetables !== ''">
-                                <label class="text-sm text-gray-500 dark:text-gray-300">
+                                <label class="text-sm">
                                     Hora da Chegada no Destino*
                                 </label>
                                 <VueMultiselect v-model="filter.time" :options="props.data?.timetables"
@@ -293,7 +293,7 @@ onMounted(() => {
                             </div>
 
                             <div class="col-span-6 md:col-span-2 text-left">
-                                <label class="text-sm text-gray-500 dark:text-gray-300">
+                                <label class="text-sm">
                                     Tempo de Permanência*
                                 </label>
                                 <input type="time" v-model="filter.duration"
@@ -307,7 +307,7 @@ onMounted(() => {
 
                             <div class="col-span-6 md:col-span-3 place-content-center"
                                 v-if="props.data?.branches !== ''">
-                                <label class="text-sm text-gray-500 dark:text-gray-300">
+                                <label class="text-sm">
                                     Destino*
                                 </label>
                                 <VueMultiselect v-model="filter.branch" :options="props.data?.branches"
@@ -566,7 +566,7 @@ onMounted(() => {
                         </div>
 
                         <div class="col-span-6 md:col-span-3">
-                            <label class="text-sm text-gray-500 dark:text-gray-300">
+                            <label class="text-sm">
                                 Destino
                             </label>
                             <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
@@ -581,7 +581,7 @@ onMounted(() => {
 
                         <div class="col-span-6 md:col-span-3 place-content-center"
                             v-if="routeForEdition.branch?.id === 1">
-                            <label class="text-sm text-gray-500 dark:text-gray-300">
+                            <label class="text-sm">
                                 Local*
                             </label>
                             <input type="text" v-model="routeForEdition.local"
@@ -594,7 +594,7 @@ onMounted(() => {
                         </div>
 
                         <div class="col-span-6 md:col-span-3 grid grid-cols-1 mt-1">
-                            <label class="text-sm text-gray-500 dark:text-gray-300">
+                            <label class="text-sm">
                                 Obs.:
                             </label>
                             <textarea class="rounded text-gray-600" v-model="routeForEdition.obs"></textarea>
@@ -607,14 +607,14 @@ onMounted(() => {
                         <div class="col-span-6 grid grid-cols-8">
                             <div class="col-span-6 grid grid-cols-4">
                                 <div class="col-span-5 md:col-span-2">
-                                    <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    <label class="text-sm">
                                         Passageiro*
                                     </label>
                                     <input type="text" v-model="passengersEditModel.passenger"
                                         class="w-full rounded border border-black h-[41px] text-gray-700" />
                                 </div>
                                 <div class="col-span-5 md:col-span-2">
-                                    <label class="text-sm text-gray-500 dark:text-gray-400">
+                                    <label class="text-sm">
                                         Contato*
                                     </label>
                                     <input type="text" v-model="passengersEditModel.contact" maxlength="11"

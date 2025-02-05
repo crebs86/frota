@@ -58,7 +58,7 @@ const modalSingleRoute = ref(false)
 const currentRoute = ref({})
 
 function km(car_log, type) {
-    return car_log.filter((c) => {
+    return car_log?.filter((c) => {
         return c.type === type
     })
 }
@@ -360,7 +360,8 @@ onMounted(() => {
                                             :class="m.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
                                             {{ m.started_at ? moment(m.started_at).format('DD/MM/YY HH:mm') : '-' }}
                                         </p>
-                                        <small>Km: {{ km(m.cars_log, 'start')[0]?.km }}</small>
+                                        <small>Km: {{ km(m.cars_log, 'start') ? km(m.cars_log, 'start')[0]?.km :
+                                            ''}}</small>
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
@@ -368,7 +369,8 @@ onMounted(() => {
                                             :class="m.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
                                             {{ m.ended_at ? moment(m.ended_at).format('DD/MM/YY HH:mm') : '-' }}
                                         </p>
-                                        <small>Km: {{ km(m.cars_log, 'end')[0]?.km }}</small>
+                                        <small>Km: {{ km(m.cars_log, 'end') ? km(m.cars_log, 'end')[0]?.km : ''
+                                            }}</small>
                                     </td>
                                     <td
                                         class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">

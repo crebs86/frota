@@ -225,7 +225,7 @@ function setRouteToEdit(route) {
                         <div class="relative w-full z-auto min-h-fit grid grid-cols-6 gap-3">
 
                             <div class="grid grid-cols-1 col-span-6 md:col-span-2 h-12 mt-1 md:mt-0">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm">
                                     Data*
                                 </label>
                                 <input type="date" v-model="routeForm.date" @change="verifyDriverRoute"
@@ -238,7 +238,7 @@ function setRouteToEdit(route) {
                             </div>
 
                             <div class="col-span-6 md:col-span-2 mt-2 md:mt-0">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm">
                                     Hora da Chegada no Destino*
                                 </label>
                                 <VueMultiselect v-model="routeForm.time" :options="$page.props.timetables"
@@ -259,7 +259,7 @@ function setRouteToEdit(route) {
                             </div>
 
                             <div class="col-span-6 md:col-span-2 text-left -mt-1.5 md:mt-0">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm">
                                     Tempo de Permanência*
                                 </label>
                                 <input type="time" v-model="routeForm.duration"
@@ -274,7 +274,7 @@ function setRouteToEdit(route) {
                             </div>
 
                             <div class="col-span-6 md:col-span-3 h-12">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm">
                                     Selecione um motorista*
                                 </label>
                                 <VueMultiselect v-model="routeForm.driver" :options="props.drivers" :multiple="false"
@@ -290,7 +290,7 @@ function setRouteToEdit(route) {
                             </div>
 
                             <div class="col-span-6 md:col-span-3 mt-3 md:mt-0">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm">
                                     Destino*
                                 </label>
                                 <VueMultiselect v-model="routeForm.branch" :options="props.branches" :multiple="false"
@@ -304,7 +304,7 @@ function setRouteToEdit(route) {
                             </div>
 
                             <div class="col-span-6" v-if="routeForm.branch?.id === 1">
-                                <label class="text-sm text-gray-500 dark:text-gray-400">
+                                <label class="text-sm">
                                     Local*
                                 </label>
                                 <input type="text" v-model="routeForm.local"
@@ -317,7 +317,7 @@ function setRouteToEdit(route) {
                             </div>
 
                             <div class="col-span-6 grid grid-cols-1">
-                                <label class="text-sm text-gray-500 dark:text-gray-400 col-span-6">
+                                <label class="text-sm col-span-6">
                                     Obs.:
                                 </label>
                                 <textarea class="rounded text-gray-600" v-model="routeForm.obs"
@@ -332,7 +332,7 @@ function setRouteToEdit(route) {
                             <div class="col-span-6 grid grid-cols-8">
                                 <div class="col-span-6 grid grid-cols-4 gap-2">
                                     <div class="col-span-5 md:col-span-2">
-                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                        <label class="text-sm">
                                             Passageiro*
                                         </label>
                                         <input type="text" v-model="passengersModel.passenger"
@@ -341,7 +341,7 @@ function setRouteToEdit(route) {
                                             :disabled="!validateDate(routeForm?.date)" />
                                     </div>
                                     <div class="col-span-5 md:col-span-2">
-                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                        <label class="text-sm">
                                             Contato*
                                         </label>
                                         <input type="text" v-model="passengersModel.contact"

@@ -16,6 +16,17 @@ function styles(style) {
     return styles;
 }
 
+function stylesTable(style, set = { body: 0, text: 200 }) {
+    let l = style.split(" ");
+    let styles = "";
+    console.log(l, style)
+    l.map((item) => {
+        let i = item.split("-");
+        styles += i[0] + "-" + i[1] + "-" + (parseInt(i[2]) - set.body) + " ";
+    });
+    return styles;
+}
+
 /**
  *
  * @param {int} type
@@ -67,4 +78,4 @@ function getRouteStatus(type, status) {
     }
 }
 
-export { styles, getStyles, getRouteStatus };
+export { styles, getStyles, getRouteStatus, stylesTable };

@@ -1,6 +1,6 @@
 <script setup>
 import has from '@/arrayHelpers';
-import { getRouteStatus, getStyles } from '@/contrasts';
+import { getRouteStatus, getStyles, stylesTable } from '@/contrasts';
 import { driverName } from '@/helpers';
 import { toast } from '@/toast';
 import axios from 'axios';
@@ -168,7 +168,7 @@ onBeforeMount(() => {
 
             </div>
             <div class="overflow-y-auto">
-                <table class="min-w-full" :class="$page.props.app.settingsStyles.main.body">
+                <table class="min-w-full" :class="stylesTable($page.props.app.settingsStyles.main.body)">
                     <thead>
                         <tr>
                             <th

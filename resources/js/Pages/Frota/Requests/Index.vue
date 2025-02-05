@@ -4,6 +4,7 @@ import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import { Head } from '@inertiajs/vue3';
 import { defineAsyncComponent, ref } from 'vue';
+import has from '@/arrayHelpers';
 
 const Evaluate = defineAsyncComponent(() => import('@/Pages/Frota/Requests/Evaluate.vue'))
 const Request = defineAsyncComponent(() => import('@/Pages/Frota/Requests/Request.vue'))
@@ -35,14 +36,15 @@ const tab = ref({
         </template>
         <SubSection>
             <template #header>
-                <button class="py-1 px-1.5 rounded border border-blue-600 mr-1.5"
+                <button class="py-1 px-1.5 rounded border border-blue-600 mr-1.5 text-white"
                     :class="tab.requester ? 'bg-blue-700 hover:bg-blue-300' : 'bg-blue-300 hover:bg-blue-700'"
                     @click="tab.liberator = false, tab.requester = true">
                     Solicitações
                 </button>
-                <button class="py-1 px-1.5 rounded border border-green-600"
-                    :class="tab.liberator ? 'bg-green-700 hover:bg-green-300' : 'bg-green-300 hover:bg-green-700'"
-                    @click="tab.liberator = true, tab.requester = false">
+                <button class="py-1 px-1.5 rounded border border-green-600 bg-green-300"
+                    :class="!tab.liberator && !has(['Super Admin'], $page.props.auth.roles) ? 'opacity-25' : 'hover:bg-green-700'"
+                    :disabled="!tab.liberator && !has(['Super Admin'], $page.props.auth.roles)"
+                    @click="tab.liberator = true, tab.requester = false" v-if="!tab.liberator">
                     Avaliar
                 </button>
             </template>

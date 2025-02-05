@@ -37,13 +37,13 @@ import moment from 'moment';
 
                     <div class="p-2 rounded-lg overflow-y-auto"
                         :class="$page.props.app.settingsStyles.main.innerSection">
-                        <table class="min-w-full">
+                        <table class="min-w-full"
+                                        :class="$page.props.app.settingsStyles.main.body">
                             <thead>
                                 <tr>
                                     <th v-for=" (value, index) in ['Marca', 'Modelo', 'Placa', 'Próprio?'
                                         , 'Nº Patrimônio', 'Garagem', 'Ativo', 'Ações']" :key="index + '' + value"
-                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-left leading-4 tracking-wider"
-                                        :class="$page.props.app.settingsStyles.main.container">
+                                        class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-left leading-4 tracking-wider">
                                         {{ value }}
                                     </th>
                                 </tr>
