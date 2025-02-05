@@ -1,5 +1,6 @@
 <script setup>
 import { branchName, drivers } from '@/helpers';
+import { phoneMask } from '@/mask';
 import { toast } from '@/toast';
 import validate from '@/validates/indexSaveRoute';
 import moment from 'moment';
@@ -57,6 +58,11 @@ const passengersModel = ref({
     passenger: '',
     contact: ''
 })
+
+const maskPhone = (event) => {
+    let input = event.target
+    input.value = phoneMask(input.value)
+}
 
 function setPassenger(remove = false, passenger = null, edit = false) {
     filter.value.errors.passengers = ''
@@ -342,17 +348,18 @@ onMounted(() => {
                             <div class="col-span-6 grid grid-cols-8">
                                 <div class="col-span-6 grid grid-cols-4">
                                     <div class="col-span-5 md:col-span-2">
-                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                        <label class="text-sm">
                                             Passageiro*
                                         </label>
                                         <input type="text" v-model="passengersModel.passenger"
                                             class="w-full rounded border border-black h-[41px] text-gray-700" />
                                     </div>
                                     <div class="col-span-5 md:col-span-2">
-                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                        <label class="text-sm">
                                             Contato*
                                         </label>
-                                        <input type="text" v-model="passengersModel.contact"
+                                        <input type="text" v-model="passengersModel.contact" @keyup="maskPhone($event)"
+                                            maxlength="11"
                                             class="w-full rounded border border-black h-[41px] text-gray-700" />
                                     </div>
                                 </div>
@@ -610,7 +617,8 @@ onMounted(() => {
                                     <label class="text-sm text-gray-500 dark:text-gray-400">
                                         Contato*
                                     </label>
-                                    <input type="text" v-model="passengersEditModel.contact"
+                                    <input type="text" v-model="passengersEditModel.contact" maxlength="11"
+                                        @keyup="maskPhone($event)"
                                         class="w-full rounded border border-black h-[41px] text-gray-700" />
                                 </div>
                             </div>

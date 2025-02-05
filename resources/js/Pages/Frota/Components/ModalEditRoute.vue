@@ -6,6 +6,7 @@ import validateUpRt from "@/validates/createUpdateRoute";
 import axios from "axios";
 import { toast } from "@/toast";
 import { validateDate } from "@/validates/validates";
+import { phoneMask } from "@/mask";
 
 const props = defineProps({
     routeForEdition: Object,
@@ -21,6 +22,11 @@ const passengersEditModel = ref({
     passenger: '',
     contact: ''
 })
+
+const maskPhone = (event) => {
+    let input = event.target
+    input.value = phoneMask(input.value)
+}
 
 function setEditPassenger(remove = false, passenger = null, edit = false) {
     props.routeForEdition.errors.passengers = ''
@@ -236,7 +242,9 @@ onMounted(() => {
                             <input type="text" v-model="passengersEditModel.contact"
                                 class="w-full rounded border border-black h-[41px] text-gray-700"
                                 :class="!validateDate(props.routeForEdition.date) ? 'bg-[#afb3b9]' : ''"
-                                :disabled="!validateDate(props.routeForEdition.date)" />
+                                :disabled="!validateDate(props.routeForEdition.date)" 
+                                maxlength="11" @keyup="maskPhone($event)"
+                                />
                         </div>
                     </div>
                     <button type="button" @click="setEditPassenger(false)"

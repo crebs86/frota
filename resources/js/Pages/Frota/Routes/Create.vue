@@ -12,6 +12,7 @@ import validate from '@/validates/indexSaveRoute';
 import has from '@/arrayHelpers'
 import { validateDate } from "@/validates/validates.js";
 import { branchName, driverName } from "@/helpers.js";
+import { phoneMask } from '@/mask';
 
 const ModalEditRoute = defineAsyncComponent(() => import('@/Pages/Frota/Components/ModalEditRoute.vue'))
 
@@ -58,6 +59,11 @@ const passengersModel = ref({
     passenger: '',
     contact: ''
 })
+
+const maskPhone = (event) => {
+    let input = event.target
+    input.value = phoneMask(input.value)
+}
 
 function setPassenger(remove = false, passenger = null, edit = false) {
     routeForm.value.errors.passengers = ''
@@ -341,6 +347,7 @@ function setRouteToEdit(route) {
                                         <input type="text" v-model="passengersModel.contact"
                                             class="w-full rounded border border-black h-[41px] text-gray-700"
                                             :class="!validateDate(routeForm?.date) ? 'bg-[#afb3b9]' : ''"
+                                            maxlength="11" @keyup="maskPhone($event)"
                                             :disabled="!validateDate(routeForm?.date)" />
                                     </div>
                                 </div>

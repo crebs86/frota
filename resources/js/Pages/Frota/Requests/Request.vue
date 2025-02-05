@@ -9,6 +9,7 @@ import axios from "axios";
 import { toast } from "@/toast";
 import validate from "@/validates/indexSaveRoute.js";
 import { branchName } from "@/helpers";
+import { phoneMask } from "@/mask";
 
 const EditRoute = defineAsyncComponent(() => import('@/Pages/Frota/Components/ModalEditRoute.vue'));
 
@@ -121,6 +122,11 @@ const passengersModel = ref({
     passenger: '',
     contact: ''
 })
+
+const maskPhone = (event) => {
+    let input = event.target
+    input.value = phoneMask(input.value)
+}
 
 function setPassenger(remove = false, passenger = null, edit = false) {
     requestForm.value.errors.passengers = ''
@@ -363,9 +369,9 @@ onBeforeMount(() => {
                             <label class="text-sm text-gray-500 dark:text-gray-400">
                                 Contato*
                             </label>
-                            <input type="text" v-model="passengersModel.contact"
+                            <input type="text" v-model="passengersModel.contact" @keyup="maskPhone($event)"
                                 class="w-full rounded border border-black h-[41px] text-gray-700"
-                                :class="!validateDate(requestForm?.date) ? 'bg-[#afb3b9]' : ''"
+                                :class="!validateDate(requestForm?.date) ? 'bg-[#afb3b9]' : ''" maxlength="11"
                                 :disabled="!validateDate(requestForm?.date)" />
                         </div>
                     </div>

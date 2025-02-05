@@ -11,6 +11,7 @@ import moment from 'moment';
 import validateESR from '@/validates/editSaveRoute';
 import { branchName, drivers } from '@/helpers';
 import { validateDate } from '@/validates/validates';
+import { phoneMask } from '@/mask';
 
 const props = defineProps({
     branches: Object,
@@ -56,6 +57,11 @@ const routeForEdition = ref({
     passengers: [],
     obs: ''
 });
+
+const maskPhone = (event) => {
+    let input = event.target
+    input.value = phoneMask(input.value)
+}
 
 function saveRoute() {
     routeForm.value.errors = ''
@@ -397,7 +403,8 @@ onMounted(() => {
                                         <label class="text-sm text-gray-500 dark:text-gray-400">
                                             Contato*
                                         </label>
-                                        <input type="text" v-model="passengersModel.contact"
+                                        <input type="text" v-model="passengersModel.contact" maxlength="11"
+                                            @keyup="maskPhone($event)"
                                             class="w-full rounded border border-black h-[41px] text-gray-700" />
                                     </div>
                                 </div>
