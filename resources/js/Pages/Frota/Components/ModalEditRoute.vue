@@ -146,7 +146,7 @@ onMounted(() => {
                     </label>
                     <VueMultiselect v-model="props.routeForEdition.time" :options="$page.props.timetables"
                         :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Hora"
-                        selectLabel="Selecionar" deselectLabel="Remover" />
+                        selectLabel="Selecionar" deselectLabel="Remover" class="border border-black rounded-md" />
                     <div v-if="props.routeForEdition.errors?.time"
                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                         <small v-for="error in props.routeForEdition.errors?.time">{{ error }}</small>
@@ -176,7 +176,7 @@ onMounted(() => {
                     </label>
                     <VueMultiselect v-model="props.routeForEdition.driver" :options="props.drivers" :multiple="false"
                         :close-on-select="true" placeholder="Motorista" :custom-label="drivers" selectLabel="Selecionar"
-                        deselectLabel="Remover" />
+                        deselectLabel="Remover" class="border border-black rounded-md" />
 
                     <div v-if="props.routeForEdition.errors?.driver"
                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -191,7 +191,7 @@ onMounted(() => {
                     <VueMultiselect v-model="props.routeForEdition.branch" :options="$page.props.branches"
                         :multiple="false" :close-on-select="true" placeholder="Destino" label="name" track-by="id"
                         selectLabel="Selecionar" deselectLabel="Remover" @select="$page.props.errors.date = null"
-                        :custom-label="branchName" />
+                        :custom-label="branchName" class="border border-black rounded-md" />
 
                     <div v-if="props.routeForEdition.errors?.branch"
                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">

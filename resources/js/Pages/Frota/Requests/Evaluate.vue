@@ -152,17 +152,18 @@ onBeforeMount(() => {
     <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.75)]">
         <h2 class="text-xl text-center">Avaliar Solicitações</h2>
         <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded">
-            <div class="grid grid-cols-6 gap-1">
+            <div class="grid grid-cols-6 gap-1 my-1">
 
                 <input type="date" v-model="filter.date"
-                    class="w-full rounded border border-gray-500 bg-red-100 h-[41px] text-gray-700 col-span-6 md:col-span-1">
+                    class="w-full rounded border border-gray-500 bg-red-100 h-[45px] text-gray-700 col-span-6 md:col-span-1">
 
                 <VueMultiselect v-model="filter.driver" :options="props.drivers" :multiple="false"
                     :close-on-select="true" placeholder="Motorista" :custom-label="driverName" track-by="id"
-                    selectLabel="Selecionar" deselectLabel="Remover" class="col-span-6 md:col-span-4" />
+                    selectLabel="Selecionar" deselectLabel="Remover"
+                    class="col-span-6 md:col-span-4 border border-black rounded-md" />
 
                 <button @click="filterRequests"
-                    class="px-2 py-1 rounded border border-green-700 bg-green-500 text-green-800 font-bold col-span-6 md:col-span-1">
+                    class="px-2 py-1 rounded border border-green-700 bg-green-500 text-green-800 font-bold col-span-6 md:col-span-1 h-[45px]">
                     Filtrar
                 </button>
 

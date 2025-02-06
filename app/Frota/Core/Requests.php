@@ -16,10 +16,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Frota\Models\Request as RequestModel;
 use App\Frota\Models\Task;
+use App\Traits\ACL;
 
 trait Requests
 {
-    use Routes, Helpers;
+    use Routes, Helpers, ACL;
 
     /**
      * @param $request
@@ -31,7 +32,8 @@ trait Requests
             'drivers' => Driver::with('user')->where('id', '<>', 2)->select('id')->get(),
             'branches' => Branch::select('id', 'name')->get(),
             'timetables' => Arr::pluck(Timetable::all(['time']), 'time'),
-            'liberator' => $this->can('Liberador') && !$this->hasRole('Super Admin')
+            'evaluator' => $this->can('Liberador'),
+            'requester'  => $this->can('Solicitacao Criar')
         ];
 
         $date = $request->date ?? now()->format('Y-m-d');

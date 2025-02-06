@@ -17,8 +17,6 @@ Assim que logar, já mostrar a tela com  as minhas solicitações pendentes e ap
 
 //todo validar em back passageiro e telefone
 
-//todo terminar inserção de passageiro/contato nas telas de .../frota/solicitacoes
-
 //todo app\Frota\Core\Routes.php
     linha 154. ALterar para DB e não trazer solicitações
 

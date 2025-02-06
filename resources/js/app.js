@@ -7,7 +7,7 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 
 import "vue-toast-notification/dist/theme-sugar.css";
-import "vue-multiselect/dist/vue-multiselect.css";
+//import "vue-multiselect/dist/vue-multiselect.css";
 
 import mdiVue from "mdi-vue/v3";
 import * as mdijs from "@mdi/js";

@@ -21,7 +21,7 @@ const garageForm = useForm({
 
 function saveGarage(status) {
     if (status) {
-        garageForm.put(route('garages.update', props.garage[0].id), {
+        garageForm.put(route('frota.garages.update', props.garage[0].id), {
             onSuccess: () => {
                 toast.success('Garagem reativada com sucesso');
             },
@@ -30,7 +30,7 @@ function saveGarage(status) {
             }
         })
     } else {
-        garageForm.delete(route('garages.destroy', props.garage[0].id), {
+        garageForm.delete(route('frota.garages.destroy', props.garage[0].id), {
             onSuccess: () => {
                 toast.success('Garagem inativada com sucesso');
             },
@@ -57,8 +57,8 @@ function saveGarage(status) {
                 Garagens
             </template>
             <template #content>
-                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
-                    <div class="p-2 rounded-lg min-h-[calc(100vh/1.33)]"
+                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.75)]">
+                    <div class="p-2"
                         :class="$page.props.app.settingsStyles.main.innerSection">
 
                         <div class="relative">

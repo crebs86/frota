@@ -278,7 +278,7 @@ onMounted(() => {
                                 </label>
                                 <VueMultiselect v-model="filter.time" :options="props.data?.timetables"
                                     :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Hora"
-                                    selectLabel="Selecionar" deselectLabel="Remover" />
+                                    selectLabel="Selecionar" deselectLabel="Remover" class="border border-black rounded-md" />
 
                                 <div v-if="filter.errors?.time"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -313,7 +313,7 @@ onMounted(() => {
                                 <VueMultiselect v-model="filter.branch" :options="props.data?.branches"
                                     :multiple="false" :close-on-select="true" selectedLabel="atual"
                                     placeholder="Destino" :custom-label="branchName" track-by="id" label="time"
-                                    selectLabel="Selecionar" deselectLabel="Remover" />
+                                    selectLabel="Selecionar" deselectLabel="Remover" class="border border-black rounded-md"/>
 
                                 <div v-if="filter.errors?.branch"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -345,8 +345,8 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <div class="col-span-6 grid grid-cols-8">
-                                <div class="col-span-6 grid grid-cols-4">
+                            <div class="col-span-6 grid grid-cols-8 gap-2">
+                                <div class="col-span-6 grid grid-cols-4 gap-2">
                                     <div class="col-span-5 md:col-span-2">
                                         <label class="text-sm">
                                             Passageiro*
@@ -365,7 +365,7 @@ onMounted(() => {
                                 </div>
                                 <button type="button" @click="setPassenger(false)"
                                     :disabled="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8"
-                                    class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:-mb-[1px]"
+                                    class="border rounded-md px-4 py-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6"
                                     :class="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
                                     Incluir
                                 </button>
@@ -504,8 +504,8 @@ onMounted(() => {
                         Data original {{ moment(filter.date).format('DD/MM/YYYY') }} {{ routeForEdition.time }}
                     </h3>
 
-                    <div class="grid grid-cols-6 gap-1">
-                        <div class="grid grid-cols-1 col-span-6 md:col-span-2 h-12 mt-1 md:mt-0">
+                    <div class="grid grid-cols-6 gap-2">
+                        <div class="grid grid-cols-1 col-span-6 md:col-span-2 h-12 mt-1 md:mt-0.5">
                             <label class="text-sm">
                                 Data*
                             </label>
@@ -524,7 +524,7 @@ onMounted(() => {
                             </label>
                             <VueMultiselect v-model="routeForEdition.time" :options="props.data?.timetables"
                                 :multiple="false" :close-on-select="true" selectedLabel="atual" placeholder="Hora"
-                                selectLabel="Selecionar" deselectLabel="Remover" />
+                                selectLabel="Selecionar" deselectLabel="Remover" class="border border-black rounded-md" />
                             <div v-if="routeForEdition.error?.time"
                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                 <small v-for="error in routeForEdition.error?.time">{{ error }}</small>
@@ -557,7 +557,7 @@ onMounted(() => {
                             </label>
                             <VueMultiselect v-model="routeForEdition.driver" :options="$page.props.drivers"
                                 :multiple="false" selectLabel="Selecionar" :close-on-select="true"
-                                placeholder="Motorista" :custom-label="drivers" deselectLabel="Remover" />
+                                placeholder="Motorista" :custom-label="drivers" deselectLabel="Remover" class="border border-black rounded-md" />
 
                             <div v-if="routeForEdition.errors?.driver"
                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -572,7 +572,7 @@ onMounted(() => {
                             <VueMultiselect v-model="routeForEdition.branch" :options="$page.props.branches"
                                 :multiple="false" :close-on-select="true" placeholder="Unidade" label="name"
                                 track-by="id" selectLabel="Selecionar" deselectLabel="Remover"
-                                :custom-label="branchName" @select="$page.props.errors.date = null" />
+                                :custom-label="branchName" @select="$page.props.errors.date = null"  class="border border-black rounded-md"/>
                             <div v-if="routeForEdition.error?.branch"
                                 class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                 <small v-for="error in routeForEdition.error?.branch">{{ error }}</small>
@@ -605,7 +605,7 @@ onMounted(() => {
                         </div>
 
                         <div class="col-span-6 grid grid-cols-8">
-                            <div class="col-span-6 grid grid-cols-4">
+                            <div class="col-span-6 grid grid-cols-4 gap-2">
                                 <div class="col-span-5 md:col-span-2">
                                     <label class="text-sm">
                                         Passageiro*

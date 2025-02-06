@@ -64,7 +64,7 @@ const maskPhone = (event) => {
 }
 
 function saveRoute() {
-    routeForm.value.errors = ''
+    routeForm.value.errors = {}
     let val = validateESR(routeForm.value)
     if (val._run) {
         axios.post(route('frota.tasks.route.store'), {
@@ -163,8 +163,25 @@ function resetForm() {
     routeForm.value.obs = ''
 }
 
+function resetRouteForEdition() {
+    routeForEdition.value.id = ''
+    routeForEdition.value.driver = ''
+    routeForEdition.value.time = ''
+    routeForEdition.value.date = ''
+    routeForEdition.value.branch = ''
+    routeForEdition.value.currentBranch = ''
+    routeForEdition.value.duration = ''
+    routeForEdition.value.local = ''
+    routeForEdition.value._checker = ''
+    routeForEdition.value.errors = {}
+    routeForEdition.value.ignore = false
+    routeForEdition.value.ignoreQuestion = false
+    routeForEdition.value.passengers = []
+    routeForEdition.value.obs = ''
+}
+
 function verifyDriverRoute() {
-    routeForm.value.errors = ''
+    routeForm.value.errors = {}
     routes.value = {};
     if (props.driverRoutes.date && props.driverRoutes.driver.id) {
         axios.post(route('frota.tasks.filter-routes'), {
@@ -304,7 +321,7 @@ onMounted(() => {
                                     Motorista
                                 </label>
                                 <input type="text"
-                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-200 w-full bg-gray-400"
+                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-500 w-full bg-gray-300"
                                     :value="props.driverRoutes?.driver?.user?.name" readonly />
                             </div>
 
@@ -313,7 +330,7 @@ onMounted(() => {
                                     Data
                                 </label>
                                 <input type="date" :value="props.driverRoutes?.date"
-                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-200 w-full bg-gray-400"
+                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-500 w-full bg-gray-300"
                                     readonly>
                             </div>
 
@@ -323,7 +340,8 @@ onMounted(() => {
                                 </label>
                                 <VueMultiselect v-model="routeForm.time" :options="props.timetables" :multiple="false"
                                     :close-on-select="true" selectedLabel="atual" placeholder="Hora"
-                                    selectLabel="Selecionar" deselectLabel="Remover" />
+                                    selectLabel="Selecionar" deselectLabel="Remover"
+                                    class="border border-black rounded-md" />
 
                                 <div v-if="routeForm.errors?.time"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit flex">
@@ -358,7 +376,7 @@ onMounted(() => {
                                 <VueMultiselect v-model="routeForm.branch" :options="props.branches" :multiple="false"
                                     :close-on-select="true" selectedLabel="atual" placeholder="Destino"
                                     :custom-label="branchName" track-by="id" label="time" selectLabel="Selecionar"
-                                    deselectLabel="Remover" />
+                                    deselectLabel="Remover" class="border border-black rounded-md" />
 
                                 <div v-if="routeForm.errors?.branch"
                                     class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -390,7 +408,7 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <div class="col-span-6 grid grid-cols-8">
+                            <div class="col-span-6 grid grid-cols-8 gap-2">
                                 <div class="col-span-6 grid grid-cols-4 gap-2">
                                     <div class="col-span-5 md:col-span-2">
                                         <label class="text-sm text-gray-500 dark:text-gray-400">
@@ -410,7 +428,7 @@ onMounted(() => {
                                 </div>
                                 <button type="button" @click="setPassenger(false)"
                                     :disabled="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8"
-                                    class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:-mb-[1px]"
+                                    class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6"
                                     :class="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
                                     Incluir
                                 </button>
@@ -534,7 +552,7 @@ onMounted(() => {
                                     </span> em {{ moment(props.driverRoutes?.date).format('DD/MM/YYYY') }}
                                 </h3>
 
-                                <div class="mt-2 overflow-x-auto grid grid-cols-1 md:grid-cols-6 gap-2">
+                                <div class="mt-2 overflow-x-hidden grid grid-cols-1 md:grid-cols-6 gap-2">
 
                                     <div class="col-span-6 md:col-span-2">
                                         <label class="text-sm">
@@ -555,7 +573,8 @@ onMounted(() => {
                                         </label>
                                         <VueMultiselect v-model="routeForEdition.time" :options="$page.props.timetables"
                                             :multiple="false" :close-on-select="true" selectedLabel="atual"
-                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover" />
+                                            placeholder="Hora" selectLabel="Selecionar" deselectLabel="Remover"
+                                            class="border border-black rounded-md" />
                                         <div v-if="routeForEdition.ignoreQuestion">
                                             <label for="_ignore" class="p-1.5 text-amber-500 font-bold">
                                                 Ignorar conflito e agendar
@@ -589,7 +608,8 @@ onMounted(() => {
                                         </label>
                                         <VueMultiselect v-model="routeForEdition.driver" :options="_drivers"
                                             :multiple="false" :close-on-select="true" placeholder="Motorista"
-                                            :custom-label="drivers" selectLabel="Selecionar" deselectLabel="Remover" />
+                                            :custom-label="drivers" selectLabel="Selecionar" deselectLabel="Remover"
+                                            class="border border-black rounded-md" />
 
                                         <div v-if="routeForEdition.errors?.driver"
                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -603,7 +623,8 @@ onMounted(() => {
                                         <VueMultiselect v-model="routeForEdition.branch" :options="props.branches"
                                             :multiple="false" :close-on-select="true" placeholder="Destino" label="name"
                                             :custom-label="branchName" track-by="id" selectLabel="Selecionar"
-                                            deselectLabel="Remover" @select="$page.props.errors.date = null" />
+                                            deselectLabel="Remover" @select="$page.props.errors.date = null"
+                                            class="border border-black rounded-md" />
 
                                         <div v-if="routeForEdition.errors?.to"
                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -634,7 +655,8 @@ onMounted(() => {
                                             <small v-for="error in routeForEdition.errors?.obs">{{ error }}</small>
                                         </div>
                                     </div>
-                                    <div class="col-span-6 grid grid-cols-8" v-if="validateDate(routeForEdition.date)">
+                                    <div class="col-span-6 grid grid-cols-8 gap-2"
+                                        v-if="validateDate(routeForEdition.date)">
                                         <div class="col-span-6 grid grid-cols-4 gap-2">
                                             <div class="col-span-5 md:col-span-2">
                                                 <label class="text-sm text-gray-500 dark:text-gray-400">
@@ -648,12 +670,13 @@ onMounted(() => {
                                                     Contato*
                                                 </label>
                                                 <input type="text" v-model="passengersEditModel.contact"
+                                                    @keyup="maskPhone($event)" maxlength="11"
                                                     class="w-full rounded border border-black h-[41px] text-gray-700" />
                                             </div>
                                         </div>
                                         <button type="button" @click="setEditPassenger(false)"
                                             :disabled="passengersEditModel.passenger.length < 3 || passengersEditModel.contact.length < 8"
-                                            class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:-mb-[1px]"
+                                            class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6"
                                             :class="passengersEditModel.passenger.length < 3 || passengersEditModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
                                             Incluir
                                         </button>
@@ -688,7 +711,7 @@ onMounted(() => {
                                 </button>
                                 <button type="button"
                                     class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                    @click="modal.editRoute = false, routeForEdition = {}">
+                                    @click="modal.editRoute = false, resetRouteForEdition()">
                                     Fechar
                                 </button>
                             </div>
@@ -705,4 +728,3 @@ input:checked~.dot {
     background-color: #0ae465;
 }
 </style>
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>

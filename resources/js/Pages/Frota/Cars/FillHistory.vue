@@ -2,8 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import has from '@/arrayHelpers'
+import { Head, useForm } from '@inertiajs/vue3';
 import moment from 'moment';
 import { onMounted, ref } from 'vue';
 

@@ -5,10 +5,6 @@ const props = defineProps({
     request: Object
 })
 
-function driverName({ id, user }) {
-    return `${id ? id : ''} - ${user?.name ? user.name : ''}`
-}
-
 function branchName({ id, name }) {
     if (id === 1) {
         return `${id ? id : ''} - Não Cadastrado`

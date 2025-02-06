@@ -133,6 +133,10 @@ trait Routes
         if ($request->branch) {
             $res = Route::where('to', $request->branch)
                 ->where('date', $request->date)
+                ->where('type', 0)
+                ->orWhere(['type' => 1])
+                ->where(['status' => 1])
+                ->where('date', $request->date)
                 ->select('id', 'task', 'to', 'started_at', 'ended_at', 'time')
                 ->with('taskData')
                 ->get();

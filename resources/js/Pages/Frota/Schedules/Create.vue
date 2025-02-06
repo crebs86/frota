@@ -208,4 +208,3 @@ input:checked~.dot {
     background-color: #0ae465;
 }
 </style>
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>

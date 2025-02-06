@@ -19,7 +19,6 @@ function styles(style) {
 function stylesTable(style, set = { body: 0, text: 200 }) {
     let l = style.split(" ");
     let styles = "";
-    console.log(l, style)
     l.map((item) => {
         let i = item.split("-");
         styles += i[0] + "-" + i[1] + "-" + (parseInt(i[2]) - set.body) + " ";

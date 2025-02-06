@@ -264,7 +264,7 @@ onBeforeMount(() => {
                     </label>
                     <VueMultiselect v-model="requestForm.driver" :options="props.drivers" :multiple="false"
                         :close-on-select="true" selectedLabel="atual" placeholder="Motorista" :custom-label="driverName"
-                        track-by="id" selectLabel="Selecionar" @select="verifyDriverRoute" deselectLabel="Remover" />
+                        track-by="id" selectLabel="Selecionar" @select="verifyDriverRoute" deselectLabel="Remover" class="border border-black rounded-md" />
                     <div v-if="requestForm.errors?.driver"
                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                         <small v-for="error in requestForm.errors?.driver">{{ error }}</small>
@@ -277,7 +277,7 @@ onBeforeMount(() => {
                     </label>
                     <VueMultiselect v-model="requestForm.branch" :options="props.branches" :multiple="false"
                         :close-on-select="true" selectedLabel="atual" placeholder="Destino" :custom-label="branchName"
-                        track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" />
+                        track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" class="border border-black rounded-md" />
                     <div v-if="requestForm.errors?.branch"
                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                         <small v-for="error in requestForm.errors?.branch">{{ error }}</small>
@@ -320,7 +320,7 @@ onBeforeMount(() => {
                     </label>
                     <VueMultiselect v-model="requestForm.time" :options="props.timetables" :multiple="false"
                         :close-on-select="true" selectedLabel="atual" placeholder="Hora" selectLabel="Selecionar"
-                        deselectLabel="Remover" />
+                        deselectLabel="Remover" class="border border-black rounded-md" />
 
                     <div v-if="requestForm.errors?.time"
                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -582,5 +582,3 @@ onBeforeMount(() => {
 
     </div>
 </template>
-
-<style scoped></style>

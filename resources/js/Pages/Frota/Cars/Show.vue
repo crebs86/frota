@@ -209,4 +209,3 @@ input:checked~.dot-dis {
     background-color: #9afbbc;
 }
 </style>
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>

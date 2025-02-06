@@ -8,8 +8,6 @@ import { toast } from '@/toast.ts';
 import axios from 'axios';
 import { computed, defineAsyncComponent, onMounted, onUpdated, ref } from 'vue';
 import moment from 'moment';
-import validate from '@/validates/indexSaveRoute.js';
-import validateUpRt from '@/validates/createUpdateRoute.js';
 import { getStyles, styles } from '@/contrasts';
 import has from '@/arrayHelpers';
 
@@ -400,4 +398,3 @@ input:checked~.dot {
     background-color: #0ae465;
 }
 </style>
-<style src="../../../../../node_modules/vue-multiselect/dist/vue-multiselect.css"></style>

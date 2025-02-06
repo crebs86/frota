@@ -61,9 +61,9 @@ function saveCar() {
                 Novo Veículo
             </template>
             <template #content>
-                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-max">
+                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.75)]">
                     <div :class="$page.props.app.settingsStyles.main.innerSection" class="px-2 py-0.5 rounded">
-                        <div class="relative mb-6 w-full z-auto min-h-[calc(100vh/1.33)]">
+                        <div class="relative mb-6 w-full z-auto">
 
                             <div class="relative">
                                 <label class="text-sm text-gray-500 dark:text-gray-400">
@@ -150,6 +150,7 @@ function saveCar() {
                                 <VueMultiselect v-model="_garagem" :options="garageOptions" :multiple="false"
                                     :close-on-select="true" selectedLabel="atual" placeholder="Garagens"
                                     :custom-label="garageName" track-by="id" selectLabel="Selecionar"
+                                    open-direction="top" class="border border-black rounded-md"
                                     deselectLabel="Remover" />
 
                                 <div v-if="$page.props.errors.garagem_id"
@@ -175,4 +176,3 @@ input:checked~.dot {
     background-color: #0ae465;
 }
 </style>
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>

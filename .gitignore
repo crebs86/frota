@@ -41,6 +41,10 @@
 !/resources
 /resources/*
 
+!/resources/css
+/resources/css/*
+!/resources/css/app.css
+
 !/resources/js
 /resources/js/*
 !/resources/js/contrasts.js

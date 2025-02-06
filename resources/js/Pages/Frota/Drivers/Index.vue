@@ -20,7 +20,7 @@ import SubSection from '@/Components/Admin/SubSection.vue';
                 Motoristas
             </template>
             <template #content>
-                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
+                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.75)]">
                     <Link
                         v-if="has(
                             $page.props.auth.permissions, ['Motorista Criar']) || has($page.props.auth.roles, ['Super Admin'])"
