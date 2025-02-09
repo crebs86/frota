@@ -24,7 +24,7 @@ class FuelController extends Controller
      */
     public function loadLastFill(Request $request): JsonResponse
     {
-        if ($this->can('Combustivel Ver', 'Combustivel Editar', 'Combustivel Criar', 'Combustivel Apagar')) {
+        if ($this->can('Combustivel Ver', 'Combustivel Editar', 'Combustivel Criar', 'Combustivel Apagar') || $this->hasRole('Motorista')) {
             return response()->json(
                 Fuel::where('car', getKeyValue($request->token, 'car_token'))
                     ->select('km', 'quantidade', 'valor', 'local', 'hora', 'created_at', 'car')
@@ -34,7 +34,7 @@ class FuelController extends Controller
                     ->get()
             );
         } else {
-            return response()->json('Você não possui permissão para acessar este recurso. Fill(403-1)', 403);
+            return response()->json('Você não possui permissão para acessar este recurso. fuel(403-1)', 403);
         }
     }
 
@@ -44,10 +44,10 @@ class FuelController extends Controller
      */
     public function insertFill(FuelRequest $request): JsonResponse
     {
-        if ($this->can('Combustivel Criar')) {
+        if ($this->can('Combustivel Criar') || $this->hasRole('Motorista')) {
             return $this->runInsertFill($request);
         } else {
-            return response()->json('Você não possui permissão para acessar este recurso. Fill(403-2)', 403);
+            return response()->json('Você não possui permissão para acessar este recurso. fuel(403-2)', 403);
         }
     }
 
