@@ -92,7 +92,7 @@ trait Routes
     public function runMyRoutes(Request $request): Response
     {
         $request->merge(['driver' => auth()->id()]);
-        $request->date ?? $request->merge(['date' => date('Y-m-d')]);
+            $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
         $cars = Car::all(['id', 'modelo', 'placa']);
         $cars->each(function ($car) {
@@ -601,6 +601,8 @@ trait Routes
             'task' => $task['id'],
             'user' => auth()->id(),
             'to' => $request->branch,
+            'duration' => '00:00',
+            'passengers' => $request->passengers ? json_encode($request->passengers) : '{}',
             'date' => $task['date'],
             'time' => date('H:i:s')
         ]);
