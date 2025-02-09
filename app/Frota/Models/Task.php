@@ -27,14 +27,13 @@ class Task extends Model
                         ->where('type', 0)
                         ->orWhere(['type' => 1])
                         ->where(['status' => 1]);
-                //} elseif (request()->route()->getName() === "frota.my-routes") {
                 } elseif (request()->route()->getName() === "frota.requests.evaluate") {
                     return $query->where('type', '<>', 0);
                 }
                 return $query;
             })
             ->select('id', 'task', 'to', 'time', 'passengers', 'started_at', 'ended_at', 'duration', 'status', 'type', 'obs', 'date')
-            ->orderBy('time')->with('branch');
+            ->orderBy('time')->with('branch', 'carsLog');
     }
 
     public function driver()

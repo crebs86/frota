@@ -35,7 +35,7 @@ import moment from 'moment';
                             </thead>
                             <tbody :class="$page.props.app.settingsStyles.main.body">
                                 <tr v-for="(m, i) in $page.props.allRoutes" :key="i + '_allroutes'">
-                                    <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center"
+                                    <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center w-[300px]"
                                         :class="m.to === 1 ? 'underline underline-offset-8' : ''">
                                         <span>{{ m.branch }}</span>
                                         <mdicon name="circle" class="float-right text-red-500" v-if="m.to === 1" />

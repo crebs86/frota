@@ -7,7 +7,9 @@ if (is_file(app_path() . '/instalar/route.php')) {//carrega rota de instalação
     require(app_path() . '/instalar/route.php');
 }else{
 
-Route::get('/', [MiscController::class, 'home'])->name('home');
+Route::get('/', function (){
+    return redirect()->route('frota.home');
+})->name('home');
 
 Route::get('/painel', [MiscController::class, 'dashboard'])->middleware(
     getSettingMustVerifyEmail() ? ['auth', 'verified'] : ['auth']

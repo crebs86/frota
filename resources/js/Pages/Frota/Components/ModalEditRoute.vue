@@ -160,7 +160,7 @@ onMounted(() => {
 
                 <div class="col-span-6 md:col-span-2 md:-mt-0.5">
                     <label class="text-sm">
-                        Tempo de Permanência*
+                        Permanência Estipulada*
                     </label>
                     <input type="time" v-model="props.routeForEdition.duration"
                         class="w-full rounded border h-[41px] mt-0.5 text-gray-700">
@@ -242,7 +242,7 @@ onMounted(() => {
                             <input type="text" v-model="passengersEditModel.contact"
                                 class="w-full rounded border border-black h-[41px] text-gray-700"
                                 :class="!validateDate(props.routeForEdition.date) ? 'bg-[#afb3b9]' : ''"
-                                :disabled="!validateDate(props.routeForEdition.date)" 
+                                :disabled="!validateDate(props.routeForEdition.date)"
                                 maxlength="11" @keyup="maskPhone($event)"
                                 />
                         </div>

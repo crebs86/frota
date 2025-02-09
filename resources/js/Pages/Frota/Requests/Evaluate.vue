@@ -194,7 +194,7 @@ onBeforeMount(() => {
                             </th>
                             <th
                                 class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Tempo de Permanência
+                                Permanência Estipulada
                             </th>
                             <th
                                 class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
@@ -217,7 +217,7 @@ onBeforeMount(() => {
                             <td class="px-3 py-1.5 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                 {{ r.driver !== 2 ? driver(r.driver)[0].user.name : '-' }}
                             </td>
-                            <td class="px-3 py-1.5 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center"
+                            <td class="px-3 py-1.5 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center w-[300px]"
                                 :class="r.to === 1 || r.b === 1 ? 'underline underline-offset-8' : ''">
                                 {{ r.branch }}
                                 <mdicon name="circle" class="float-right text-red-500" v-if="r.to === 1 || r.b === 1" />

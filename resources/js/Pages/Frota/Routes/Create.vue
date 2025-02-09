@@ -260,7 +260,7 @@ function setRouteToEdit(route) {
 
                             <div class="col-span-6 md:col-span-2 text-left -mt-1.5 md:mt-0">
                                 <label class="text-sm">
-                                    Tempo de Permanência*
+                                    Permanência Estipulada*
                                 </label>
                                 <input type="time" v-model="routeForm.duration"
                                     class="h-[41px] w-full text-gray-800 rounded"
@@ -415,7 +415,7 @@ function setRouteToEdit(route) {
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                            Tempo de Permanência
+                                            Permanência Estipulada
                                         </th>
                                         <th
                                             class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
@@ -437,7 +437,7 @@ function setRouteToEdit(route) {
                                             class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                             {{ r.time }}
                                         </td>
-                                        <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center"
+                                        <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center w-[300px]"
                                             :class="r.branch.id === 1 ? 'underline underline-offset-8' : ''">
                                             {{ r.branch.name }}
                                             <mdicon name="circle" class="float-right text-red-500"

@@ -294,7 +294,7 @@ onMounted(() => {
 
                             <div class="col-span-6 md:col-span-2 text-left">
                                 <label class="text-sm">
-                                    Tempo de Permanência*
+                                    Permanência Estipulada*
                                 </label>
                                 <input type="time" v-model="filter.duration"
                                     class="h-[41px] w-full text-gray-800 rounded" />
@@ -540,7 +540,7 @@ onMounted(() => {
 
                         <div class="col-span-6 md:col-span-2">
                             <label class="text-sm">
-                                Tempo de Permanência*
+                                Permanência Estipulada*
                             </label>
                             <input type="time" v-model="routeForEdition.duration"
                                 class="h-[41px] w-full text-gray-800 rounded" />
