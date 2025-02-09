@@ -4,6 +4,7 @@
 !composer.json
 !package.json
 !tailwind.config.js
+!frota.sql
 
 !/app
 /app/*
