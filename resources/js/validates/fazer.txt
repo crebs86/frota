@@ -17,3 +17,9 @@ Assim que logar, já mostrar a tela com  as minhas solicitações pendentes e ap
     linha 154. ALterar para DB e não trazer solicitações
 
 //todo ajustar cores das tabelas no light
+
+//todo
+    - Histórico de abastecimento;
+    - definir máximo de itens;
+    - criar paginate;
+

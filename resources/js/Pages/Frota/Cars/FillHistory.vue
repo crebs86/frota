@@ -21,7 +21,7 @@ const form = useForm({
 const historyFill = ref();
 
 function filterDate() {
-    form.get(route('frota.load-history-fill', [props.car, form.de, form.para]))
+    form.get(route('frota.load-history-fill', [props.car?.id]))
 }
 
 onMounted(() => {
@@ -43,20 +43,10 @@ onMounted(() => {
         </template>
         <SubSection>
             <template #header>
-                Veículos
+                Histórico de Abastecimento de {{ props.car?.marca }} {{ props.car?.modelo }} {{ props.car?.placa }}
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
-                    <!--                     <Link
-                        v-if="has(
-                            $page.props.auth.permissions, ['Carro Criar']) || has($page.props.auth.roles, ['Super Admin'])"
-                        class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
-                        :href="route('frota.cars.create')" title="Novo Carro">
-                    <mdicon name="car-arrow-right" />
-                    <div>
-                        Novo Veículo
-                    </div>
-                    </Link> -->
 
                     <div class="grid grid-cols-1 md:grid-cols-2">
                         <div class="grid grid-cols-1 col-span-2 md:col-span-1">

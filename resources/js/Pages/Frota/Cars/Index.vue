@@ -37,8 +37,7 @@ import moment from 'moment';
 
                     <div class="p-2 rounded-lg overflow-y-auto"
                         :class="$page.props.app.settingsStyles.main.innerSection">
-                        <table class="min-w-full"
-                                        :class="$page.props.app.settingsStyles.main.body">
+                        <table class="min-w-full" :class="$page.props.app.settingsStyles.main.body">
                             <thead>
                                 <tr>
                                     <th v-for=" (value, index) in ['Marca', 'Modelo', 'Placa', 'Próprio?'
@@ -84,7 +83,7 @@ import moment from 'moment';
                                             <mdicon name="car-cog" />
                                             </Link>
                                             <Link
-                                                :href="route('frota.load-history-fill', [c.id, moment().format('YYYY-MM-DD')])"
+                                                :href="route('frota.load-history-fill', [c.id]) + '?de=' + moment().format('YYYY-MM-DD')"
                                                 title="Histórico de Abastecimento"
                                                 v-if="has(
                                                     $page.props.auth.permissions, ['Combistivel Editar', 'Combistivel Apagar', 'Combustivel Ver', 'Combustivel Criar']) || has($page.props.auth.roles, ['Super Admin'])">

@@ -252,16 +252,15 @@ trait Requests
 
             $update = $request->driver ? ['status' => $request->type ? 2 : 1, 'driver' => $request->driver] : ['status' => $request->type ? 2 : 1];
             if ($request->driver) {
-                if (
-                    $task = DB::table('tasks as t')
+                $task = DB::table('tasks as t')
                     ->where('t.driver', '<>', 2)
                     ->where('driver', $request->driver)
                     ->where('r.id', '<>', $route->id)
                     ->where(['r.date' => $route->date, 'r.time' => $route->time])
                     ->select('type', 'status')
                     ->join('routes as r', 't.id', '=', 'r.task')
-                    ->first()
-                ) {
+                    ->first();
+                if (!$task) {
                     if (!($task && $task->status != 2) || $request->ignore) {
                         $update = ['status' => $request->type ? 2 : 1, 'task' => $this->getTask($request, $route)?->id];
                     } else {
@@ -284,7 +283,6 @@ trait Requests
             } else {
                 $update = ['status' => $request->type ? 2 : 1];
             }
-
             if ($route->update($update)) {
                 if ($status === 2 && !$request->type) {
                     $this->removeJustification((int)$route->id);

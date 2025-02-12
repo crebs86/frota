@@ -48,7 +48,7 @@ Route::prefix('/frota')->middleware(
 
     Route::resource('/relatorios', ReportsController::class, ['names' => 'reports'])->parameter('relatorios', 'report')->withTrashed(['show', 'edit', 'update', 'restore']);
 
-    Route::get('/combustivel/carregarAbastecimentos/{car}/de/{de}/para/{para?}', [FuelController::class, 'loadHistoryFill'])->name('load-history-fill');
+    Route::get('/combustivel/carregarAbastecimentos/{car}', [FuelController::class, 'loadHistoryFill'])->name('load-history-fill');
     Route::post('/combustivel/carregarAbastecimentos', [FuelController::class, 'loadLastFill'])->name('load-last-fill');
     Route::post('/combustivel/informarAbastecimento', [FuelController::class, 'insertFill'])->name('insert-fill');
 

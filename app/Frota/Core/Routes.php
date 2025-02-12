@@ -92,7 +92,7 @@ trait Routes
     public function runMyRoutes(Request $request): Response
     {
         $request->merge(['driver' => auth()->id()]);
-            $request->date ?? $request->merge(['date' => date('Y-m-d')]);
+        $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
         $cars = Car::all(['id', 'modelo', 'placa']);
         $cars->each(function ($car) {
@@ -131,13 +131,16 @@ trait Routes
     {
         $res = [];
         if ($request->branch) {
-            $res = Route::where('to', $request->branch)
+            $res = Route::select('id', 'task', 'to', 'started_at', 'ended_at', 'time')
+                ->where('to', $request->branch)
                 ->where('date', $request->date)
                 ->where('type', 0)
-                ->orWhere(['type' => 1])
-                ->where(['status' => 1])
-                ->where('date', $request->date)
-                ->select('id', 'task', 'to', 'started_at', 'ended_at', 'time')
+                ->orWhere(function ($q) use ($request) {
+                    return $q->where(['status' => 1])
+                        ->where('date', $request->date)
+                        ->where(['type' => 1])
+                        ->where('to', $request->branch);
+                })
                 ->with('taskData')
                 ->get();
         } elseif ($request->driver) {
