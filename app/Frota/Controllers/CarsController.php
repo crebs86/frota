@@ -46,7 +46,7 @@ class CarsController extends Controller
     /**
      * @param CarRequest $carRequest
      * @param Car $car
-     * 
+     *
      * @return Response
      */
     public function store(CarRequest $carRequest, Car $car): Response|RedirectResponse
@@ -69,6 +69,7 @@ class CarsController extends Controller
         if ($this->can('Carros Ver', 'Carros Editar', 'Carros Apagar')) {
             return $this->showCarPage();
         }
+        return Inertia::render('Admin/403');
     }
 
     /**
@@ -79,6 +80,7 @@ class CarsController extends Controller
         if ($this->can('Carro Ver', 'Carro Editar', 'Carro Apagar')) {
             return $this->showCarPage($this->can('Carro Editar'));
         }
+        return Inertia::render('Admin/403');
     }
 
     /**
@@ -86,32 +88,31 @@ class CarsController extends Controller
      */
     public function showCarPage($canEdit = false): Response
     {
-        if ($this->can('Carro Ver', 'Carro Editar', 'Carro Apagar', 'Motorista Criar')) {
-            return Inertia::render('Frota/Cars/Show', [
-                'garages' => Garage::with('branch')->select('id')->get(),
-                'car' => Car::select('id', 'placa', 'marca', 'modelo', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')->where('id', request('car'))->with('garage')->get(),
-                '_checker' => setGetKey(request('car'), 'edit_car'),
-                'canEdit' => $canEdit
-            ]);
-        }
+        return Inertia::render('Frota/Cars/Show', [
+            'garages' => Garage::with('branch')->select('id')->get(),
+            'car' => Car::select('id', 'placa', 'marca', 'modelo', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')->where('id', request('car'))->withTrashed()->with('garage')->get(),
+            '_checker' => setGetKey(request('car'), 'edit_car'),
+            'canEdit' => $canEdit
+        ]);
     }
 
     /**
      * @param CarRequest $request
      * @param Car $car
-     * 
-     * @return Response
+     *
+     * @return Response|RedirectResponse
      */
     public function update(CarRequest $request, Car $car): Response|RedirectResponse
     {
         if (
-            (int) getKeyValue($request->_checker, 'edit_car') === request('car')->id
+            (int)getKeyValue($request->_checker, 'edit_car') === request('car')->id
         ) {
             if ($this->can('Carros Editar', 'Carros Apagar')) {
-                if ($car->update($request->validated())) {
+                $request->merge(['deleted_at' => !$request->active ? now() : null]);
+                if ($car->update($request->all())) {
                     return redirect()->back()->with(['car' => Car::where('id', request('car'))
                         ->select('id', 'marca', 'modelo', 'placa', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')
-                        ->with('garage')->withTrashed()->get()->toArray(), 'aaa' => $car]);
+                        ->with('garage')->withTrashed()->get()->toArray()]);
                 }
                 return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do veículo.');
             }

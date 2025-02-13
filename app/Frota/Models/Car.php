@@ -10,7 +10,7 @@ class Car extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['marca', 'modelo', 'placa', 'garagem_id', 'patrimonio', 'tombo'];
+    protected $fillable = ['marca', 'modelo', 'placa', 'garagem_id', 'patrimonio', 'tombo', 'deleted_at'];
 
     public function garage()
     {
