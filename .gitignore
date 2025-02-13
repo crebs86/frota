@@ -121,3 +121,6 @@ resources/js/Pages/Auth/*
 !/public/favicons
 /public/favicons/*
 !/public/favicons/verde
+!/public/logos/
+/public/logos/*
+!/public/logos/logo_VV.*
