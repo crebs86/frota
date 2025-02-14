@@ -39,7 +39,7 @@ class GaragesController extends Controller
         if ($this->can('Garagem Criar')) {
             return Inertia::render('Frota/Garages/Create', [
                 'branches' => Branch::select('id', 'name', 'email', 'address', 'phones', 'notes')
-                    ->whereKeyNot(Arr::pluck(Garage::all('id')
+                    ->whereKeyNot(Arr::pluck(Garage::withTrashed()->get(['id'])
                         ->toArray(), 'id'))
                     ->get()
             ]);
@@ -50,7 +50,7 @@ class GaragesController extends Controller
     /**
      * @param GarageRequest $garageRequest
      * @param Garage $garage
-     * 
+     *
      * @return Response
      */
     public function store(GarageRequest $garageRequest, Garage $garage): Response|RedirectResponse
@@ -58,6 +58,7 @@ class GaragesController extends Controller
         if ($this->can('Garagem Criar')) {
 
             if ($garage->create($garageRequest->validated())) {
+                resetCache('activeGarages');
                 return redirect()->back();
             }
             return redirect()->back()->with('error', 'Ocorreu um erro ao adicionar garagem');
@@ -73,6 +74,7 @@ class GaragesController extends Controller
         if ($this->can('Garagem Ver', 'Garagem Editar', 'Garagem Apagar')) {
             return $this->showGaragePage();
         }
+        return Inertia::render('Admin/403');
     }
 
     /**
@@ -83,9 +85,11 @@ class GaragesController extends Controller
         if ($this->can('Garagem Ver', 'Garagem Editar', 'Garagem Apagar')) {
             return $this->showGaragePage($this->can('Garagem Editar'));
         }
+        return Inertia::render('Admin/403');
     }
 
     /**
+     * @param bool $canEdit
      * @return Response
      */
     public function showGaragePage($canEdit = false): Response
@@ -97,22 +101,24 @@ class GaragesController extends Controller
                 'canEdit' => $canEdit
             ]);
         }
+        return Inertia::render('Admin/403');
     }
 
     /**
      * @param GarageRequest $request
      * @param Garage $garage
-     * 
-     * @return Response
+     *
+     * @return Response|RedirectResponse
      */
     public function update(GarageRequest $request, Garage $garage): Response|RedirectResponse
     {
         if (
-            (int) getKeyValue($request->_checker, 'edit_destroy_garage')
+            (int)getKeyValue($request->_checker, 'edit_destroy_garage')
             === $request->garage->id
         ) {
             if ($this->can('Garagem Editar', 'Garagem Apagar')) {
                 if ($garage->restore()) {
+                    resetCache('activeGarages');
                     return redirect(route('frota.garages.index'));
                 }
                 return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados da garagem.');
@@ -124,16 +130,17 @@ class GaragesController extends Controller
     /**
      * @param GarageRequest $request
      * @param Garage $garage
-     * 
-     * @return Response
+     *
+     * @return Response|RedirectResponse
      */
     public function destroy(GarageRequest $request, Garage $garage): Response|RedirectResponse
     {
         if (
-            (int) getKeyValue($request->_checker, 'edit_destroy_garage') === $request->garage->id
+            (int)getKeyValue($request->_checker, 'edit_destroy_garage') === $request->garage->id
         ) {
             if ($this->can('Garagem Editar', 'Garagem Apagar')) {
                 if ($garage->delete()) {
+                    resetCache('activeGarages');
                     return redirect(route('frota.garages.index'));
                 }
                 return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados da garagem.');

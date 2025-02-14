@@ -7,7 +7,6 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Traits\Helpers;
 use App\Frota\Models\Car;
-use App\Frota\Models\Garage;
 use App\Frota\Requests\CarRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -37,7 +36,7 @@ class CarsController extends Controller
     {
         if ($this->can('Carros Criar')) {
             return Inertia::render('Frota/Cars/Create', [
-                'garages' => Garage::with('branch')->select('id')->get(),
+                'garages' => activeGarages(),
             ]);
         }
         return Inertia::render('Admin/403');
@@ -47,7 +46,7 @@ class CarsController extends Controller
      * @param CarRequest $carRequest
      * @param Car $car
      *
-     * @return Response
+     * @return Response|RedirectResponse
      */
     public function store(CarRequest $carRequest, Car $car): Response|RedirectResponse
     {
@@ -89,7 +88,7 @@ class CarsController extends Controller
     public function showCarPage($canEdit = false): Response
     {
         return Inertia::render('Frota/Cars/Show', [
-            'garages' => Garage::with('branch')->select('id')->get(),
+            'garages' => activeGarages(),
             'car' => Car::select('id', 'placa', 'marca', 'modelo', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')->where('id', request('car'))->withTrashed()->with('garage')->get(),
             '_checker' => setGetKey(request('car'), 'edit_car'),
             'canEdit' => $canEdit

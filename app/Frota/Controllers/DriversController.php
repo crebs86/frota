@@ -27,7 +27,7 @@ class DriversController extends Controller
         if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar', 'Motorista Criar')) {
             $drivers = Driver::with('user', 'garage', 'car')->select('id', 'garagem_id', 'carro_favorito', 'proprio', 'matricula', 'cnh', 'deleted_at')->withTrashed()->get();
             return Inertia::render('Frota/Drivers/Index', [
-                'drivers' => $drivers->where('user', '<>', null)->toArray()
+                'drivers' => $drivers->where('user', '<>', null)->where('id', '<>', 2)->toArray()
             ]);
         }
         return Inertia::render('Admin/403');
@@ -46,7 +46,7 @@ class DriversController extends Controller
                             Driver::withTrashed()->get(['id'])
                                 ->toArray(), 'id'))
                     ->get(),
-                'garages' => Garage::with('branch')->select('id')->get(),
+                'garages' => activeGarages(),
                 'cars' => Car::select('id', 'placa', 'modelo')->get(),
             ]);
         }
@@ -107,7 +107,7 @@ class DriversController extends Controller
             if ($driver?->user) {
                 return Inertia::render('Frota/Drivers/Show', [
                     'driver' => $driver,
-                    'garages' => Garage::with('branch')->select('id')->get(),
+                    'garages' => activeGarages(),
                     'cars' => Car::select('id', 'placa', 'modelo')->get(),
                     '_checker' => setGetKey(request('driver'), 'edit_driver'),
                     'canEdit' => $canEdit
@@ -131,9 +131,9 @@ class DriversController extends Controller
         if ($this->can('Motorista Editar')) {
             if ((int)getKeyValue($request->_checker, 'edit_driver') === (int)$request->driver->id) {
                 if ($this->can('Motorista Editar')) {
-                    if ($driver->update($request->validated())) {
+                    $request->merge(['deleted_at' => $request->deleted_at ? now() : null]);
+                    if ($driver->update($request->all())) {
                         if ($request->deleted_at) {
-                            $driver->delete();
                             User::find($driver->id)->removeRole('Motorista');
                         } else {
                             $u = User::find($driver->id);

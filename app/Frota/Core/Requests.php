@@ -30,7 +30,7 @@ trait Requests
     {
         $props = [
             'drivers' => Driver::with('user')->where('id', '<>', 2)->select('id')->get(),
-            'branches' => Branch::select('id', 'name')->get(),
+            'branches' => activeBranches(),
             'timetables' => Arr::pluck(Timetable::all(['time']), 'time'),
             'evaluator' => $this->can('Liberador'),
             'requester'  => $this->can('Solicitacao Criar')

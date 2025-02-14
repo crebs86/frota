@@ -19,6 +19,7 @@
 !/app/Http/Controllers/Admin
 /app/Http/Controllers/Admin/*
 !/app/Http/Controllers/Admin/UserController.php
+!/app/Http/Controllers/Admin/BranchController.php
 
 !/app/Traits
 /app/Traits/*

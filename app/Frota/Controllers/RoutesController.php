@@ -25,7 +25,7 @@ class RoutesController extends Controller
     public function index(): Response
     {
         return Inertia::render('Frota/Routes/Index', [
-            'branches' => Branch::all(['id', 'name']),
+            'branches' => activeBranches(),
             'drivers' => Driver::select('id')->where('id', '<>', 2)->with('user')->get()->toArray()
         ]);
     }
@@ -34,7 +34,7 @@ class RoutesController extends Controller
     {
         return Inertia::render('Frota/Routes/Create', [
             'drivers' => Driver::with('user')->where('id', '<>', 2)->select('id')->get(),
-            'branches' => Branch::select('id', 'name')->get(),
+            'branches' => activeBranches(),
             'timetables' => Arr::pluck(Timetable::all(['time']), 'time')
         ]);
     }

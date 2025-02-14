@@ -12,7 +12,7 @@ class Driver extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['id', 'garagem_id', 'carro_favorito', 'proprio', 'matricula', 'cnh'];
+    protected $fillable = ['id', 'garagem_id', 'carro_favorito', 'proprio', 'matricula', 'cnh', 'deleted_at'];
 
     /**
      * @return BelongsTo

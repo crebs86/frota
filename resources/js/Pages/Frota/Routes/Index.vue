@@ -157,7 +157,7 @@ function verifyDriverRoute() {
                                 Data*
                             </label>
                         </div>
-                        <div class="relative z-10 mb-6 w-full md:col-span-2">
+                        <div class="relative z-20 mb-6 w-full md:col-span-2">
                             <div>Destino</div>
                             <VueMultiselect v-model="filter.branch" :options="$page.props.branches" :multiple="false"
                                 :close-on-select="true" placeholder="Destino" label="name" track-by="id"
