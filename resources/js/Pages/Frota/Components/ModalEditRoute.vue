@@ -125,8 +125,8 @@ onMounted(() => {
             <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
         </div>
         <div v-if="props.routeForEdition"
-            class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600 p-4">
-            <div class="overflow-x-auto grid grid-cols-6 gap-3">
+            class="bg-white rounded-lg overflow-auto shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600 p-4 max-h-[95%]">
+            <div class="overflow-x-auto overflow-y-hidden grid grid-cols-6 gap-3">
 
                 <div class="grid grid-cols-1 col-span-6 md:col-span-2 h-12 mt-1 md:mt-0">
                     <label class="text-sm">

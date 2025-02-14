@@ -346,9 +346,8 @@ function setRouteToEdit(route) {
                                         </label>
                                         <input type="text" v-model="passengersModel.contact"
                                             class="w-full rounded border border-black h-[41px] text-gray-700"
-                                            :class="!validateDate(routeForm?.date) ? 'bg-[#afb3b9]' : ''"
-                                            maxlength="11" @keyup="maskPhone($event)"
-                                            :disabled="!validateDate(routeForm?.date)" />
+                                            :class="!validateDate(routeForm?.date) ? 'bg-[#afb3b9]' : ''" maxlength="11"
+                                            @keyup="maskPhone($event)" :disabled="!validateDate(routeForm?.date)" />
                                     </div>
                                 </div>
                                 <button type="button" @click="setPassenger(false)"

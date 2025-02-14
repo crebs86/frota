@@ -5,6 +5,7 @@ use App\Models\Setting;
 use App\Frota\Models\Car;
 use App\Frota\Models\Driver;
 use App\Frota\Models\Garage;
+use App\Frota\Models\Timetable;
 use Illuminate\Support\Facades\Crypt;
 
 /**
@@ -90,6 +91,16 @@ if (!function_exists('drivers')) {
     {
         return cache()->remember('drivers', 60 * 60 * 24, function () {
             return  Driver::with('user', 'garage', 'car')->select('id', 'garagem_id', 'carro_favorito', 'proprio', 'matricula', 'cnh', 'deleted_at')->withTrashed()->get();
+        });
+    }
+}
+
+if (!function_exists('timetable')) {
+
+    function timetable()
+    {
+        return cache()->remember('timetable', 60 * 60 * 30, function () {
+            return  Timetable::all(['time']);
         });
     }
 }
