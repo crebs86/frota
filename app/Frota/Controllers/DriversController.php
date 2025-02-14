@@ -25,9 +25,8 @@ class DriversController extends Controller
     public function index(): Response
     {
         if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar', 'Motorista Criar')) {
-            $drivers = Driver::with('user', 'garage', 'car')->select('id', 'garagem_id', 'carro_favorito', 'proprio', 'matricula', 'cnh', 'deleted_at')->withTrashed()->get();
             return Inertia::render('Frota/Drivers/Index', [
-                'drivers' => $drivers->where('user', '<>', null)->where('id', '<>', 2)->toArray()
+                'drivers' => drivers()->where('user', '<>', null)->where('id', '<>', 2)
             ]);
         }
         return Inertia::render('Admin/403');
@@ -44,7 +43,10 @@ class DriversController extends Controller
                     ->whereKeyNot(
                         Arr::pluck(
                             Driver::withTrashed()->get(['id'])
-                                ->toArray(), 'id'))
+                                ->toArray(),
+                            'id'
+                        )
+                    )
                     ->get(),
                 'garages' => activeGarages(),
                 'cars' => Car::select('id', 'placa', 'modelo')->get(),
@@ -66,6 +68,7 @@ class DriversController extends Controller
 
                 $user = User::find($driverRequest->id);
                 $user->assignRole('Motorista');
+                resetCache('drivers');
 
                 return redirect(route('frota.drivers.index'))->with('success', 'Motorista adicionado!' . $d);
             }
@@ -103,12 +106,12 @@ class DriversController extends Controller
     public function showUserPage(bool $canEdit = false): Response
     {
         if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar', 'Motorista Criar')) {
-            $driver = Driver::where('id', request('driver'))->with('user', 'garage', 'car')->withTrashed()->first();
+            $driver = drivers()->where('id', request('driver'))->first();
             if ($driver?->user) {
                 return Inertia::render('Frota/Drivers/Show', [
                     'driver' => $driver,
                     'garages' => activeGarages(),
-                    'cars' => Car::select('id', 'placa', 'modelo')->get(),
+                    'cars' => cars()->select('id', 'placa', 'modelo'),
                     '_checker' => setGetKey(request('driver'), 'edit_driver'),
                     'canEdit' => $canEdit
                 ]);
@@ -133,6 +136,7 @@ class DriversController extends Controller
                 if ($this->can('Motorista Editar')) {
                     $request->merge(['deleted_at' => $request->deleted_at ? now() : null]);
                     if ($driver->update($request->all())) {
+                        resetCache('drivers');
                         if ($request->deleted_at) {
                             User::find($driver->id)->removeRole('Motorista');
                         } else {
@@ -141,7 +145,7 @@ class DriversController extends Controller
                                 $u->assignRole('Motorista');
                             }
                         }
-                        return redirect()->back()->with(['driver' => Driver::where('id', request('driver'))->with('user', 'garage', 'car')->withTrashed()->get()]);
+                        return redirect()->back()->with(['driver' => drivers()->where('id', request('driver'))]);
                     }
                     return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do motorista.');
                 }

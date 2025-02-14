@@ -8,6 +8,7 @@
 
 !/app
 /app/*
+!/app/adm_utils.php
 
 !/app/Frota
 !/app/Frota/helpers.php

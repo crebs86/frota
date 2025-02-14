@@ -25,7 +25,7 @@ class GaragesController extends Controller
     {
         if ($this->can('Garagem Ver', 'Garagem Editar', 'Garagem Apagar', 'Garagem Criar')) {
             return Inertia::render('Frota/Garages/Index', [
-                'garage' => Garage::select('id', 'deleted_at')->with('branch')->withTrashed()->get()->toArray()
+                'garage' => garages()
             ]);
         }
         return Inertia::render('Admin/403');
@@ -59,6 +59,7 @@ class GaragesController extends Controller
 
             if ($garage->create($garageRequest->validated())) {
                 resetCache('activeGarages');
+                resetCache('garages');
                 return redirect()->back();
             }
             return redirect()->back()->with('error', 'Ocorreu um erro ao adicionar garagem');
@@ -119,6 +120,7 @@ class GaragesController extends Controller
             if ($this->can('Garagem Editar', 'Garagem Apagar')) {
                 if ($garage->restore()) {
                     resetCache('activeGarages');
+                    resetCache('garages');
                     return redirect(route('frota.garages.index'));
                 }
                 return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados da garagem.');
@@ -141,6 +143,7 @@ class GaragesController extends Controller
             if ($this->can('Garagem Editar', 'Garagem Apagar')) {
                 if ($garage->delete()) {
                     resetCache('activeGarages');
+                    resetCache('garages');
                     return redirect(route('frota.garages.index'));
                 }
                 return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados da garagem.');

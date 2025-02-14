@@ -22,6 +22,3 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
     - Histórico de abastecimento;
     - definir máximo de itens;
     - criar paginate;
-
-//todo
-    - otimizar busca no bd por motoristas como feito com garagens e unidades.

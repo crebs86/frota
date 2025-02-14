@@ -23,7 +23,7 @@ class CarsController extends Controller
     {
         if ($this->can('Carros Ver', 'Carros Editar', 'Carros Apagar', 'Carros Criar')) {
             return Inertia::render('Frota/Cars/Index', [
-                'cars' => Car::select('id', 'marca', 'modelo', 'placa', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')->with('garage')->withTrashed()->get()->toArray()
+                'cars' => cars()
             ]);
         }
         return Inertia::render('Admin/403');
@@ -52,7 +52,8 @@ class CarsController extends Controller
     {
         if ($this->can('Carros Criar')) {
 
-            if ($d = $car->create($carRequest->validated())) {
+            if ($car->create($carRequest->validated())) {
+                resetCache('cars');
                 return redirect(route('frota.cars.index'))->with('success', 'Carro adicionado!');
             }
             return redirect()->back()->with('error', 'Ocorreu um erro ao adicionar garagem');
@@ -89,7 +90,7 @@ class CarsController extends Controller
     {
         return Inertia::render('Frota/Cars/Show', [
             'garages' => activeGarages(),
-            'car' => Car::select('id', 'placa', 'marca', 'modelo', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')->where('id', request('car'))->withTrashed()->with('garage')->get(),
+            'car' => cars()->where('id', request('car')),
             '_checker' => setGetKey(request('car'), 'edit_car'),
             'canEdit' => $canEdit
         ]);
@@ -109,9 +110,8 @@ class CarsController extends Controller
             if ($this->can('Carros Editar', 'Carros Apagar')) {
                 $request->merge(['deleted_at' => !$request->active ? now() : null]);
                 if ($car->update($request->all())) {
-                    return redirect()->back()->with(['car' => Car::where('id', request('car'))
-                        ->select('id', 'marca', 'modelo', 'placa', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')
-                        ->with('garage')->withTrashed()->get()->toArray()]);
+                    resetCache('cars');
+                    return redirect()->back()->with(['car' => cars()->where('id', request('car'))]);
                 }
                 return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do veículo.');
             }
