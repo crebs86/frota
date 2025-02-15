@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class FuelRequest extends FormRequest
 {
     use ACL;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -15,7 +16,7 @@ class FuelRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->can('Combustivel Criar', 'Combustivel Editar');
+        return $this->can('Combustivel Criar', 'Combustivel Editar') || $this->hasRole('Motorista');
     }
 
     /**
@@ -25,8 +26,7 @@ class FuelRequest extends FormRequest
      */
     public function rules(): array
     {
-        $this->merge(['car' => (int) getKeyValue($this->car['token'], 'car_token')]);
-        $req = $this;
+        $this->merge(['car' => (int)getKeyValue($this->car['token'], 'car_token')]);
         return [
             'car' => 'exists:cars,id',
             'km' => 'integer|required',

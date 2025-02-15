@@ -13,6 +13,7 @@ use App\Traits\Helpers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Inertia\Response;
 
 class FuelController extends Controller
 {
@@ -51,7 +52,11 @@ class FuelController extends Controller
         }
     }
 
-    public function loadHistoryFill(Request $request)
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function loadHistoryFill(Request $request): Response
     {
         return $this->runLoadHistoryFill($request);
     }
