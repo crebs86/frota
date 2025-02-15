@@ -36,7 +36,7 @@ class RequestsController extends Controller
         if ($this->can('Solicitacao Apagar', 'Solicitacao Criar', 'Solicitacao Editar', 'Solicitacao Ver', 'Liberador')) {
             return response()->json($this->runFilterRoutes($request));
         }
-        return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqc(403-1)'], 403);
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. rc(403-1)'], 403);
     }
 
     public function update(RequestRequest $request, Route $route)
@@ -44,7 +44,7 @@ class RequestsController extends Controller
         if ($this->can('Solicitacao Editar') && $route->user === auth()->id() || $this->can('Agenda Editar', 'Liberador')) {
             return $this->runUpdate($request, $route);
         }
-        return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqc(403-2)'], 403);
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. rc(403-2)'], 403);
     }
 
     public function getRequestsToEvaluate(Request $request)
@@ -52,7 +52,7 @@ class RequestsController extends Controller
         if ($this->can('Liberador')) {
             return $this->runGetRequestsToEvaluate($request);
         }
-        return response()->json(['error' => 'Você não tem permissão para usar este recurso. reqe(403-1)'], 403);
+        return response()->json(['error' => 'Você não tem permissão para usar este recurso. rc(403-3)'], 403);
     }
 
     public function allow(Request $request): JsonResponse

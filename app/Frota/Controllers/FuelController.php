@@ -30,9 +30,8 @@ class FuelController extends Controller
                 Fuel::where('car', getKeyValue($request->token, 'car_token'))
                     ->select('km', 'quantidade', 'valor', 'local', 'hora', 'created_at', 'car')
                     //->with('carModel')
-                    ->limit(3)
                     ->orderBy('hora', 'desc')
-                    ->get()
+                    ->paginate(3)
             );
         } else {
             return response()->json('Você não possui permissão para acessar este recurso. fuel(403-1)', 403);

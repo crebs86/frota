@@ -4,6 +4,7 @@ import axios from 'axios';
 import {defineEmits, onMounted, ref} from 'vue';
 import moment from 'moment';
 import validateCUR from "@/validates/insertUpdateFill.js";
+import {TailwindPagination} from 'laravel-vue-pagination';
 
 const abastecerModalStatus = defineEmits(['abastecerModalStatus'])
 
@@ -30,9 +31,10 @@ const fill = ref({
     errors: ''
 })
 
-function loadLastFill() {
+function loadLastFill(page = 1) {
+    fills.value = []
     if (props.car) {
-        axios.post(route('frota.load-last-fill'), props.car)
+        axios.post(route('frota.load-last-fill') + '?page=' + page, props.car)
             .then((r) => {
                 fills.value = r.data
             })
@@ -250,7 +252,7 @@ onMounted(() => {
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(f, i) in fills" :key="'fills_' + i">
+                            <tr v-for="(f, i) in fills?.data" :key="'fills_' + i">
                                 <th
                                     class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
                                     {{ f.hora ? moment(f.hora).format('DD/MM/YY HH:mm') : '-' }}
@@ -274,6 +276,15 @@ onMounted(() => {
                             </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="my-3 grid col-span-2 place-content-center overflow-x-auto">
+                        <TailwindPagination
+                            :item-classes="['bg-blue-100 text-gray-500 border-gray-400 hover:bg-white dark:bg-gray-600 dark:text-gray-100 dark:border-gray-300 dark:hover:bg-gray-800']"
+                            :active-classes="['bg-white border-gray-600 text-blue-600 dark:bg-gray-300 dark:border-gray-500 dark:text-blue-500']"
+                            :data="fills"
+                            :limit="1"
+                            @pagination-change-page="loadLastFill"
+                        />
                     </div>
                 </div>
 

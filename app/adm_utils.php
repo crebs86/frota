@@ -15,7 +15,7 @@ if (!function_exists('setGetKey')) {
     /**
      * @param string $key
      * @param string|null $sufix
-     * 
+     *
      * @return string
      */
     function setGetKey($key, $sufix = null)
@@ -31,7 +31,7 @@ if (!function_exists('getKeyValue')) {
     /**
      * @param string $key
      * @param string|null $sufix
-     * 
+     *
      * @return mixed
      */
     function getKeyValue($key, $sufix = null)
@@ -50,7 +50,7 @@ if (!function_exists('garages')) {
     function garages()
     {
         return cache()->remember('garages', 60 * 60 * 24, function () {
-            return  Garage::select('id', 'deleted_at')->with('branch')->withTrashed()->get()->toArray();
+            return Garage::select('id', 'deleted_at')->with('branch')->withTrashed()->get()->toArray();
         });
     }
 }
@@ -60,7 +60,7 @@ if (!function_exists('activeGarages')) {
     function activeGarages()
     {
         return cache()->remember('activeGarages', 60 * 60 * 24, function () {
-            return  Garage::with('branch')->select('id')->get();
+            return Garage::with('branch')->select('id')->get();
         });
     }
 }
@@ -70,7 +70,7 @@ if (!function_exists('activeBranches')) {
     function activeBranches()
     {
         return cache()->remember('activeBranches', 60 * 60 * 24, function () {
-            return  Branch::select('id', 'name')->get();
+            return Branch::select('id', 'name')->get();
         });
     }
 }
@@ -80,7 +80,16 @@ if (!function_exists('cars')) {
     function cars()
     {
         return cache()->remember('cars', 60 * 60 * 24, function () {
-            return  Car::select('id', 'placa', 'marca', 'modelo', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')->with('garage')->withTrashed()->get();
+            return Car::select('id', 'placa', 'marca', 'modelo', 'patrimonio', 'tombo', 'garagem_id', 'deleted_at')->with('garage')->withTrashed()->get();
+        });
+    }
+}
+if (!function_exists('activeCars')) {
+
+    function activeCars()
+    {
+        return cache()->remember('activeCars', 60 * 60 * 24, function () {
+            return Car::select('id', 'placa', 'marca', 'modelo')->get();
         });
     }
 }
@@ -90,7 +99,7 @@ if (!function_exists('drivers')) {
     function drivers()
     {
         return cache()->remember('drivers', 60 * 60 * 24, function () {
-            return  Driver::with('user', 'garage', 'car')->select('id', 'garagem_id', 'carro_favorito', 'proprio', 'matricula', 'cnh', 'deleted_at')->withTrashed()->get();
+            return Driver::with('user', 'garage', 'car')->select('id', 'garagem_id', 'carro_favorito', 'proprio', 'matricula', 'cnh', 'deleted_at')->withTrashed()->get();
         });
     }
 }
@@ -100,7 +109,17 @@ if (!function_exists('timetable')) {
     function timetable()
     {
         return cache()->remember('timetable', 60 * 60 * 30, function () {
-            return  Timetable::all(['time']);
+            return Timetable::all(['time']);
+        });
+    }
+}
+
+if (!function_exists('definedFavoriteCar')) {
+
+    function definedFavoriteCar($lifetime = 60 * 60)
+    {
+        return cache()->remember('definedFavoriteCar_' . auth()->id(), $lifetime, function () {
+            return true;
         });
     }
 }

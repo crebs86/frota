@@ -94,7 +94,7 @@ trait Routes
         $request->merge(['driver' => auth()->id()]);
         $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
-        $cars = Car::all(['id', 'modelo', 'placa']);
+        $cars = activeCars();
         $cars->each(function ($car) {
             return $car->token = setGetKey($car->id, 'car_token');
         });

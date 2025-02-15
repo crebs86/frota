@@ -23,11 +23,11 @@ Route::prefix('/frota')->middleware(
     Route::resource('/rotas', RoutesController::class, ['names' => 'routes'])->parameter('rotas', 'route')->withTrashed(['show', 'edit', 'update', 'restore']);
     Route::get('/tarefas', [RoutesController::class, 'allRoutes'])->name('all-routes');
     Route::get('/tarefas/minhas', [RoutesController::class, 'myRoutes'])->name('my-routes');
+    Route::post('/tarefas/minhas/filtrar', [RoutesController::class, 'myRoutesByDate'])->name('my-routes-bydate');
     Route::post('/tarefas/minhas/iniciarRota/{id}', [RoutesController::class, 'startRoute'])->name('tasks.start-route');
     Route::post('/tarefas/minhas/finalizarRota/{id}', [RoutesController::class, 'finishRoute'])->name('tasks.finish-route');
     Route::post('/tarefas/minhas/limparRota/{id}', [RoutesController::class, 'eraseRoute'])->name('tasks.erase-route');
     Route::post('/tarefas/minhas/inserirRotaAvulsa', [RoutesController::class, 'setSingleRoute'])->name('tasks.set-sigle-route');
-    Route::post('/tarefas/minhas/filtrar', [RoutesController::class, 'myRoutesByDate'])->name('my-routes-bydate');
     Route::post('/tarefas/filtrar', [RoutesController::class, 'filter'])->name('tasks.filter');
     Route::post('/tarefas', [RoutesController::class, 'filterRoutes'])->name('tasks.filter-routes');
     Route::get('/editarRota/{route}', [RoutesController::class, 'getRouteDetails'])->name('tasks.get-route-details');

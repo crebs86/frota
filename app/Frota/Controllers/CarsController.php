@@ -3,6 +3,8 @@
 namespace App\Frota\Controllers;
 
 use App\Traits\ACL;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Traits\Helpers;
@@ -54,6 +56,7 @@ class CarsController extends Controller
 
             if ($car->create($carRequest->validated())) {
                 resetCache('cars');
+                resetCache('activeCars');
                 return redirect(route('frota.cars.index'))->with('success', 'Carro adicionado!');
             }
             return redirect()->back()->with('error', 'Ocorreu um erro ao adicionar garagem');
@@ -111,11 +114,17 @@ class CarsController extends Controller
                 $request->merge(['deleted_at' => !$request->active ? now() : null]);
                 if ($car->update($request->all())) {
                     resetCache('cars');
+                    resetCache('activeCars');
                     return redirect()->back()->with(['car' => cars()->where('id', request('car'))]);
                 }
                 return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do veículo.');
             }
         }
         return Inertia::render('Admin/403');
+    }
+
+    public function driverFavoriteCar(Request $request): JsonResponse
+    {
+
     }
 }
