@@ -126,7 +126,7 @@ function updateRoute() {
                 toast.success(r.data)
                 verifyDriverRoute();
                 modal.value.editRoute = false;
-                routeForEdition.value = {};
+                resetRouteForEdition()
             })
             .catch((e) => {
                 if (e.response?.status === 403) {
