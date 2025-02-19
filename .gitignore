@@ -84,6 +84,7 @@ resources/js/Pages/Auth/*
 !/resources/js/Layouts/Frota
 !/resources/js/Layouts/AuthenticatedLayout.vue
 !/resources/js/Layouts/CustomBackgroundLayout.vue
+!/resources/js/Layouts/SettingsLayout.vue
 !/resources/js/Pages/Frota
 !/resources/views/Frota
 
