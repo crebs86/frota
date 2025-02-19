@@ -10,11 +10,22 @@ import { toast } from "@/toast";
 import validate from "@/validates/indexSaveRoute.js";
 import { branchName } from "@/helpers";
 import { phoneMask } from "@/mask";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import SubSection from '@/Components/Admin/SubSection.vue';
+import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
 
 const EditRoute = defineAsyncComponent(() => import('@/Pages/Frota/Components/ModalEditRoute.vue'));
 
 const p = defineProps({
-    props: Object
+    props: Object,
+    drivers: Object,
+    branches: Object,
+    timetables: Object,
+    routes: Object,
+    errors: Object,
+    evaluator: Boolean,
+    requester: Boolean,
 });
 
 const props = ref({});
@@ -73,6 +84,11 @@ const modal = ref({
     editRequest: false
 });
 
+const tab = ref({
+    evaluator: p.evaluator,
+    requester: p.requester,
+    current: p.evaluator ? 'evaluator' : 'requester'
+})
 
 function driverName({ id, user }) {
     return `${id ? id : ''} - ${user?.name ? user.name : ''}`
@@ -254,331 +270,372 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.75)]">
-        <h2 class="text-xl text-center">Solicitar Carro</h2>
-        <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded" v-if="requestForm.date">
-            <div class="relative w-full z-auto min-h-fit grid grid-cols-4 gap-3">
-                <div class="col-span-4 md:col-span-2 h-12">
-                    <label class="text-sm">
-                        Selecione um motorista
-                    </label>
-                    <VueMultiselect v-model="requestForm.driver" :options="props.drivers" :multiple="false"
-                        :close-on-select="true" selectedLabel="atual" placeholder="Motorista" :custom-label="driverName"
-                        track-by="id" selectLabel="Selecionar" @select="verifyDriverRoute" deselectLabel="Remover" class="border border-black rounded-md" />
-                    <div v-if="requestForm.errors?.driver"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                        <small v-for="error in requestForm.errors?.driver">{{ error }}</small>
-                    </div>
-                </div>
 
-                <div class="col-span-4 md:col-span-2 mt-4 md:mt-0" v-if="validateDate(requestForm.date)">
-                    <label class="text-sm">
-                        Destino*
-                    </label>
-                    <VueMultiselect v-model="requestForm.branch" :options="props.branches" :multiple="false"
-                        :close-on-select="true" selectedLabel="atual" placeholder="Destino" :custom-label="branchName"
-                        track-by="id" label="time" selectLabel="Selecionar" deselectLabel="Remover" class="border border-black rounded-md" />
-                    <div v-if="requestForm.errors?.branch"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                        <small v-for="error in requestForm.errors?.branch">{{ error }}</small>
-                    </div>
-                </div>
+    <Head title="Solicitar" />
 
-                <div class="col-span-4" v-if="requestForm.date && requestForm.branch?.id === 1">
-                    <label class="text-sm">
-                        Local*
-                    </label>
-                    <input type="text" v-model="requestForm.local"
-                        class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700" />
+    <AuthenticatedLayout>
 
-                    <div v-if="requestForm.errors?.local"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                        <small v-for="error in requestForm.errors?.local">{{ error }}</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mt-3">
-            <div class="w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-6 gap-3">
-
-                <div class="grid grid-cols-1 col-span-6 md:col-span-2 h-12">
-                    <label class="text-sm">
-                        Data*
-                    </label>
-                    <input type="date" v-model="requestForm.date" @change="verifyDriverRoute"
-                        class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
-
-                    <div v-if="requestForm.errors?.date"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                        <small v-for="error in requestForm.errors?.date">{{ error }}</small>
-                    </div>
-                </div>
-
-                <div class="col-span-6 md:col-span-2 mt-4 md:-mt-0.5" v-if="validateDate(requestForm.date)">
-                    <label class="text-sm">
-                        Hora da Chegada no Destino*
-                    </label>
-                    <VueMultiselect v-model="requestForm.time" :options="props.timetables" :multiple="false"
-                        :close-on-select="true" selectedLabel="atual" placeholder="Hora" selectLabel="Selecionar"
-                        deselectLabel="Remover" class="border border-black rounded-md" />
-
-                    <div v-if="requestForm.errors?.time"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                        <small v-for="error in requestForm.errors?.time">{{ error }}</small>
-                    </div>
-                    <div v-if="requestForm.ignoreQuestion">
-                        <label for="_ignore" class="p-1.5 text-amber-500 font-bold">Ignorar conflito.</label>
-                        <input type="checkbox" id="_ignore" v-model="requestForm.ignore" class="text-red-400" />
-                    </div>
-                </div>
-
-                <div class="col-span-6 md:col-span-2 text-left md:-mt-0.5" v-if="validateDate(requestForm.date)">
-                    <label class="text-sm">
-                        Permanência Estipulada*
-                    </label>
-                    <input type="time" v-model="requestForm.duration" class="h-[41px] w-full text-gray-800 rounded" />
-
-                    <div v-if="requestForm.errors?.duration"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
-                        <small v-for="error in requestForm.errors?.duration">{{ error }}</small>
-                    </div>
-                </div>
-                <div class="col-span-6 grid grid-cols-1" v-if="validateDate(requestForm?.date)">
-                    <label class="text-sm col-span-6">
-                        Obs.:
-                    </label>
-                    <textarea class="rounded text-gray-600" v-model="requestForm.obs"></textarea>
-                    <div v-if="requestForm.errors?.obs"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
-                        <small v-for="error in requestForm.errors?.obs">{{ error }}</small>
-                    </div>
-                </div>
-
-                <div class="col-span-6 grid grid-cols-8" v-if="validateDate(requestForm.date)">
-                    <div class="col-span-6 grid grid-cols-4 gap-2">
-                        <div class="col-span-5 md:col-span-2">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                Passageiro*
-                            </label>
-                            <input type="text" v-model="passengersModel.passenger"
-                                class="w-full rounded border border-black h-[41px] text-gray-700"
-                                :class="!validateDate(requestForm?.date) ? 'bg-[#afb3b9]' : ''"
-                                :disabled="!validateDate(requestForm?.date)" />
-                        </div>
-                        <div class="col-span-5 md:col-span-2">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                Contato*
-                            </label>
-                            <input type="text" v-model="passengersModel.contact" @keyup="maskPhone($event)"
-                                class="w-full rounded border border-black h-[41px] text-gray-700"
-                                :class="!validateDate(requestForm?.date) ? 'bg-[#afb3b9]' : ''" maxlength="11"
-                                :disabled="!validateDate(requestForm?.date)" />
-                        </div>
-                    </div>
-                    <button type="button" @click="setPassenger(false)"
-                        :disabled="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8"
-                        class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:-mb-[1px]"
-                        :class="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
-                        Incluir
-                    </button>
-
-                    <div v-if="requestForm.errors?.passengers"
-                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
-                        <small v-for="error in requestForm.errors?.passengers">{{ error }}</small>
-                    </div>
-
-                    <div class="col-span-4 mb-4" v-if="validateDate(requestForm?.date)">
-                        <div v-for="(p, i) in requestForm.passengers" :key="'pre_' + i" class="inline-flex w-full">
-                            {{ p.passenger }}: {{ p.contact }}
-                            <button @click="setPassenger(true, p)">
-                                <mdicon name="close" class="text-red-400" />
-                            </button>
-                            <button @click="setPassenger(false, p, true)">
-                                <mdicon name="pencil" class="text-blue-400" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <button type="button" @click="saveRequest" v-if="validateDate(requestForm.date)"
-                class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline w-full max-w-[300px]">
-                Enviar Solicitação
-            </button>
-        </div>
-
-        <!-- modal edit -->
-        <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2 mt-3"
-            v-if="requestForm?.driver && (requestForm?.driver?.id === routes?.driver && routes?.driver != null)">
-            <p><span class="font-bold">Motorista:</span>
-                {{ requestForm?.driver?.id === routes[0]?.driver ? requestForm?.driver?.user?.name : '' }}
-            </p>
-            <p><span class="font-bold">Data:</span>
-                {{ moment(routes.date).format('DD/MM/YYYY') }}
-            </p>
-            <div class="p-2 rounded-lg overflow-y-auto" :class="$page.props.app.settingsStyles.main.innerSection">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
-
-                    <div class="grid grid-cols-1">
-                        <p>Filtrar:</p>
-                        <div class="inline-flex gap-1 my-1">
-                            <div
-                                class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 px-3 w-[135px]">
-                                <input id="bordered-radio-1" type="checkbox" v-model="filter.routes"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label for="bordered-radio-1"
-                                    class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                    Agendados
+        <template #inner_menu>
+            <FrotaMenu />
+        </template>
+        <SubSection>
+            <template #header>
+                <button class="py-1 px-1.5 rounded border border-lime-500 mr-1.5 text-white bg-lime-600 font-normal"
+                    :disabled="!tab.requester">
+                    Solicitar
+                </button>
+                <button class="py-1 px-1.5 rounded border border-gray-600 mr-1.5 text-white bg-gray-600 font-normal"
+                    :class="!tab.evaluator ? 'opacity-25' : ''" :disabled="!tab.evaluator"
+                    @click="router.visit(route('frota.requests.evaluates'))">
+                    Avaliar
+                </button>
+            </template>
+            <template #content>
+                <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.75)]">
+                    <h2 class="text-xl text-center">Solicitar Carro</h2>
+                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded"
+                        v-if="requestForm.date">
+                        <div class="relative w-full z-auto min-h-fit grid grid-cols-4 gap-3">
+                            <div class="col-span-4 md:col-span-2 h-12">
+                                <label class="text-sm">
+                                    Selecione um motorista
                                 </label>
+                                <VueMultiselect v-model="requestForm.driver" :options="p.drivers" :multiple="false"
+                                    :close-on-select="true" selectedLabel="atual" placeholder="Motorista"
+                                    :custom-label="driverName" track-by="id" selectLabel="Selecionar"
+                                    @select="verifyDriverRoute" deselectLabel="Remover"
+                                    class="border border-black rounded-md" />
+                                <div v-if="requestForm.errors?.driver"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small v-for="error in requestForm.errors?.driver">{{ error }}</small>
+                                </div>
                             </div>
-                            <div
-                                class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 px-3 w-[135px]">
-                                <input checked id="bordered-radio-2" type="checkbox" v-model="filter.requests"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label for="bordered-radio-2"
-                                    class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                    Solicitações
+
+                            <div class="col-span-4 md:col-span-2 mt-4 md:mt-0" v-if="validateDate(requestForm.date)">
+                                <label class="text-sm">
+                                    Destino*
                                 </label>
+                                <VueMultiselect v-model="requestForm.branch" :options="p.branches" :multiple="false"
+                                    :close-on-select="true" selectedLabel="atual" placeholder="Destino"
+                                    :custom-label="branchName" track-by="id" label="time" selectLabel="Selecionar"
+                                    deselectLabel="Remover" class="border border-black rounded-md" />
+                                <div v-if="requestForm.errors?.branch"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small v-for="error in requestForm.errors?.branch">{{ error }}</small>
+                                </div>
+                            </div>
+
+                            <div class="col-span-4" v-if="requestForm.date && requestForm.branch?.id === 1">
+                                <label class="text-sm">
+                                    Local*
+                                </label>
+                                <input type="text" v-model="requestForm.local"
+                                    class="w-full rounded border border-black h-[41px] mt-0.5 text-gray-700" />
+
+                                <div v-if="requestForm.errors?.local"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small v-for="error in requestForm.errors?.local">{{ error }}</small>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="self-end w-full">
-                        <button @click="verifyDriverRoute"
-                            class="flex px-2 py-1.5 mb-1 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 self-end max-h-[38px] max-w-fit float-right">
-                            Recarregar Rotas
-                            <mdicon name="refresh" />
+                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mt-3">
+                        <div class="w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-6 gap-3">
+
+                            <div class="grid grid-cols-1 col-span-6 md:col-span-2 h-12">
+                                <label class="text-sm">
+                                    Data*
+                                </label>
+                                <input type="date" v-model="requestForm.date" @change="verifyDriverRoute"
+                                    class="rounded border border-black h-[41px] mt-0.5 text-gray-700">
+
+                                <div v-if="requestForm.errors?.date"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small v-for="error in requestForm.errors?.date">{{ error }}</small>
+                                </div>
+                            </div>
+
+                            <div class="col-span-6 md:col-span-2 mt-4 md:-mt-0.5" v-if="validateDate(requestForm.date)">
+                                <label class="text-sm">
+                                    Hora da Chegada no Destino*
+                                </label>
+                                <VueMultiselect v-model="requestForm.time" :options="p.timetables" :multiple="false"
+                                    :close-on-select="true" selectedLabel="atual" placeholder="Hora"
+                                    selectLabel="Selecionar" deselectLabel="Remover"
+                                    class="border border-black rounded-md" />
+
+                                <div v-if="requestForm.errors?.time"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small v-for="error in requestForm.errors?.time">{{ error }}</small>
+                                </div>
+                                <div v-if="requestForm.ignoreQuestion">
+                                    <label for="_ignore" class="p-1.5 text-amber-500 font-bold">Ignorar
+                                        conflito.</label>
+                                    <input type="checkbox" id="_ignore" v-model="requestForm.ignore"
+                                        class="text-red-400" />
+                                </div>
+                            </div>
+
+                            <div class="col-span-6 md:col-span-2 text-left md:-mt-0.5"
+                                v-if="validateDate(requestForm.date)">
+                                <label class="text-sm">
+                                    Permanência Estipulada*
+                                </label>
+                                <input type="time" v-model="requestForm.duration"
+                                    class="h-[41px] w-full text-gray-800 rounded" />
+
+                                <div v-if="requestForm.errors?.duration"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                    <small v-for="error in requestForm.errors?.duration">{{ error }}</small>
+                                </div>
+                            </div>
+                            <div class="col-span-6 grid grid-cols-1" v-if="validateDate(requestForm?.date)">
+                                <label class="text-sm col-span-6">
+                                    Obs.:
+                                </label>
+                                <textarea class="rounded text-gray-600" v-model="requestForm.obs"></textarea>
+                                <div v-if="requestForm.errors?.obs"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                                    <small v-for="error in requestForm.errors?.obs">{{ error }}</small>
+                                </div>
+                            </div>
+
+                            <div class="col-span-6 grid grid-cols-8" v-if="validateDate(requestForm.date)">
+                                <div class="col-span-6 grid grid-cols-4 gap-2">
+                                    <div class="col-span-5 md:col-span-2">
+                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                            Passageiro*
+                                        </label>
+                                        <input type="text" v-model="passengersModel.passenger"
+                                            class="w-full rounded border border-black h-[41px] text-gray-700"
+                                            :class="!validateDate(requestForm?.date) ? 'bg-[#afb3b9]' : ''"
+                                            :disabled="!validateDate(requestForm?.date)" />
+                                    </div>
+                                    <div class="col-span-5 md:col-span-2">
+                                        <label class="text-sm text-gray-500 dark:text-gray-400">
+                                            Contato*
+                                        </label>
+                                        <input type="text" v-model="passengersModel.contact" @keyup="maskPhone($event)"
+                                            class="w-full rounded border border-black h-[41px] text-gray-700"
+                                            :class="!validateDate(requestForm?.date) ? 'bg-[#afb3b9]' : ''"
+                                            maxlength="11" :disabled="!validateDate(requestForm?.date)" />
+                                    </div>
+                                </div>
+                                <button type="button" @click="setPassenger(false)"
+                                    :disabled="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8"
+                                    class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:-mb-[1px]"
+                                    :class="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
+                                    Incluir
+                                </button>
+
+                                <div v-if="requestForm.errors?.passengers"
+                                    class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit col-span-6">
+                                    <small v-for="error in requestForm.errors?.passengers">{{ error }}</small>
+                                </div>
+
+                                <div class="col-span-4 mb-4" v-if="validateDate(requestForm?.date)">
+                                    <div v-for="(p, i) in requestForm.passengers" :key="'pre_' + i"
+                                        class="inline-flex w-full">
+                                        {{ p.passenger }}: {{ p.contact }}
+                                        <button @click="setPassenger(true, p)">
+                                            <mdicon name="close" class="text-red-400" />
+                                        </button>
+                                        <button @click="setPassenger(false, p, true)">
+                                            <mdicon name="pencil" class="text-blue-400" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <button type="button" @click="saveRequest" v-if="validateDate(requestForm.date)"
+                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline w-full max-w-[300px]">
+                            Enviar Solicitação
                         </button>
                     </div>
 
+                    <!-- modal edit -->
+                    <div :class="$page.props.app.settingsStyles.main.innerSection" class="py-0.5 rounded mx-2 mt-3"
+                        v-if="requestForm?.driver && (requestForm?.driver?.id === routes?.driver && routes?.driver != null)">
+                        <p><span class="font-bold">Motorista:</span>
+                            {{ requestForm?.driver?.id === routes[0]?.driver ? requestForm?.driver?.user?.name : '' }}
+                        </p>
+                        <p><span class="font-bold">Data:</span>
+                            {{ moment(routes.date).format('DD/MM/YYYY') }}
+                        </p>
+                        <div class="p-2 rounded-lg overflow-y-auto"
+                            :class="$page.props.app.settingsStyles.main.innerSection">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
+
+                                <div class="grid grid-cols-1">
+                                    <p>Filtrar:</p>
+                                    <div class="inline-flex gap-1 my-1">
+                                        <div
+                                            class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 px-3 w-[135px]">
+                                            <input id="bordered-radio-1" type="checkbox" v-model="filter.routes"
+                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label for="bordered-radio-1"
+                                                class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                Agendados
+                                            </label>
+                                        </div>
+                                        <div
+                                            class="flex items-center ps-4 border border-gray-200 rounded dark:border-gray-700 px-3 w-[135px]">
+                                            <input checked id="bordered-radio-2" type="checkbox"
+                                                v-model="filter.requests"
+                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label for="bordered-radio-2"
+                                                class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                Solicitações
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="self-end w-full">
+                                    <button @click="verifyDriverRoute"
+                                        class="flex px-2 py-1.5 mb-1 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 self-end max-h-[38px] max-w-fit float-right">
+                                        Recarregar Rotas
+                                        <mdicon name="refresh" />
+                                    </button>
+                                </div>
+
+                            </div>
+                            <table class="min-w-full" :class="$page.props.app.settingsStyles.main.body">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Chegada Prevista
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Destino
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Passageiros
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Permanência Estipulada
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Saída
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Chegada
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Status
+                                        </th>
+                                        <th
+                                            class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
+                                            Ações
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="border border-black">
+                                    <tr v-for="(r, i) in filteredRoutes" :key="'route-' + i"
+                                        :class="getRouteStatus(r.type, r.status) !== 'Confirmado' && getRouteStatus(r.type, r.status) !== 'Aprovado' ? styles($page.props.app.settingsStyles.main.body) : ''">
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            {{ r.time }}
+                                        </td>
+                                        <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center w-[300px]"
+                                            :class="r.to === 1 || r.b === 1 ? 'underline underline-offset-8' : ''">
+                                            {{ r.branch.name }}
+                                            <mdicon name="circle" class="float-right text-red-500"
+                                                v-if="r.to === 1 || r.b === 1" />
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            {{ Object.values(JSON.parse(r.passengers ?? '[]')).length }}
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            {{ r.duration }}
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            <p class="mx-auto text-sm px-2 rounded-md border w-min"
+                                                :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                                {{
+                                                    r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') :
+                                                        '-'
+                                                }}
+                                            </p>
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            <p class="mx-auto text-sm px-2 rounded-md border w-min"
+                                                :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
+                                                {{
+                                                    r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
+                                                        '-'
+                                                }}
+                                            </p>
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            <p class="mx-auto text-sm px-2 rounded-md border"
+                                                :class="getStyles(r.type, r.status)">
+                                                {{
+                                                    getRouteStatus(r.type, r.status)
+                                                }}
+                                                <br>
+                                                <span class="text-[10px]">
+                                                    {{
+                                                        r.created_at ? moment(r.created_at).format('DD/MM/YYYY HH:mm:ss') :
+                                                            ''
+                                                    }}
+                                                </span>
+                                            </p>
+                                        </td>
+                                        <td
+                                            class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
+                                            <button @click="setRouteToEdit(r)"
+                                                v-if="moment(moment(requestForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
+                                                    moment(moment(requestForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))
+                                                    && (has($page.props.auth.permissions, ['Agenda Editar', 'Agenda Apagar']) || has($page.props.auth.roles, ['Super Admin']))
+                                                    && (r.type === 0
+                                                        || r.type === 1 && getRouteStatus(r.type, r.status) === 'Aprovado')">
+                                                <mdicon name="pencil"
+                                                    class="hover:text-green-500 dark:hover:text-blue-300" />
+                                            </button>
+                                            <button @click="setRouteToEdit(r)" v-else-if="moment(moment(requestForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
+                                                moment(moment(requestForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))
+                                                && (has($page.props.auth.permissions, ['Solicitacao Editar', 'Solicitacao Apagar']) || has($page.props.auth.roles, ['Super Admin']) || r.user?.id === $page.props.auth.user.id)
+                                                && r.type === 1">
+                                                <mdicon name="hand-wash"
+                                                    class="hover:text-green-500 dark:hover:text-blue-300" />
+                                            </button>
+                                            <span v-else>-</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!--Modal editar rota-->
+                    <EditRoute v-if="modal.editRoute" :routeForEdition="routeForEdition" :drivers="props.drivers"
+                        :driver="requestForm.driver" :_checker="routeForEdition._checker" @routeUpdated="routeUpdated"
+                        :isRequest="true">
+                        <template #close_button>
+                            <button type="button"
+                                class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                @click="routeUpdated()">
+                                Fechar
+                            </button>
+                        </template>
+                    </EditRoute>
+
                 </div>
-                <table class="min-w-full" :class="$page.props.app.settingsStyles.main.body">
-                    <thead>
-                        <tr>
-                            <th
-                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Chegada Prevista
-                            </th>
-                            <th
-                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Destino
-                            </th>
-                            <th
-                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Passageiros
-                            </th>
-                            <th
-                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Permanência Estipulada
-                            </th>
-                            <th
-                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Saída
-                            </th>
-                            <th
-                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Chegada
-                            </th>
-                            <th
-                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Status
-                            </th>
-                            <th
-                                class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-center leading-4 tracking-wider">
-                                Ações
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="border border-black">
-                        <tr v-for="(r, i) in filteredRoutes" :key="'route-' + i"
-                            :class="getRouteStatus(r.type, r.status) !== 'Confirmado' && getRouteStatus(r.type, r.status) !== 'Aprovado' ? styles($page.props.app.settingsStyles.main.body) : ''">
-                            <td
-                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                {{ r.time }}
-                            </td>
-                            <td class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center w-[300px]"
-                                :class="r.to === 1 || r.b === 1 ? 'underline underline-offset-8' : ''">
-                                {{ r.branch.name }}
-                                <mdicon name="circle" class="float-right text-red-500" v-if="r.to === 1 || r.b === 1" />
-                            </td>
-                            <td
-                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                {{ Object.values(JSON.parse(r.passengers ?? '[]')).length }}
-                            </td>
-                            <td
-                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                {{ r.duration }}
-                            </td>
-                            <td
-                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                <p class="mx-auto text-sm px-2 rounded-md border w-min"
-                                    :class="r.started_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
-                                    {{
-                                        r.started_at ? moment(r.started_at).format('DD/MM/YYYY HH:mm') :
-                                            '-'
-                                    }}
-                                </p>
-                            </td>
-                            <td
-                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                <p class="mx-auto text-sm px-2 rounded-md border w-min"
-                                    :class="r.ended_at ? 'border-teal-700 bg-green-500 text-teal-700' : 'border-amber-700 bg-yellow-500 text-amber-700'">
-                                    {{
-                                        r.ended_at ? moment(r.ended_at).format('DD/MM/YYYY HH:mm') :
-                                            '-'
-                                    }}
-                                </p>
-                            </td>
-                            <td
-                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                <p class="mx-auto text-sm px-2 rounded-md border" :class="getStyles(r.type, r.status)">
-                                    {{
-                                        getRouteStatus(r.type, r.status)
-                                    }}
-                                    <br>
-                                    <span class="text-[10px]">
-                                        {{
-                                            r.created_at ? moment(r.created_at).format('DD/MM/YYYY HH:mm:ss') :
-                                                ''
-                                        }}
-                                    </span>
-                                </p>
-                            </td>
-                            <td
-                                class="px-3 py-1.5 md:px-6 md:py-3 whitespace-no-wrap border-b border-gray-500 text-center">
-                                <button @click="setRouteToEdit(r)" v-if="moment(moment(requestForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
-                                    moment(moment(requestForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))
-                                    && (has($page.props.auth.permissions, ['Agenda Editar', 'Agenda Apagar']) || has($page.props.auth.roles, ['Super Admin']))
-                                    && (r.type === 0
-                                        || r.type === 1 && getRouteStatus(r.type, r.status) === 'Aprovado')">
-                                    <mdicon name="pencil" class="hover:text-green-500 dark:hover:text-blue-300" />
-                                </button>
-                                <button @click="setRouteToEdit(r)" v-else-if="moment(moment(requestForm.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
-                                    moment(moment(requestForm.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))
-                                    && (has($page.props.auth.permissions, ['Solicitacao Editar', 'Solicitacao Apagar']) || has($page.props.auth.roles, ['Super Admin']) || r.user?.id === $page.props.auth.user.id)
-                                    && r.type === 1">
-                                    <mdicon name="hand-wash" class="hover:text-green-500 dark:hover:text-blue-300" />
-                                </button>
-                                <span v-else>-</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!--Modal editar rota-->
-        <EditRoute v-if="modal.editRoute" :routeForEdition="routeForEdition" :drivers="props.drivers"
-            :driver="requestForm.driver" :_checker="routeForEdition._checker" @routeUpdated="routeUpdated"
-            :isRequest="true">
-            <template #close_button>
-                <button type="button"
-                    class="w-full inline-flex transition duration-500 ease justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-                    @click="routeUpdated()">
-                    Fechar
-                </button>
             </template>
-        </EditRoute>
-
-    </div>
+        </SubSection>
+    </AuthenticatedLayout>
 </template>

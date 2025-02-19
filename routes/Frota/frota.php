@@ -55,6 +55,8 @@ Route::prefix('/frota')->middleware(
 
     Route::post('/solicitacoes/solicitarRota', [RoutesController::class, 'routeStore'])->name('request.store');
     Route::match(['get', 'post'], '/solicitacoes', [RequestsController::class, 'index'])->name('requests.index');
+    Route::match(['get', 'post'], '/solicitacoes/solicitar', [RequestsController::class, 'index'])->name('requests.request');
+    Route::match(['get', 'post'], '/solicitacoes/avaliacao', [RequestsController::class, 'index'])->name('requests.evaluates');
     Route::match(['get', 'post'], '/solicitacoes/avaliar', [RequestsController::class, 'getRequestsToEvaluate'])->name('requests.evaluate');
     Route::post('/solicitacoes/liberar', [RequestsController::class, 'allow'])->name('requests.allow');
     Route::post('/solicitacoes/criar', [RequestsController::class, 'store'])->name('requests.store');

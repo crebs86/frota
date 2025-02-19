@@ -5,13 +5,10 @@ namespace App\Frota\Core;
 use App\Frota\Models\Justification;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\Branch;
 use App\Traits\Helpers;
 use App\Frota\Models\Route;
 use Illuminate\Support\Arr;
-use App\Frota\Models\Driver;
 use Illuminate\Http\Request;
-use App\Frota\Models\Timetable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Frota\Models\Request as RequestModel;
@@ -29,50 +26,22 @@ trait Requests
     public function runIndex($request): Response
     {
         $props = [
-            'drivers' => Driver::with('user')->where('id', '<>', 2)->select('id')->get(),
+            'drivers' => userDriver(),
             'branches' => activeBranches(),
-            'timetables' => Arr::pluck(Timetable::all(['time']), 'time'),
+            'timetables' => Arr::pluck(timetable(), 'time'),
             'evaluator' => $this->can('Liberador'),
             'requester'  => $this->can('Solicitacao Criar')
         ];
 
-        $date = $request->date ?? now()->format('Y-m-d');
-
-        if ($this->can('Liberador') && !$this->hasRole('Super Admin')) {
-            return Inertia::render('Frota/Requests/Index', array_merge_recursive(
-                [
-                    'requests' => RequestModel::where(
-                        function ($q) use ($date, $request) {
-                            if ($request->type === 'Data Criação') {
-                                return $q->whereBetween('created_at', [$date . ' 00:00:00', $date . ' 23:59:59']);
-                            } else {
-                                return $q->where('date', request('date') ?? now()->format('Y-m-d'));
-                            }
-                        }
-                    )->where(function ($q) use ($request) {
-                        if ($request->driver) {
-                            return $q->where('driver', $request->driver);
-                        }
-                        return $q;
-                    })
-                        ->where(function ($q) use ($request) {
-                            if ($request->branch) {
-                                return $q->where('to', $request->branch);
-                            }
-                            return $q;
-                        })
-                        ->select('id', 'driver', 'to', 'local', 'date', 'time', 'duration', 'obs', 'passengers', 'status', 'created_at')
-                        ->with('branch', 'driver')
-                        ->get()->each(function ($item) {
-                            $item->_checker = setGetKey($item->id, 'request_evaluate');
-                        })->toArray()
-                ],
-                $props
-            ));
+        if (
+            $this->can('Liberador') && !$this->hasRole('Super Admin')
+            || request()->route()->getName() === 'frota.requests.evaluates' && $this->can('Liberador')
+        ) {
+            return Inertia::render('Frota/Requests/Evaluate', $props);
         }
 
         if ($this->can('Solicitacao Criar', 'Solicitacao Ver', 'Solicitacao Apagar', 'Solicitacao Editar')) {
-            return Inertia::render('Frota/Requests/Index', $props);
+            return Inertia::render('Frota/Requests/Request', $props);
         }
         return Inertia::render('Admin/403');
     }

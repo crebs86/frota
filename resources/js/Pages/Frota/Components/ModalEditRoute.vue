@@ -93,7 +93,6 @@ function updateRoute() {
 }
 
 onMounted(() => {
-    console.log(props)
     props.routeForEdition.ignore = false
     props.routeForEdition.ignoreQuestion = false
     props.routeForEdition.driver = props.driver
