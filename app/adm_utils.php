@@ -104,6 +104,16 @@ if (!function_exists('drivers')) {
     }
 }
 
+if (!function_exists('userDriver')) {
+
+    function userDriver()
+    {
+        return cache()->remember('userDriver', 60 * 60 * 24, function () {
+            return Driver::with('user', 'garage', 'car')->where('id', '<>', 2)->select('id', 'garagem_id', 'carro_favorito', 'proprio', 'matricula', 'cnh', 'deleted_at')->get();
+        });
+    }
+}
+
 if (!function_exists('timetable')) {
 
     function timetable()

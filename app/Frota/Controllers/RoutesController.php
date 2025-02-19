@@ -26,15 +26,14 @@ class RoutesController extends Controller
     {
         return Inertia::render('Frota/Routes/Index', [
             'branches' => activeBranches(),
-            'drivers' => Driver::select('id')->where('id', '<>', 2)->with('user')->get()
+            'drivers' => userDriver()
         ]);
     }
 
     public function create(): Response
     {
         return Inertia::render('Frota/Routes/Create', [
-            //'drivers' => drivers()->where('id', '<>', 2)->toArray(),
-            'drivers' => Driver::with('user')->where('id', '<>', 2)->select('id')->get(),
+            'drivers' => userDriver(),
             'branches' => activeBranches(),
             'timetables' => Arr::pluck(timetable(), 'time')
         ]);

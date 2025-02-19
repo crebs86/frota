@@ -10,7 +10,6 @@ use App\Traits\Helpers;
 use App\Frota\Models\Car;
 use Illuminate\Support\Arr;
 use App\Frota\Models\Driver;
-use App\Frota\Models\Garage;
 use App\Http\Controllers\Controller;
 use App\Frota\Requests\DriverRequest;
 use Illuminate\Http\RedirectResponse;
@@ -69,6 +68,7 @@ class DriversController extends Controller
                 $user = User::find($driverRequest->id);
                 $user->assignRole('Motorista');
                 resetCache('drivers');
+                resetCache('userDriver');
 
                 return redirect(route('frota.drivers.index'))->with('success', 'Motorista adicionado!' . $d);
             }
@@ -137,6 +137,7 @@ class DriversController extends Controller
                     $request->merge(['deleted_at' => $request->deleted_at ? now() : null]);
                     if ($driver->update($request->all())) {
                         resetCache('drivers');
+                        resetCache('userDriver');
                         if ($request->deleted_at) {
                             User::find($driver->id)->removeRole('Motorista');
                         } else {

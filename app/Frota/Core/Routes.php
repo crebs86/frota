@@ -14,7 +14,6 @@ use App\Frota\Models\Driver;
 use Illuminate\Http\Request;
 use App\Frota\Models\CarsLog;
 use App\Frota\Models\Timetable;
-use Illuminate\Validation\Rule;
 use App\Frota\Models\RealBranch;
 use App\Traits\Helpers;
 use Illuminate\Http\JsonResponse;

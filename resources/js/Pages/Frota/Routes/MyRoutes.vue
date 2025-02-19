@@ -2,13 +2,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
-import {Head} from '@inertiajs/vue3';
+import {Head,usePoll} from '@inertiajs/vue3';
 import {defineAsyncComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
 import {toast} from '@/toast';
 import moment from 'moment';
 import VueMultiselect from 'vue-multiselect';
-import {validateDate} from "@/validates/validates.js";
 import {phoneMask} from "@/mask.js";
 
 const Abastecer = defineAsyncComponent(() => import('../Components/Abastecer.vue'));
@@ -39,6 +38,18 @@ const maskPhone = (event) => {
     let input = event.target
     input.value = phoneMask(input.value)
 }
+
+
+usePoll(1000 * 60 * 5, {
+    onStart() {
+        console.log('Atualizando lista...')
+    },
+    onFinish() {
+        myRoutes.value = props.myRoutesByDate[0]
+        car.value = props.driver?.car
+        console.log('Atualizado.')
+  }
+})
 
 const singleRouteModel = ref({
     branch: '',
