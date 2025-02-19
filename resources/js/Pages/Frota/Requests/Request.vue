@@ -271,7 +271,7 @@ onBeforeMount(() => {
                     </div>
                 </div>
 
-                <div class="col-span-4 md:col-span-2" v-if="validateDate(requestForm.date)">
+                <div class="col-span-4 md:col-span-2 mt-4 md:mt-0" v-if="validateDate(requestForm.date)">
                     <label class="text-sm">
                         Destino*
                     </label>
@@ -314,7 +314,7 @@ onBeforeMount(() => {
                     </div>
                 </div>
 
-                <div class="col-span-6 md:col-span-2" v-if="validateDate(requestForm.date)">
+                <div class="col-span-6 md:col-span-2 mt-4 md:-mt-0.5" v-if="validateDate(requestForm.date)">
                     <label class="text-sm">
                         Hora da Chegada no Destino*
                     </label>
@@ -332,7 +332,7 @@ onBeforeMount(() => {
                     </div>
                 </div>
 
-                <div class="col-span-6 md:col-span-2 text-left" v-if="validateDate(requestForm.date)">
+                <div class="col-span-6 md:col-span-2 text-left md:-mt-0.5" v-if="validateDate(requestForm.date)">
                     <label class="text-sm">
                         Permanência Estipulada*
                     </label>
@@ -343,7 +343,7 @@ onBeforeMount(() => {
                         <small v-for="error in requestForm.errors?.duration">{{ error }}</small>
                     </div>
                 </div>
-                <div class="col-span-6 grid grid-cols-1 -mt-1.5 md:mt-0" v-if="validateDate(requestForm?.date)">
+                <div class="col-span-6 grid grid-cols-1" v-if="validateDate(requestForm?.date)">
                     <label class="text-sm col-span-6">
                         Obs.:
                     </label>
