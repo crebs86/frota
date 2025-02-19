@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.2",
         "geekcom/validator-docs": "^3.10",
-        "inertiajs/inertia-laravel": "^1.0",
+        "inertiajs/inertia-laravel": "2.0",
         "laravel/framework": "^11.9",
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",
