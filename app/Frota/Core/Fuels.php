@@ -2,7 +2,6 @@
 
 namespace App\Frota\Core;
 
-use App\Frota\Models\Car;
 use App\Frota\Models\Fuel;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -43,20 +42,19 @@ trait Fuels
                 ->where(function ($q) use ($request) {
                     if ($request->de && $request->para) {
                         return $q->whereBetween('hora', [$request->de . ' 00:00:00', $request->para . ' 23:59:59']);
-                    }elseif($request->de && !$request->para){
+                    } elseif ($request->de && !$request->para) {
                         return $q->whereBetween('hora', [$request->de . ' 00:00:00', now()->format('Y-m-d') . ' 23:59:59']);
-                    }elseif(!$request->de && $request->para){
+                    } elseif (!$request->de && $request->para) {
                         return $q->whereBetween('hora', ['1970-01-01' . ' 00:00:00', $request->para . ' 23:59:59']);
                     }
                     return $q;
                 })
                 ->with('carModel', 'driver')
                 ->orderBy('hora', 'desc')
-                ->limit(10)
-                ->get(),
+                ->paginate(10),
             'de' => $request->de,
             'para' => $request->para,
-            'car' => Car::select('id', 'marca', 'modelo', 'placa')->find($request->car)
+            'car' => cars()->where('id', $request->car)->first()
         ]);
     }
 }

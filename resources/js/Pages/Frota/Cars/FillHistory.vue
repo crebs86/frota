@@ -5,6 +5,7 @@ import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import moment from 'moment';
 import { onMounted, ref } from 'vue';
+import {TailwindPagination} from 'laravel-vue-pagination';
 
 const props = defineProps({
     history: Object | null,
@@ -20,12 +21,12 @@ const form = useForm({
 
 const historyFill = ref();
 
-function filterDate() {
-    form.get(route('frota.load-history-fill', [props.car?.id]))
+function filterDate(page = 1) {
+    form.get(route('frota.load-history-fill', [props.car?.id]) + `?page=${page}`)
 }
 
 onMounted(() => {
-    historyFill.value = props.history
+    historyFill.value = props.history?.data
     form.de = props.de
     form.para = props.para
 })
@@ -34,7 +35,7 @@ onMounted(() => {
 
 <template>
 
-    <Head title="histórico de Abastecimentos" />
+    <Head title="Histórico de Abastecimentos" />
 
     <AuthenticatedLayout>
 
@@ -94,13 +95,13 @@ onMounted(() => {
                             <tbody :class="$page.props.app.settingsStyles.main.body">
                                 <tr v-for="( c, i ) in historyFill" :key="i">
                                     <td class="px-3 py-1.5 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                        {{ c.car_model.modelo }}
+                                        {{ c.car_model?.modelo }}
                                     </td>
                                     <td class="px-3 py-1.5 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                        {{ c.car_model.placa }}
+                                        {{ c.car_model?.placa }}
                                     </td>
                                     <td class="px-3 py-1.5 md:py-3 whitespace-no-wrap border-b border-gray-500">
-                                        {{ c.driver.user.name }}
+                                        {{ c.driver?.user.name }}
                                     </td>
                                     <td class="px-3 py-1.5 md:py-3 whitespace-no-wrap border-b border-gray-500">
                                         {{ c.quantidade }}
@@ -138,6 +139,15 @@ onMounted(() => {
                                 </tr>
                             </tbody>
                         </table>
+                        <div class="my-3 grid col-span-2 place-content-center overflow-x-auto">
+                        <TailwindPagination
+                            :item-classes="['bg-blue-100 text-gray-500 border-gray-400 hover:bg-white dark:bg-gray-600 dark:text-gray-100 dark:border-gray-300 dark:hover:bg-gray-800']"
+                            :active-classes="['bg-white border-gray-600 text-blue-600 dark:bg-gray-300 dark:border-gray-500 dark:text-blue-500']"
+                            :data="props.history"
+                            :limit="1"
+                            @pagination-change-page="filterDate"
+                        />
+                    </div>
                     </div>
                 </div>
             </template>

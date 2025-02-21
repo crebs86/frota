@@ -83,7 +83,7 @@ import moment from 'moment';
                                             <mdicon name="car-cog" />
                                             </Link>
                                             <Link
-                                                :href="route('frota.load-history-fill', [c.id]) + '?de=' + moment().format('YYYY-MM-DD')"
+                                                :href="route('frota.load-history-fill', [c.id]) + '?de=' + moment().subtract('15', 'days').format('YYYY-MM-DD')"
                                                 title="Histórico de Abastecimento"
                                                 v-if="has(
                                                     $page.props.auth.permissions, ['Combistivel Editar', 'Combistivel Apagar', 'Combustivel Ver', 'Combustivel Criar']) || has($page.props.auth.roles, ['Super Admin'])">
