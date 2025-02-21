@@ -2,9 +2,9 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 192.168.18.25
--- Tempo de geração: 09/02/2025 às 22:11
--- Versão do servidor: 10.5.19-MariaDB-0+deb11u2
+-- Host: localhost
+-- Tempo de geração: 21/02/2025 às 00:51
+-- Versão do servidor: 8.0.41-0ubuntu0.24.04.1
 -- Versão do PHP: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -28,9 +28,9 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `acl_updates` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `updates` text NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id` bigint UNSIGNED NOT NULL,
+  `updates` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -49,14 +49,14 @@ INSERT INTO `acl_updates` (`id`, `updates`, `updated_at`) VALUES
 --
 
 CREATE TABLE `branches` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `cnpj` varchar(14) DEFAULT NULL,
-  `email` varchar(155) DEFAULT NULL,
-  `phones` varchar(255) DEFAULT NULL,
-  `cep` varchar(8) DEFAULT NULL,
-  `notes` varchar(255) DEFAULT NULL,
-  `address` varchar(510) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cnpj` varchar(14) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(155) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phones` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cep` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` varchar(510) COLLATE utf8mb4_unicode_ci NOT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -72,7 +72,8 @@ INSERT INTO `branches` (`id`, `name`, `cnpj`, `email`, `phones`, `cep`, `notes`,
 (3, 'Almoxarifado', NULL, NULL, NULL, NULL, NULL, 'Rodovia Darly Santos, atrás do Posto Rede Marcela', NULL, '2025-01-16 22:56:14', '2025-01-16 22:56:14'),
 (4, 'US Araçás', NULL, NULL, NULL, NULL, NULL, 'Praça de Araçás', NULL, '2025-01-16 22:56:44', '2025-01-16 22:56:44'),
 (5, 'Garagem Vila Nova', NULL, NULL, NULL, NULL, NULL, 'Anexo a US Vila Nova', NULL, '2025-01-16 22:58:04', '2025-01-16 22:58:04'),
-(6, 'Central', NULL, NULL, NULL, NULL, NULL, 'Garagem Central', NULL, '2025-02-06 16:01:30', '2025-02-06 16:01:30');
+(6, 'Central', NULL, NULL, NULL, NULL, NULL, 'Garagem Central', NULL, '2025-02-06 16:01:30', '2025-02-06 16:01:30'),
+(7, 'US Paul', NULL, NULL, NULL, NULL, NULL, 'Praça de Paul', NULL, '2025-02-14 00:05:19', '2025-02-14 00:05:19');
 
 -- --------------------------------------------------------
 
@@ -81,9 +82,9 @@ INSERT INTO `branches` (`id`, `name`, `cnpj`, `email`, `phones`, `cep`, `notes`,
 --
 
 CREATE TABLE `branch_updates` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `updates` text NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id` bigint UNSIGNED NOT NULL,
+  `updates` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -93,9 +94,9 @@ CREATE TABLE `branch_updates` (
 --
 
 CREATE TABLE `cache` (
-  `key` varchar(255) NOT NULL,
-  `value` mediumtext NOT NULL,
-  `expiration` int(11) NOT NULL
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -105,9 +106,9 @@ CREATE TABLE `cache` (
 --
 
 CREATE TABLE `cache_locks` (
-  `key` varchar(255) NOT NULL,
-  `owner` varchar(255) NOT NULL,
-  `expiration` int(11) NOT NULL
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -117,13 +118,13 @@ CREATE TABLE `cache_locks` (
 --
 
 CREATE TABLE `cars` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `marca` varchar(25) NOT NULL,
-  `modelo` varchar(55) NOT NULL,
-  `placa` varchar(7) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `marca` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `modelo` varchar(55) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `placa` varchar(7) COLLATE utf8mb4_unicode_ci NOT NULL,
   `patrimonio` tinyint(1) NOT NULL,
-  `tombo` varchar(55) DEFAULT NULL,
-  `garagem_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `tombo` varchar(55) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `garagem_id` bigint UNSIGNED DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -134,9 +135,9 @@ CREATE TABLE `cars` (
 --
 
 INSERT INTO `cars` (`id`, `marca`, `modelo`, `placa`, `patrimonio`, `tombo`, `garagem_id`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(1, 'VW', 'Polo', 'ABC0D12', 0, NULL, 5, NULL, '2025-01-16 23:00:12', '2025-01-16 23:00:12'),
+(1, 'VW', 'Polo', 'ABC0D12', 0, NULL, NULL, '2025-02-13 23:14:25', '2025-01-16 23:00:12', '2025-02-13 23:14:25'),
 (2, 'Fiat', 'Novo Uno', 'EFG3H45', 1, '123654', NULL, NULL, '2025-01-16 23:00:52', '2025-01-16 23:00:52'),
-(3, 'Ford', 'Ka', 'IJK7L89', 1, '98745', 2, NULL, '2025-01-16 23:03:01', '2025-01-16 23:03:01');
+(3, 'Ford', 'Ka', 'IJK7L89', 1, '98745', 3, NULL, '2025-01-16 23:03:01', '2025-02-13 23:23:46');
 
 -- --------------------------------------------------------
 
@@ -145,11 +146,11 @@ INSERT INTO `cars` (`id`, `marca`, `modelo`, `placa`, `patrimonio`, `tombo`, `ga
 --
 
 CREATE TABLE `cars_log` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `route` bigint(20) UNSIGNED NOT NULL,
-  `car` bigint(20) UNSIGNED NOT NULL,
-  `type` varchar(255) NOT NULL,
-  `km` int(11) NOT NULL
+  `id` bigint UNSIGNED NOT NULL,
+  `route` bigint UNSIGNED NOT NULL,
+  `car` bigint UNSIGNED NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `km` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -169,15 +170,15 @@ INSERT INTO `cars_log` (`id`, `route`, `car`, `type`, `km`) VALUES
 --
 
 CREATE TABLE `clients` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `cpf` varchar(11) DEFAULT NULL,
-  `email` varchar(155) DEFAULT NULL,
-  `cep` varchar(8) DEFAULT NULL,
-  `address` varchar(510) NOT NULL,
-  `phones` varchar(105) DEFAULT NULL,
-  `notes` varchar(255) DEFAULT NULL,
-  `branch_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cpf` varchar(11) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(155) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cep` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` varchar(510) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phones` varchar(105) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `branch_id` bigint UNSIGNED DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -190,9 +191,9 @@ CREATE TABLE `clients` (
 --
 
 CREATE TABLE `client_updates` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `updates` text NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id` bigint UNSIGNED NOT NULL,
+  `updates` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -202,11 +203,11 @@ CREATE TABLE `client_updates` (
 --
 
 CREATE TABLE `drivers` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `garagem_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `carro_favorito` bigint(20) UNSIGNED DEFAULT NULL,
-  `proprio` tinyint(1) NOT NULL DEFAULT 0,
-  `matricula` varchar(55) DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `garagem_id` bigint UNSIGNED DEFAULT NULL,
+  `carro_favorito` bigint UNSIGNED DEFAULT NULL,
+  `proprio` tinyint(1) NOT NULL DEFAULT '0',
+  `matricula` varchar(55) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `cnh` tinyint(1) DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -219,7 +220,7 @@ CREATE TABLE `drivers` (
 
 INSERT INTO `drivers` (`id`, `garagem_id`, `carro_favorito`, `proprio`, `matricula`, `cnh`, `deleted_at`, `created_at`, `updated_at`) VALUES
 (2, 2, 2, 0, NULL, 1, NULL, '2025-01-16 22:54:33', '2025-01-16 23:03:47'),
-(4, 5, 1, 0, NULL, 0, NULL, '2025-01-26 21:04:41', '2025-01-26 21:04:41'),
+(4, 5, NULL, 0, NULL, 0, NULL, '2025-01-26 21:04:41', '2025-02-13 23:57:31'),
 (5, 2, 2, 0, NULL, 1, NULL, '2025-01-16 22:54:33', '2025-01-16 23:03:47');
 
 -- --------------------------------------------------------
@@ -229,13 +230,13 @@ INSERT INTO `drivers` (`id`, `garagem_id`, `carro_favorito`, `proprio`, `matricu
 --
 
 CREATE TABLE `failed_jobs` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `uuid` varchar(255) NOT NULL,
-  `connection` text NOT NULL,
-  `queue` text NOT NULL,
-  `payload` longtext NOT NULL,
-  `exception` longtext NOT NULL,
-  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `id` bigint UNSIGNED NOT NULL,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -245,16 +246,16 @@ CREATE TABLE `failed_jobs` (
 --
 
 CREATE TABLE `fuels` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `car` bigint(20) UNSIGNED NOT NULL,
-  `driver` bigint(20) UNSIGNED NOT NULL,
-  `km` int(11) NOT NULL,
-  `quantidade` varchar(255) NOT NULL,
-  `valor` varchar(255) DEFAULT NULL,
-  `local` varchar(255) DEFAULT NULL,
-  `observacao` text DEFAULT NULL,
-  `arquivo` varchar(255) DEFAULT NULL,
-  `hora` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id` bigint UNSIGNED NOT NULL,
+  `car` bigint UNSIGNED NOT NULL,
+  `driver` bigint UNSIGNED NOT NULL,
+  `km` int NOT NULL,
+  `quantidade` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `valor` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `local` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `observacao` text COLLATE utf8mb4_unicode_ci,
+  `arquivo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hora` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -267,7 +268,24 @@ CREATE TABLE `fuels` (
 INSERT INTO `fuels` (`id`, `car`, `driver`, `km`, `quantidade`, `valor`, `local`, `observacao`, `arquivo`, `hora`, `deleted_at`, `created_at`, `updated_at`) VALUES
 (1, 2, 2, 1000, '10', '45.48', NULL, NULL, NULL, '2025-01-16 18:35:00', NULL, '2025-01-17 00:17:18', '2025-01-17 00:17:18'),
 (4, 2, 2, 1150, '10', '56.50', 'Posto Sete', 'Logo ali!', NULL, '2025-01-17 00:52:43', NULL, '2025-01-17 00:52:43', '2025-01-17 00:52:43'),
-(5, 2, 2, 1152, '1', '5,48', NULL, NULL, NULL, '2025-01-17 00:54:07', NULL, '2025-01-17 00:54:07', '2025-01-17 00:54:07');
+(5, 2, 2, 1152, '1', '5,48', NULL, NULL, NULL, '2025-01-17 00:54:07', NULL, '2025-01-17 00:54:07', '2025-01-17 00:54:07'),
+(6, 2, 5, 1260, '10', '58.60', 'Posto Marcela Almoxarifado', 'Somente reserva', NULL, '2025-02-15 18:50:00', NULL, '2025-02-15 19:07:05', '2025-02-15 19:07:05'),
+(7, 2, 5, 1159, '10', '58.35', NULL, NULL, NULL, '2025-02-10 11:00:00', NULL, '2025-02-15 21:05:14', '2025-02-15 21:05:14'),
+(8, 2, 2, 1200, '10', '45.48', NULL, NULL, NULL, '2025-01-16 18:36:00', NULL, '2025-01-17 00:17:18', '2025-01-17 00:17:18'),
+(9, 2, 2, 1201, '10', '56.50', 'Posto Sete', 'Logo ali!', NULL, '2025-01-17 00:52:43', NULL, '2025-01-17 00:52:43', '2025-01-17 00:52:43'),
+(10, 2, 2, 1202, '1', '5,48', NULL, NULL, NULL, '2025-01-17 00:59:07', NULL, '2025-01-17 00:54:07', '2025-01-17 00:54:07'),
+(11, 2, 5, 1203, '10', '58.60', 'Posto Marcela Almoxarifado', 'Somente reserva', NULL, '2025-02-15 18:55:00', NULL, '2025-02-15 19:07:05', '2025-02-15 19:07:05'),
+(12, 2, 5, 1205, '10', '58.35', NULL, NULL, NULL, '2025-02-10 11:30:00', NULL, '2025-02-15 21:05:14', '2025-02-15 21:05:14'),
+(13, 2, 2, 1000, '10', '45.48', NULL, NULL, NULL, '2025-01-16 18:35:00', NULL, '2025-01-17 00:17:18', '2025-01-17 00:17:18'),
+(14, 2, 2, 1150, '10', '56.50', 'Posto Sete', 'Logo ali!', NULL, '2025-01-17 00:52:43', NULL, '2025-01-17 00:52:43', '2025-01-17 00:52:43'),
+(15, 2, 2, 1152, '1', '5,48', NULL, NULL, NULL, '2025-01-17 00:54:07', NULL, '2025-01-17 00:54:07', '2025-01-17 00:54:07'),
+(16, 2, 5, 1260, '10', '58.60', 'Posto Marcela Almoxarifado', 'Somente reserva', NULL, '2025-02-15 18:50:00', NULL, '2025-02-15 19:07:05', '2025-02-15 19:07:05'),
+(17, 2, 5, 1159, '10', '58.35', NULL, NULL, NULL, '2025-02-10 11:00:00', NULL, '2025-02-15 21:05:14', '2025-02-15 21:05:14'),
+(18, 2, 2, 1200, '10', '45.48', NULL, NULL, NULL, '2025-01-16 18:36:00', NULL, '2025-01-17 00:17:18', '2025-01-17 00:17:18'),
+(19, 2, 2, 1201, '10', '56.50', 'Posto Sete', 'Logo ali!', NULL, '2025-01-17 00:52:43', NULL, '2025-01-17 00:52:43', '2025-01-17 00:52:43'),
+(20, 2, 2, 1202, '1', '5,48', NULL, NULL, NULL, '2025-01-17 00:59:07', NULL, '2025-01-17 00:54:07', '2025-01-17 00:54:07'),
+(21, 2, 5, 1203, '10', '58.60', 'Posto Marcela Almoxarifado', 'Somente reserva', NULL, '2025-02-15 18:55:00', NULL, '2025-02-15 19:07:05', '2025-02-15 19:07:05'),
+(22, 2, 5, 1205, '10', '58.35', NULL, NULL, NULL, '2025-02-10 11:30:00', NULL, '2025-02-15 21:05:14', '2025-02-15 21:05:14');
 
 -- --------------------------------------------------------
 
@@ -276,7 +294,7 @@ INSERT INTO `fuels` (`id`, `car`, `driver`, `km`, `quantidade`, `valor`, `local`
 --
 
 CREATE TABLE `garages` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -287,7 +305,7 @@ CREATE TABLE `garages` (
 --
 
 INSERT INTO `garages` (`id`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(2, NULL, '2025-01-16 22:57:41', '2025-02-06 15:55:59'),
+(2, '2025-02-13 23:37:56', '2025-01-16 22:57:41', '2025-02-13 23:37:56'),
 (3, NULL, '2025-02-06 15:59:08', '2025-02-06 15:59:08'),
 (5, NULL, '2025-01-16 22:58:11', '2025-01-16 22:58:11'),
 (6, NULL, '2025-02-06 16:01:34', '2025-02-06 16:01:34');
@@ -299,7 +317,7 @@ INSERT INTO `garages` (`id`, `deleted_at`, `created_at`, `updated_at`) VALUES
 --
 
 CREATE TABLE `incidents` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -311,13 +329,13 @@ CREATE TABLE `incidents` (
 --
 
 CREATE TABLE `jobs` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `queue` varchar(255) NOT NULL,
-  `payload` longtext NOT NULL,
-  `attempts` tinyint(3) UNSIGNED NOT NULL,
-  `reserved_at` int(10) UNSIGNED DEFAULT NULL,
-  `available_at` int(10) UNSIGNED NOT NULL,
-  `created_at` int(10) UNSIGNED NOT NULL
+  `id` bigint UNSIGNED NOT NULL,
+  `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `attempts` tinyint UNSIGNED NOT NULL,
+  `reserved_at` int UNSIGNED DEFAULT NULL,
+  `available_at` int UNSIGNED NOT NULL,
+  `created_at` int UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -327,16 +345,16 @@ CREATE TABLE `jobs` (
 --
 
 CREATE TABLE `job_batches` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `total_jobs` int(11) NOT NULL,
-  `pending_jobs` int(11) NOT NULL,
-  `failed_jobs` int(11) NOT NULL,
-  `failed_job_ids` longtext NOT NULL,
-  `options` mediumtext DEFAULT NULL,
-  `cancelled_at` int(11) DEFAULT NULL,
-  `created_at` int(11) NOT NULL,
-  `finished_at` int(11) DEFAULT NULL
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `total_jobs` int NOT NULL,
+  `pending_jobs` int NOT NULL,
+  `failed_jobs` int NOT NULL,
+  `failed_job_ids` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `options` mediumtext COLLATE utf8mb4_unicode_ci,
+  `cancelled_at` int DEFAULT NULL,
+  `created_at` int NOT NULL,
+  `finished_at` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -346,9 +364,9 @@ CREATE TABLE `job_batches` (
 --
 
 CREATE TABLE `justifications` (
-  `route` bigint(20) UNSIGNED NOT NULL,
-  `user` bigint(20) UNSIGNED NOT NULL,
-  `justification` varchar(255) NOT NULL,
+  `route` bigint UNSIGNED NOT NULL,
+  `user` bigint UNSIGNED NOT NULL,
+  `justification` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -360,9 +378,9 @@ CREATE TABLE `justifications` (
 --
 
 CREATE TABLE `migrations` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `migration` varchar(255) NOT NULL,
-  `batch` int(11) NOT NULL
+  `id` int UNSIGNED NOT NULL,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -408,9 +426,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 --
 
 CREATE TABLE `model_has_permissions` (
-  `permission_id` bigint(20) UNSIGNED NOT NULL,
-  `model_type` varchar(255) NOT NULL,
-  `model_id` bigint(20) UNSIGNED NOT NULL
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -420,9 +438,9 @@ CREATE TABLE `model_has_permissions` (
 --
 
 CREATE TABLE `model_has_roles` (
-  `role_id` bigint(20) UNSIGNED NOT NULL,
-  `model_type` varchar(255) NOT NULL,
-  `model_id` bigint(20) UNSIGNED NOT NULL
+  `role_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -432,10 +450,10 @@ CREATE TABLE `model_has_roles` (
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 (1, 'App\\Models\\User', 1),
 (8, 'App\\Models\\User', 2),
-(8, 'App\\Models\\User', 4),
-(8, 'App\\Models\\User', 5),
 (15, 'App\\Models\\User', 2),
-(16, 'App\\Models\\User', 3);
+(16, 'App\\Models\\User', 3),
+(8, 'App\\Models\\User', 4),
+(8, 'App\\Models\\User', 5);
 
 -- --------------------------------------------------------
 
@@ -444,8 +462,8 @@ INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 --
 
 CREATE TABLE `password_resets` (
-  `email` varchar(255) NOT NULL,
-  `token` varchar(255) NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -456,8 +474,8 @@ CREATE TABLE `password_resets` (
 --
 
 CREATE TABLE `password_reset_tokens` (
-  `email` varchar(255) NOT NULL,
-  `token` varchar(255) NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -468,9 +486,9 @@ CREATE TABLE `password_reset_tokens` (
 --
 
 CREATE TABLE `permissions` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `guard_name` varchar(255) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -542,9 +560,9 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 --
 
 CREATE TABLE `permission_updates` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `updates` text NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id` bigint UNSIGNED NOT NULL,
+  `updates` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -564,12 +582,12 @@ INSERT INTO `permission_updates` (`id`, `updates`, `updated_at`) VALUES
 --
 
 CREATE TABLE `personal_access_tokens` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `tokenable_type` varchar(255) NOT NULL,
-  `tokenable_id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `token` varchar(64) NOT NULL,
-  `abilities` text DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tokenable_id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `abilities` text COLLATE utf8mb4_unicode_ci,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `expires_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -583,8 +601,8 @@ CREATE TABLE `personal_access_tokens` (
 --
 
 CREATE TABLE `real_branches` (
-  `route` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL
+  `route` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -601,18 +619,18 @@ INSERT INTO `real_branches` (`route`, `name`) VALUES
 --
 
 CREATE TABLE `requests` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `driver` bigint(20) UNSIGNED DEFAULT NULL,
-  `user` bigint(20) UNSIGNED NOT NULL,
-  `mediator` bigint(20) UNSIGNED DEFAULT NULL,
-  `to` bigint(20) UNSIGNED NOT NULL,
-  `local` varchar(255) DEFAULT NULL,
-  `vacancy` int(11) DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `driver` bigint UNSIGNED DEFAULT NULL,
+  `user` bigint UNSIGNED NOT NULL,
+  `mediator` bigint UNSIGNED DEFAULT NULL,
+  `to` bigint UNSIGNED NOT NULL,
+  `local` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `vacancy` int DEFAULT NULL,
   `date` date NOT NULL,
   `time` time NOT NULL,
   `duration` time DEFAULT NULL,
-  `passengers` varchar(510) DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 0
+  `passengers` varchar(510) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -633,9 +651,9 @@ INSERT INTO `requests` (`id`, `driver`, `user`, `mediator`, `to`, `local`, `vaca
 --
 
 CREATE TABLE `roles` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `guard_name` varchar(255) NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -669,8 +687,8 @@ INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VAL
 --
 
 CREATE TABLE `role_has_permissions` (
-  `permission_id` bigint(20) UNSIGNED NOT NULL,
-  `role_id` bigint(20) UNSIGNED NOT NULL
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `role_id` bigint UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -678,30 +696,34 @@ CREATE TABLE `role_has_permissions` (
 --
 
 INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
-(1, 5),
 (3, 2),
-(3, 6),
-(4, 5),
 (6, 2),
-(6, 6),
 (10, 2),
-(10, 5),
 (12, 2),
+(17, 2),
+(18, 2),
+(19, 2),
 (12, 3),
-(12, 6),
+(19, 3),
 (13, 4),
 (14, 4),
 (15, 4),
 (16, 4),
-(17, 2),
-(17, 8),
-(18, 2),
-(19, 2),
-(19, 3),
+(1, 5),
+(4, 5),
+(10, 5),
+(3, 6),
+(6, 6),
+(12, 6),
 (19, 7),
 (20, 7),
 (21, 7),
 (22, 7),
+(17, 8),
+(39, 8),
+(40, 8),
+(41, 8),
+(42, 8),
 (23, 9),
 (24, 9),
 (25, 9),
@@ -712,21 +734,15 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (30, 10),
 (31, 11),
 (32, 11),
-(32, 16),
 (33, 11),
 (34, 11),
 (35, 12),
 (36, 12),
-(36, 16),
 (37, 12),
 (38, 12),
-(39, 8),
 (39, 13),
-(40, 8),
 (40, 13),
-(41, 8),
 (41, 13),
-(42, 8),
 (42, 13),
 (43, 14),
 (44, 14),
@@ -736,6 +752,8 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (48, 15),
 (49, 15),
 (50, 15),
+(32, 16),
+(36, 16),
 (51, 16),
 (52, 16),
 (53, 16),
@@ -748,9 +766,9 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 --
 
 CREATE TABLE `role_updates` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `updates` text NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id` bigint UNSIGNED NOT NULL,
+  `updates` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -768,23 +786,23 @@ INSERT INTO `role_updates` (`id`, `updates`, `updated_at`) VALUES
 --
 
 CREATE TABLE `routes` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `task` bigint(20) UNSIGNED NOT NULL,
-  `user` bigint(20) UNSIGNED NOT NULL,
-  `mediator` bigint(20) UNSIGNED DEFAULT NULL,
-  `to` bigint(20) UNSIGNED NOT NULL,
-  `vacancy` int(11) DEFAULT NULL,
-  `passengers` varchar(510) DEFAULT NULL,
-  `obs_start` text DEFAULT NULL,
-  `obs_end` text DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `task` bigint UNSIGNED NOT NULL,
+  `user` bigint UNSIGNED NOT NULL,
+  `mediator` bigint UNSIGNED DEFAULT NULL,
+  `to` bigint UNSIGNED NOT NULL,
+  `vacancy` int DEFAULT NULL,
+  `passengers` varchar(510) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `obs_start` text COLLATE utf8mb4_unicode_ci,
+  `obs_end` text COLLATE utf8mb4_unicode_ci,
   `date` date NOT NULL,
   `time` time NOT NULL,
   `duration` time DEFAULT NULL,
   `started_at` timestamp NULL DEFAULT NULL,
   `ended_at` timestamp NULL DEFAULT NULL,
-  `obs` text DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 0,
-  `type` int(11) NOT NULL DEFAULT 0
+  `obs` text COLLATE utf8mb4_unicode_ci,
+  `status` int NOT NULL DEFAULT '0',
+  `type` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -818,7 +836,15 @@ INSERT INTO `routes` (`id`, `task`, `user`, `mediator`, `to`, `vacancy`, `passen
 (89, 20, 1, NULL, 5, NULL, '[{\"passenger\":\"Caca\",\"contact\":\"23456788\"}]', NULL, NULL, '2025-02-06', '12:00:00', '00:10:00', NULL, NULL, 'asdf', 0, 0),
 (90, 21, 1, NULL, 5, NULL, '[{\"passenger\":\"Fada\",\"contact\":\"23423452345\"}]', NULL, NULL, '2025-02-06', '11:00:00', '11:02:00', NULL, NULL, 'asdf', 0, 0),
 (91, 23, 5, NULL, 3, NULL, '[{\"passenger\":\"Mariana\",\"contact\":\"45698745\"}]', NULL, 'Nada a declarar', '2025-02-09', '18:42:54', '00:00:00', '2025-02-09 21:42:54', '2025-02-09 21:49:00', NULL, 0, 0),
-(92, 23, 5, NULL, 1, NULL, '{}', NULL, 'Última rota do dia', '2025-02-09', '18:54:21', '00:00:00', '2025-02-09 21:54:21', '2025-02-09 22:04:59', NULL, 0, 0);
+(92, 23, 5, NULL, 1, NULL, '{}', NULL, 'Última rota do dia', '2025-02-09', '18:54:21', '00:00:00', '2025-02-09 21:54:21', '2025-02-09 22:04:59', NULL, 0, 0),
+(93, 24, 1, NULL, 2, NULL, '[{\"passenger\":\"Maria\",\"contact\":\"27998298541\"}]', NULL, NULL, '2025-02-19', '07:30:00', '00:25:00', NULL, NULL, NULL, 1, 1),
+(94, 25, 1, NULL, 3, NULL, '[{\"passenger\":\"Maria\",\"contact\":\"12345678\"}]', NULL, NULL, '2025-02-21', '07:00:00', '00:00:00', NULL, NULL, NULL, 1, 1),
+(95, 26, 1, NULL, 6, NULL, '[{\"passenger\":\"Musk\",\"contact\":\"987453211\"}]', NULL, NULL, '2025-02-20', '23:30:00', '12:01:00', NULL, NULL, NULL, 1, 1),
+(96, 27, 1, NULL, 7, NULL, '[{\"passenger\":\"Mano Brow\",\"contact\":\"2789784521\"}]', NULL, NULL, '2025-02-20', '23:15:00', '01:00:00', NULL, NULL, NULL, 1, 1),
+(97, 27, 1, NULL, 4, NULL, '[{\"passenger\":\"Messias\",\"contact\":\"278587891\"}]', NULL, NULL, '2025-02-20', '22:00:00', '01:20:00', NULL, NULL, NULL, 1, 1),
+(98, 27, 1, NULL, 3, NULL, '[{\"passenger\":\"Teste de atualiza\\u00e7\\u00e3o\",\"contact\":\"2748458645\"}]', NULL, NULL, '2025-02-20', '22:30:00', '13:00:00', NULL, NULL, NULL, 1, 1),
+(99, 28, 1, NULL, 2, NULL, '[{\"passenger\":\"Malu\",\"contact\":\"321456987\"}]', NULL, NULL, '2025-02-21', '07:45:00', '12:01:00', NULL, NULL, 'obs', 1, 1),
+(100, 26, 1, NULL, 5, NULL, '[{\"passenger\":\"Mot\\u00f4\",\"contact\":\"279878987\"}]', NULL, NULL, '2025-02-20', '20:45:00', '12:00:00', NULL, NULL, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -827,7 +853,7 @@ INSERT INTO `routes` (`id`, `task`, `user`, `mediator`, `to`, `vacancy`, `passen
 --
 
 CREATE TABLE `schedules` (
-  `driver` bigint(20) UNSIGNED NOT NULL,
+  `driver` bigint UNSIGNED NOT NULL,
   `morning_start` time DEFAULT NULL,
   `morning_end` time DEFAULT NULL,
   `afternoon_start` time DEFAULT NULL,
@@ -848,12 +874,12 @@ CREATE TABLE `schedules` (
 --
 
 CREATE TABLE `sessions` (
-  `id` varchar(255) NOT NULL,
-  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `ip_address` varchar(45) DEFAULT NULL,
-  `user_agent` text DEFAULT NULL,
-  `payload` longtext NOT NULL,
-  `last_activity` int(11) NOT NULL
+  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text COLLATE utf8mb4_unicode_ci,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `last_activity` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -863,10 +889,10 @@ CREATE TABLE `sessions` (
 --
 
 CREATE TABLE `settings` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(155) NOT NULL,
-  `settings` text NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(155) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `settings` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -884,9 +910,9 @@ INSERT INTO `settings` (`id`, `name`, `settings`, `updated_at`) VALUES
 --
 
 CREATE TABLE `setting_updates` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `updates` text NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id` bigint UNSIGNED NOT NULL,
+  `updates` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -896,9 +922,9 @@ CREATE TABLE `setting_updates` (
 --
 
 CREATE TABLE `tasks` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `driver` bigint(20) UNSIGNED NOT NULL,
-  `obs` varchar(255) DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `driver` bigint UNSIGNED NOT NULL,
+  `obs` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -916,7 +942,12 @@ INSERT INTO `tasks` (`id`, `driver`, `obs`, `date`) VALUES
 (20, 5, NULL, '2025-02-06'),
 (21, 4, NULL, '2025-02-06'),
 (22, 4, NULL, '2025-02-08'),
-(23, 5, NULL, '2025-02-09');
+(23, 5, NULL, '2025-02-09'),
+(24, 5, NULL, '2025-02-19'),
+(25, 5, NULL, '2025-02-21'),
+(26, 5, NULL, '2025-02-20'),
+(27, 4, NULL, '2025-02-20'),
+(28, 4, NULL, '2025-02-21');
 
 -- --------------------------------------------------------
 
@@ -925,7 +956,7 @@ INSERT INTO `tasks` (`id`, `driver`, `obs`, `date`) VALUES
 --
 
 CREATE TABLE `timetables` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint UNSIGNED NOT NULL,
   `time` time NOT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1039,18 +1070,18 @@ INSERT INTO `timetables` (`id`, `time`, `deleted_at`) VALUES
 --
 
 CREATE TABLE `users` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `cpf` varchar(11) DEFAULT NULL,
-  `branch_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `notes` varchar(255) DEFAULT NULL,
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cpf` varchar(11) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `branch_id` bigint UNSIGNED DEFAULT NULL,
+  `notes` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `password` varchar(255) NOT NULL,
-  `two_factor_secret` text DEFAULT NULL,
-  `two_factor_recovery_codes` text DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `two_factor_secret` text COLLATE utf8mb4_unicode_ci,
+  `two_factor_recovery_codes` text COLLATE utf8mb4_unicode_ci,
   `two_factor_confirmed_at` timestamp NULL DEFAULT NULL,
-  `remember_token` varchar(100) DEFAULT NULL,
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
@@ -1061,11 +1092,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `cpf`, `branch_id`, `notes`, `email_verified_at`, `password`, `two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `remember_token`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Super Admin', 'crebs@crebs.dev', '11736707779', NULL, 'Default User', '2025-01-16 22:38:12', '$2y$12$BhF5T93.4ygycHaknuLgZeTkngSEZHPt0i4oCXc5cD.hAQ0OG1zkC', NULL, NULL, NULL, 'fZ3Nd3t9RCmAvcJvy34AAZQ4pX1l81o58pKHmY8H9TzMFBGCtGTjhMEgsPbr', '2025-01-16 22:38:12', '2025-01-16 22:38:12', NULL),
+(1, 'Super Admin', 'crebs@crebs.dev', '11736707779', NULL, 'Default User', '2025-01-16 22:38:12', '$2y$12$BhF5T93.4ygycHaknuLgZeTkngSEZHPt0i4oCXc5cD.hAQ0OG1zkC', NULL, NULL, NULL, 'ijgEyNQfkGqc68vgpIAia7Gj6AUGcMDt8dnTGgwdoc7pBXs7cSVXJs4UAy2d', '2025-01-16 22:38:12', '2025-01-16 22:38:12', NULL),
 (2, '-', '-', '', NULL, NULL, '2025-01-16 22:53:00', '$2y$12$gs6KzYo6BAEj.gQ6TKomQ.JPUOpyCPrhNRXK/xHz7jBQXepmCOnAW', NULL, NULL, NULL, 'RDvTF0mG2sGJkPHyi7jbQWN2vDCghBoXGCHODXuKVsxt9ZT5zPcFmxjc0Nvb', '2025-01-16 22:52:44', '2025-01-16 22:53:12', NULL),
 (3, 'Usuario Um', 'usuarioum@email.com', '56528145784', NULL, NULL, '2025-01-19 11:40:57', '$2y$12$08dWw7wEraRG47swgQiGouzuRLmtSNN29n4P/4CoWVqqWPROtM7bm', NULL, NULL, NULL, '3S0NeyUqIpkzw6Fc14QfcQozotNBkSDqXE6HHH9preqPvAuddLQP23bZj3jG', '2025-01-19 11:40:45', '2025-01-19 12:35:47', NULL),
 (4, 'Motorista Tres', 'motoristatres@email.com', '31290354863', NULL, NULL, '2025-01-26 21:03:18', '$2y$12$rhz5TP4.EbX0u4o9.1HfmOZry1MEB6JSMk0tBMXmTx4PVS0EqtbZm', NULL, NULL, NULL, 'Esg9W7EfAfLvvRevqWjm7xuzLL28WPd2OYKQKwYpRhmoIBj9i0Bs9227AW5d', '2025-01-26 21:03:06', '2025-01-26 21:03:18', NULL),
-(5, 'Motorista Um', 'motoristaum@email.com', '51611338565', NULL, NULL, '2025-01-16 22:53:00', '$2y$12$gs6KzYo6BAEj.gQ6TKomQ.JPUOpyCPrhNRXK/xHz7jBQXepmCOnAW', NULL, NULL, NULL, 'u1yGoUxPscudcvZG9OUCjmeSGq3vyH4X9nHeEN9t6OI4dqxl1aMnEGH48RxE', '2025-01-16 22:52:44', '2025-01-16 22:53:12', NULL);
+(5, 'Motorista Um', 'motoristaum@email.com', '51611338565', NULL, NULL, '2025-01-16 22:53:00', '$2y$12$gs6KzYo6BAEj.gQ6TKomQ.JPUOpyCPrhNRXK/xHz7jBQXepmCOnAW', NULL, NULL, NULL, 'y0c8WxTUfSrzjLPyib71kjv5udhU4hJsGVgOqSbmD7MWBG8z95d4TGv6tnh0', '2025-01-16 22:52:44', '2025-01-16 22:53:12', NULL);
 
 -- --------------------------------------------------------
 
@@ -1074,9 +1105,9 @@ INSERT INTO `users` (`id`, `name`, `email`, `cpf`, `branch_id`, `notes`, `email_
 --
 
 CREATE TABLE `user_updates` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `updates` text NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id` bigint UNSIGNED NOT NULL,
+  `updates` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -1370,109 +1401,109 @@ ALTER TABLE `user_updates`
 -- AUTO_INCREMENT de tabela `branches`
 --
 ALTER TABLE `branches`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de tabela `cars`
 --
 ALTER TABLE `cars`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `cars_log`
 --
 ALTER TABLE `cars_log`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `fuels`
 --
 ALTER TABLE `fuels`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de tabela `incidents`
 --
 ALTER TABLE `incidents`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT de tabela `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT de tabela `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `requests`
 --
 ALTER TABLE `requests`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de tabela `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de tabela `routes`
 --
 ALTER TABLE `routes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- AUTO_INCREMENT de tabela `settings`
 --
 ALTER TABLE `settings`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT de tabela `timetables`
 --
 ALTER TABLE `timetables`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT de tabela `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restrições para tabelas despejadas
