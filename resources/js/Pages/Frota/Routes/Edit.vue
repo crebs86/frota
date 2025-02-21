@@ -12,6 +12,7 @@ import validateESR from '@/validates/editSaveRoute';
 import { branchName, drivers } from '@/helpers';
 import { validateDate } from '@/validates/validates';
 import { phoneMask } from '@/mask';
+import {stylesTable} from "@/contrasts.js";
 
 const props = defineProps({
     branches: Object,
@@ -430,7 +431,7 @@ onMounted(() => {
                                     :disabled="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8"
                                     class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6"
                                     :class="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
-                                    Incluir
+                                    Incluir <span class="hidden md:inline-flex">Passageiro</span>
                                 </button>
 
                                 <div v-if="routeForm.errors?.passengers"
@@ -463,11 +464,11 @@ onMounted(() => {
                         <div class="p-2 rounded-lg overflow-y-auto"
                             :class="$page.props.app.settingsStyles.main.innerSection">
                             <button @click="verifyDriverRoute"
-                                class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right">
+                                class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right mb-1.5">
                                 Recarregar Rotas
                                 <mdicon name="refresh" />
                             </button>
-                            <table class="min-w-full">
+                            <table class="min-w-full" :class="stylesTable($page.props.app.settingsStyles.main.body)">
                                 <thead>
                                     <tr>
                                         <th
@@ -678,7 +679,7 @@ onMounted(() => {
                                             :disabled="passengersEditModel.passenger.length < 3 || passengersEditModel.contact.length < 8"
                                             class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6"
                                             :class="passengersEditModel.passenger.length < 3 || passengersEditModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
-                                            Incluir
+                                            Incluir <span class="hidden md:inline-flex">Passageiro</span>
                                         </button>
 
                                         <div v-if="routeForEdition.errors?.passengers"

@@ -16,10 +16,8 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
 //todo app\Frota\Core\Routes.php
     linha 154. Alterar para DB e não trazer solicitações
 
-//todo ajustar cores das tabelas no light
-
 //todo
     lógica do carro favorito em cache
 
-//todo resources\js\Pages\Frota\Requests\Evaluate.vue linha 163
-    alterar lógica de trazer lista para avaliação, que deve vir como um prop para faciliar o reload.
+//todo resources/js/Pages/Frota/Cars/FillHistory.vue
+    corrigir erros na busca. Fazer testes para identificar

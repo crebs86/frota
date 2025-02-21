@@ -10,6 +10,10 @@ export default function validateUpRt(value) {
     partial += '"time": ["Informe um horário."],';
   }
 
+  if (!value.driver) {
+    partial += '"driver": ["Informe um motorista."],';
+  }
+
   if (!value.currentBranch?.id) {
     partial += '"_checker": ["Erro ao carregar dados essenciais [2]."],';
   }

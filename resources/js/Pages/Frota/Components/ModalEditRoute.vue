@@ -125,7 +125,7 @@ onMounted(() => {
         </div>
         <div v-if="props.routeForEdition"
             class="bg-white rounded-lg overflow-auto shadow-xl transform transition-all w-11/12 md:max-w-[1024px] dark:bg-gray-600 p-4 max-h-[95%]">
-            <div class="overflow-x-auto overflow-y-hidden grid grid-cols-6 gap-3">
+            <div class="overflow-hidden grid grid-cols-6 gap-3">
 
                 <div class="grid grid-cols-1 col-span-6 md:col-span-2 h-12 mt-1 md:mt-0">
                     <label class="text-sm">
@@ -223,8 +223,8 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <div class="col-span-6 grid grid-cols-8">
-                    <div class="col-span-6 grid grid-cols-4">
+                <div class="col-span-6 grid grid-cols-8 max-w-[98%]">
+                    <div class="col-span-6 grid grid-cols-4 gap-2">
                         <div class="col-span-5 md:col-span-2">
                             <label class="text-sm">
                                 Passageiro*
@@ -248,9 +248,9 @@ onMounted(() => {
                     </div>
                     <button type="button" @click="setEditPassenger(false)"
                         :disabled="passengersEditModel.passenger.length < 3 || passengersEditModel.contact.length < 8"
-                        class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:-mb-[1px]"
+                        class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:mb-0 ml-2"
                         :class="passengersEditModel.passenger.length < 3 || passengersEditModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
-                        Incluir
+                        Incluir <span class="hidden md:inline-flex">Passageiro</span>
                     </button>
 
                     <div class="col-span-6 md:col-span-3">

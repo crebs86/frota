@@ -30,14 +30,14 @@ trait Requests
             'branches' => activeBranches(),
             'timetables' => Arr::pluck(timetable(), 'time'),
             'evaluator' => $this->can('Liberador'),
-            'requester'  => $this->can('Solicitacao Criar')
+            'requester' => $this->can('Solicitacao Criar')
         ];
 
         if (
             $this->can('Liberador') && !$this->hasRole('Super Admin')
             || request()->route()->getName() === 'frota.requests.evaluates' && $this->can('Liberador')
         ) {
-            return Inertia::render('Frota/Requests/Evaluate', $props);
+            return Inertia::render('Frota/Requests/Evaluate', array_merge_recursive($props, ['requests' => $this->runGetRequestsToEvaluate($request)->getData(), 'params' => [$request->date, $request->driver]]));
         }
 
         if ($this->can('Solicitacao Criar', 'Solicitacao Ver', 'Solicitacao Apagar', 'Solicitacao Editar')) {
@@ -239,13 +239,13 @@ trait Requests
             } elseif (!$request->ignore) {
                 if (
                     DB::table('tasks as t')
-                    ->where('t.driver', '<>', 2)
-                    ->where('driver', $route->taskData->driver)
-                    ->where('r.id', '<>', $route->id)
-                    ->where(['r.date' => $route->date, 'r.time' => $route->time])
-                    ->select('type', 'status')
-                    ->join('routes as r', 't.id', '=', 'r.task')
-                    ->get()->count() > 0
+                        ->where('t.driver', '<>', 2)
+                        ->where('driver', $route->taskData->driver)
+                        ->where('r.id', '<>', $route->id)
+                        ->where(['r.date' => $route->date, 'r.time' => $route->time])
+                        ->select('type', 'status')
+                        ->join('routes as r', 't.id', '=', 'r.task')
+                        ->get()->count() > 0
                 ) {
                     return response()->json('Já existe uma agenda ou solicitação para este horário para este motorista.(2)', 409, ['_direct_allow' => true]);
                 }

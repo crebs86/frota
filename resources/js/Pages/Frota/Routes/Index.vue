@@ -9,6 +9,7 @@ import { toast } from '@/toast'
 import { defineAsyncComponent, ref } from 'vue';
 import moment from 'moment';
 import axios from 'axios';
+import {stylesTable} from "@/contrasts.js";
 
 const CreateEditRoute = defineAsyncComponent(() => import('@/Pages/Frota/Components/ModalCreateEditRoute.vue'))
 
@@ -192,11 +193,11 @@ function verifyDriverRoute() {
                                 v-if="(moment(moment(results.date).format('YYYY-MM-DD')).isAfter(moment().format('YYYY-MM-DD')) ||
                                     moment(moment(results.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'))) && (has($page.props.auth.permissions, ['Tarefa Apagar', 'Tarefa Criar', 'Tarefa Editar']) || has($page.props.auth.roles, ['Super Admin']))"
                                 @click="verifyDriverRoute()"
-                                class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right">
+                                class="flex px-2 py-1.5 transition duration-500 ease select-none rounded-md border border-blue-500 dark:border-slate-300 bg-blue-300 hover:bg-blue-400 text-blue-500 hover:text-blue-200 dark:bg-slate-400 dark:hover:bg-slate-600 dark:text-slate-800 dark:hover:text-slate-200 float-right mb-1.5">
                                 Editar/Adicionar Rota
                                 <mdicon name="text-box-edit" />
                             </button>
-                            <table class="min-w-full">
+                            <table class="min-w-full" :class="stylesTable($page.props.app.settingsStyles.main.body)">
                                 <thead>
                                     <tr>
                                         <th
@@ -257,7 +258,7 @@ function verifyDriverRoute() {
                         v-if="results && filter.branch && (filter.branch.id === results[0]?.to)">
                         <div class="p-2 rounded-lg overflow-y-auto"
                             :class="$page.props.app.settingsStyles.main.innerSection">
-                            <table class="min-w-full">
+                            <table class="min-w-full" :class="stylesTable($page.props.app.settingsStyles.main.body)">
                                 <thead>
                                     <tr>
                                         <th

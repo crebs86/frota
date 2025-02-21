@@ -226,7 +226,7 @@ onMounted(() => {
                     </div>
                     <div class="col-span-2 overflow-x-auto">
                         <h2 class="text-xl text-center underline">Últimos Abastecimentos</h2>
-                        <table class="min-w-full">
+                        <table class="min-w-full" :class="$page.props.app.settingsStyles.main.body">
                             <thead>
                             <tr>
                                 <th

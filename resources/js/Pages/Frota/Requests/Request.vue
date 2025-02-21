@@ -423,9 +423,9 @@ onBeforeMount(() => {
                                 </div>
                                 <button type="button" @click="setPassenger(false)"
                                     :disabled="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8"
-                                    class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:-mb-[1px]"
+                                    class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:mb-0 md:ml-2"
                                     :class="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
-                                    Incluir
+                                    Incluir <span class="hidden md:inline-flex">Passageiro</span>
                                 </button>
 
                                 <div v-if="requestForm.errors?.passengers"
@@ -622,7 +622,7 @@ onBeforeMount(() => {
                     </div>
 
                     <!--Modal editar rota-->
-                    <EditRoute v-if="modal.editRoute" :routeForEdition="routeForEdition" :drivers="props.drivers"
+                    <EditRoute v-if="modal.editRoute" :routeForEdition="routeForEdition" :drivers="p.drivers"
                         :driver="requestForm.driver" :_checker="routeForEdition._checker" @routeUpdated="routeUpdated"
                         :isRequest="true">
                         <template #close_button>

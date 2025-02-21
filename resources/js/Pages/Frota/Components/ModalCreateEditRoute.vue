@@ -255,7 +255,7 @@ onMounted(() => {
                         {{ props.filter?.driver?.user?.name ?? '' }}
                     </span>
                 </h3>
-                <div class="mt-2 overflow-auto">
+                <div class="mt-2">
                     <div class="py-0.5 rounded">
                         <div class="mb-6 w-full z-auto min-h-fit grid grid-cols-1 md:grid-cols-6 gap-2">
 
@@ -371,7 +371,7 @@ onMounted(() => {
                                         :disabled="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8"
                                         class="border rounded-md px-4 py-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6"
                                         :class="passengersModel.passenger.length < 3 || passengersModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
-                                    Incluir
+                                    Incluir <span class="hidden md:inline-flex">Passageiro</span>
                                 </button>
 
                                 <div v-if="filter.errors?.passengers?.length > 0"
@@ -636,7 +636,7 @@ onMounted(() => {
                                     :disabled="passengersEditModel.passenger.length < 3 || passengersEditModel.contact.length < 8"
                                     class="border rounded-md px-4 py-2 my-0.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline col-span-2 w-full self-center h-28 md:max-h-[41px] md:self-end mt-6 md:-mb-[1px]"
                                     :class="passengersEditModel.passenger.length < 3 || passengersEditModel.contact.length < 8 ? 'border-gray-700 bg-gray-400 text-gray-100' : 'border-blue-600 bg-blue-500 text-blue-100 hover:bg-blue-700'">
-                                Incluir
+                                Incluir <span class="hidden md:inline-flex">Passageiro</span>
                             </button>
 
                             <div class="col-span-6 md:col-span-3">
