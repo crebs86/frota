@@ -21,10 +21,16 @@
 /app/Http/Controllers/Admin/*
 !/app/Http/Controllers/Admin/UserController.php
 !/app/Http/Controllers/Admin/BranchController.php
+!/app/Http/Controllers/Admin/MiscController.php
+
+!/app/Http/Controllers/Auth/
+/app/Http/Controllers/Auth/*
+!/app/Http/Controllers/Auth/AuthenticatedSessionController.php
 
 !/app/Traits
 /app/Traits/*
 !/app/Traits/Helpers.php
+!/app/Traits/ACL.php
 
 !/app/Providers
 /app/Providers/*
@@ -40,6 +46,10 @@
 !/app/Models
 /app/Models/*
 !/app/Models/User.php
+
+!/config
+/config/*
+!/config/fortify.php
 
 !/resources
 /resources/*

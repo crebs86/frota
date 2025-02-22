@@ -34,7 +34,7 @@ trait Requests
         ];
 
         if (
-            $this->can('Liberador') && !$this->hasRole('Super Admin')
+            request()->route()->getName() !== 'frota.requests.request' && $this->can('Liberador') && !$this->hasRole('Super Admin')
             || request()->route()->getName() === 'frota.requests.evaluates' && $this->can('Liberador')
         ) {
             return Inertia::render('Frota/Requests/Evaluate', array_merge_recursive($props, ['requests' => $this->runGetRequestsToEvaluate($request)->getData(), 'params' => [$request->date, $request->driver]]));

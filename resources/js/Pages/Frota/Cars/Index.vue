@@ -74,19 +74,19 @@ import moment from 'moment';
                                         <div class="flex justify-center gap-1">
                                             <Link :href="route('frota.cars.show', c.id)" title="Ver"
                                                 v-if="has(
-                                                    $page.props.auth.permissions, ['Carros Editar', 'Carros Ver', 'Carros Criar', 'Carros Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
+                                                    $page.props.auth.permissions, ['Carro Editar', 'Carro Ver', 'Carro Criar', 'Carro Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <mdicon name="car-info" />
                                             </Link>
                                             <Link :href="route('frota.cars.edit', c.id)" title="Editar"
                                                 v-if="has(
-                                                    $page.props.auth.permissions, ['Carros Editar', 'Carros Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
+                                                    $page.props.auth.permissions, ['Carro Editar', 'Carro Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <mdicon name="car-cog" />
                                             </Link>
                                             <Link
                                                 :href="route('frota.load-history-fill', [c.id]) + '?de=' + moment().subtract('15', 'days').format('YYYY-MM-DD')"
                                                 title="Histórico de Abastecimento"
                                                 v-if="has(
-                                                    $page.props.auth.permissions, ['Combistivel Editar', 'Combistivel Apagar', 'Combustivel Ver', 'Combustivel Criar']) || has($page.props.auth.roles, ['Super Admin'])">
+                                                    $page.props.auth.permissions, ['Combustivel Editar', 'Combustivel Apagar', 'Combustivel Ver', 'Combustivel Criar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <mdicon name="gas-station" />
                                             </Link>
                                         </div>

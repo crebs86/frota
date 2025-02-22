@@ -7,7 +7,8 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
     checkbox para ocultar liberados
 
 //todo colocações do analista
-    Assim que logar, já mostrar a tela com as minhas solicitações pendentes e aprovadas. Mostrar em cima um botão de "nova solicitação". Não vejo necessidade do usuário ver as rotas dos motoristas, isso fica a cargo do gestor.
+    Mostrar em cima um botão de "nova solicitação".
+    Não vejo necessidade do usuário ver as rotas dos motoristas, isso fica a cargo do gestor.
 
 //todo validar em back passageiro e telefone
 

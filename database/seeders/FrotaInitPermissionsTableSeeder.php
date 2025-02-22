@@ -273,6 +273,14 @@ class FrotaInitPermissionsTableSeeder extends Seeder
                     'name' => 'Solicitacao Editar',
                     'updated_at' => now(),
                 ),
+            32 =>
+                array(
+                    'created_at' => now(),
+                    'guard_name' => 'web',
+                    'id' => 55,
+                    'name' => 'Liberador',
+                    'updated_at' => now(),
+                ),
         ));
     }
 }

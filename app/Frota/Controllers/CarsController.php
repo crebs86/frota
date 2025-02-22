@@ -23,7 +23,7 @@ class CarsController extends Controller
      */
     public function index(): Response
     {
-        if ($this->can('Carros Ver', 'Carros Editar', 'Carros Apagar', 'Carros Criar')) {
+        if ($this->can('Carro Ver', 'Carro Editar', 'Carro Apagar', 'Carro Criar')) {
             return Inertia::render('Frota/Cars/Index', [
                 'cars' => cars()
             ]);
@@ -36,7 +36,7 @@ class CarsController extends Controller
      */
     public function create(): Response
     {
-        if ($this->can('Carros Criar')) {
+        if ($this->can('Carro Criar')) {
             return Inertia::render('Frota/Cars/Create', [
                 'garages' => activeGarages(),
             ]);
@@ -52,7 +52,7 @@ class CarsController extends Controller
      */
     public function store(CarRequest $carRequest, Car $car): Response|RedirectResponse
     {
-        if ($this->can('Carros Criar')) {
+        if ($this->can('Carro Criar')) {
 
             if ($car->create($carRequest->validated())) {
                 resetCache('cars');
@@ -69,7 +69,7 @@ class CarsController extends Controller
      */
     public function show(): Response
     {
-        if ($this->can('Carros Ver', 'Carros Editar', 'Carros Apagar')) {
+        if ($this->can('Carro Ver', 'Carro Editar', 'Carro Apagar')) {
             return $this->showCarPage();
         }
         return Inertia::render('Admin/403');
@@ -110,7 +110,7 @@ class CarsController extends Controller
         if (
             (int)getKeyValue($request->_checker, 'edit_car') === request('car')->id
         ) {
-            if ($this->can('Carros Editar', 'Carros Apagar')) {
+            if ($this->can('Carro Editar', 'Carro Apagar')) {
                 $request->merge(['deleted_at' => !$request->active ? now() : null]);
                 if ($car->update($request->all())) {
                     resetCache('cars');

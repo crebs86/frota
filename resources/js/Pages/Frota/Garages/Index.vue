@@ -66,7 +66,7 @@ import has from '@/arrayHelpers'
                                             </Link>
                                             <Link :href="route('frota.garages.edit', g.id)" title="Editar"
                                                 v-if="has(
-                                                    $page.props.auth.permissions, ['Garagem Editar', 'Garagem Ver', 'Garagem Criar', 'Garagem Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
+                                                    $page.props.auth.permissions, ['Garagem Editar', 'Garagem Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <mdicon name="home-edit" />
                                             </Link>
                                         </div>

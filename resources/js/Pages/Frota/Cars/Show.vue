@@ -6,6 +6,7 @@ import VueMultiselect from 'vue-multiselect';
 import {Head, Link, useForm} from '@inertiajs/vue3';
 import {ref} from 'vue';
 import {toast} from '@/toast';
+import has from "@/arrayHelpers.js";
 
 const props = defineProps({
     canEdit: Boolean,
@@ -187,23 +188,25 @@ function setNumber() {
                                    maxlength="25"
                                    class="w-full px-4 mb-3 rounded-md border py-[9px] text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-300">
                         </div>
-
-                        <template v-if="!canEdit">
-                            <button type="button" @click="canEdit = true"
-                                    class="border border-yellow-600 bg-yellow-500 text-yellow-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-yellow-700 focus:outline-none focus:shadow-outline">
-                                Editar Motorista
-                            </button>
-                        </template>
-                        <template v-else>
-                            <button type="button" @click="canEdit = false"
-                                    class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 mt-4 transition duration-500 ease select-none hover:bg-gray-700 focus:outline-none focus:shadow-outline">
-                                Cancelar Edição de Motorista
-                            </button>
-                            <button type="button" @click="saveCar"
-                                    class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
-                                Salvar
-                            </button>
-                        </template>
+                        <div
+                            v-if="has($page.props.auth.permissions, ['Carro Editar']) || has($page.props.auth.roles, ['Super Admin'])">
+                            <template v-if="!canEdit">
+                                <button type="button" @click="canEdit = true"
+                                        class="border border-yellow-600 bg-yellow-500 text-yellow-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-yellow-700 focus:outline-none focus:shadow-outline">
+                                    Editar Motorista
+                                </button>
+                            </template>
+                            <template v-else>
+                                <button type="button" @click="canEdit = false"
+                                        class="border border-gray-600 bg-gray-500 text-gray-100 rounded-md px-4 py-2 m-2 mt-4 transition duration-500 ease select-none hover:bg-gray-700 focus:outline-none focus:shadow-outline">
+                                    Cancelar Edição de Motorista
+                                </button>
+                                <button type="button" @click="saveCar"
+                                        class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
+                                    Salvar
+                                </button>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </template>
