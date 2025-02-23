@@ -45,7 +45,7 @@ class CarRequest extends FormRequest
             'garagem_id.exists' => 'Garagem não existe.',
             'tombo.max' => 'Número de patrimônio muito grande.',
             'tombo.required' => 'Informe o número de patrimônio.',
-            'placa.unique' => 'Já existe um veículo cadastrado com a placa informada.'
+            'placa.unique' => 'Já existe um carro cadastrado com a placa informada.'
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Frota\Controllers;
 
+use App\Frota\Models\Driver;
 use App\Traits\ACL;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -87,13 +88,14 @@ class CarsController extends Controller
     }
 
     /**
+     * @param bool $canEdit
      * @return Response
      */
     public function showCarPage($canEdit = false): Response
     {
         return Inertia::render('Frota/Cars/Show', [
             'garages' => activeGarages(),
-            'car' => cars()->where('id', request('car')),
+            'car' => [cars()->where('id', request('car'))->first()],
             '_checker' => setGetKey(request('car'), 'edit_car'),
             'canEdit' => $canEdit
         ]);
@@ -117,7 +119,7 @@ class CarsController extends Controller
                     resetCache('activeCars');
                     return redirect()->back()->with(['car' => cars()->where('id', request('car'))]);
                 }
-                return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do veículo.');
+                return redirect()->back()->with('error', 'Ocorreu um erro ao salvar os dados do carro.');
             }
         }
         return Inertia::render('Admin/403');
@@ -125,6 +127,24 @@ class CarsController extends Controller
 
     public function driverFavoriteCar(Request $request): JsonResponse
     {
+        cache()->forget('lifetime_' . auth()->id());
+        if ((int)$request->currentCar['id'] === (int)getKeyValue($request->currentCar['token'], 'car_token')) {
+            $driver = Driver::find(auth()->id());
+            if ($driver->carro_favorito != $request->car['id']) {
+                $driver->update([
+                    'carro_favorito' => $request->car['id']
+                ]);
+                $this->cacheCar();
+                return response()->json('Carro favorito atualizado.');
+            }
+            $this->cacheCar();
+            return response()->json('Carro favorito confirmado.');
+        }
+        return response()->json('Ocorreu um erro ao salvar os dados do carro. dfv(500-1)', 500);
+    }
 
+    private function cacheCar(): void
+    {
+        cache()->forever('lifetime_' . auth()->id(), now()->addSeconds(60 * 60 * 2)->format('YmdHis'));
     }
 }

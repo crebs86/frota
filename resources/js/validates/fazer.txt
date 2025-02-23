@@ -14,6 +14,3 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
 
 //todo app\Frota\Core\Routes.php
     linha 154. Alterar para DB e não trazer solicitações
-
-//todo
-    lógica do carro favorito em cache

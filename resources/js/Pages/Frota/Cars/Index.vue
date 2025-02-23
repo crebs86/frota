@@ -10,7 +10,7 @@ import moment from 'moment';
 
 <template>
 
-    <Head title="Veículos" />
+    <Head title="Carros" />
 
 
     <AuthenticatedLayout>
@@ -20,7 +20,7 @@ import moment from 'moment';
         </template>
         <SubSection>
             <template #header>
-                Veículos
+                Carros
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.75)]">
@@ -31,7 +31,7 @@ import moment from 'moment';
                         :href="route('frota.cars.create')" title="Novo Carro">
                     <mdicon name="car-arrow-right" />
                     <div>
-                        Novo Veículo
+                        Novo Carro
                     </div>
                     </Link>
 

@@ -29,9 +29,9 @@ import has from '@/arrayHelpers'
             class="col-span-1 flex flex-col items-center">
             <Link :href="route('frota.cars.index')" class="flex flex-col items-center max-w-fill"
                 :class="route().current('frota.cars.*') ? 'text-emerald-500 dark:text-lime-300' : 'text-gray-600 hover:text-emerald-600 dark:hover:text-lime-300'">
-            <mdicon name="car-multiple" title="Veículos" />
+            <mdicon name="car-multiple" title="Carros" />
             <span class="text-[10px] font-bold text-center">
-                Veículos
+                Carros
             </span>
             </Link>
         </div>

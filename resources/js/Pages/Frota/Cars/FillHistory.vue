@@ -84,7 +84,7 @@ onMounted(() => {
                         <table class="min-w-full">
                             <thead>
                                 <tr>
-                                    <th v-for=" (value, index) in ['Veículo', 'Placa', 'Motorista', 'Quantidade', 'Valor', 'Local', 'Data']"
+                                    <th v-for=" (value, index) in ['Carro', 'Placa', 'Motorista', 'Quantidade', 'Valor', 'Local', 'Data']"
                                         :key="index + '' + value"
                                         class="p-1.5 md:px-3 md:py-3 border-b-2 border-gray-300 text-left leading-4 tracking-wider"
                                         :class="$page.props.app.settingsStyles.main.container">

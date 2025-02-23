@@ -2,8 +2,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
 import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
-import {Head,usePoll} from '@inertiajs/vue3';
-import {defineAsyncComponent, onMounted, ref} from 'vue';
+import {Head, router, usePoll} from '@inertiajs/vue3';
+import {defineAsyncComponent, onMounted, onUpdated, ref} from 'vue';
 import axios from 'axios';
 import {toast} from '@/toast';
 import moment from 'moment';
@@ -11,11 +11,13 @@ import VueMultiselect from 'vue-multiselect';
 import {phoneMask} from "@/mask.js";
 
 const Abastecer = defineAsyncComponent(() => import('../Components/Abastecer.vue'));
+const CarroUtilizado = defineAsyncComponent(() => import('../Components/CarroUtilizado.vue'));
 
 const props = defineProps({
     myRoutesByDate: Object,
     cars: Object,
-    driver: Object
+    driver: Object,
+    lifetime: String
 })
 
 const date = ref({
@@ -25,7 +27,7 @@ const date = ref({
 
 const myRoutes = ref({})
 
-const car = ref({});
+const car = ref();
 
 const routeModel = ref({
     km: '',
@@ -48,7 +50,7 @@ usePoll(1000 * 60 * 5, {
         myRoutes.value = props.myRoutesByDate[0]
         car.value = props.driver?.car
         console.log('Atualizado.')
-  }
+    }
 })
 
 const singleRouteModel = ref({
@@ -292,14 +294,28 @@ function saveSingleRoute() {
 }
 
 const abastecerModal = ref(false)
+const carroModal = ref(parseInt(props.lifetime) <= parseInt(moment().format('YYYYMMDDHHmmss')))
 
 function abastecerModalStatus(status) {
     abastecerModal.value = status
 }
 
+function carroModalStatus(status) {
+    router.reload({only: ['driver']})
+    carroModal.value = status
+}
+
+function setCar() {
+    car.value = props.driver?.car
+}
+
 onMounted(() => {
     myRoutes.value = props.myRoutesByDate[0]
-    car.value = props.driver?.car
+    setCar()
+})
+
+onUpdated(() => {
+    setCar()
 })
 
 </script>
@@ -368,7 +384,7 @@ onMounted(() => {
                             </label>
                             <VueMultiselect v-model="car" :options="props.cars" :multiple="false"
                                             :close-on-select="true" selectedLabel="atual" placeholder="Carro atual"
-                                            :custom-label="cars" track-by="id" selectLabel="Selecionar"
+                                            :custom-label="cars" track-by="placa" selectLabel="Selecionar"
                                             deselectLabel="Remover"/>
                         </div>
 
@@ -784,6 +800,14 @@ onMounted(() => {
                         <div v-if="abastecerModal" class="opacity-70 fixed inset-0 z-40 bg-black"></div>
                     </template>
                 </Abastecer>
+
+                <CarroUtilizado v-if="carroModal" @carroModalStatus="carroModalStatus" :currentCar="props.driver.car"
+                                :cars="props.cars">
+                    <template #back>
+                        <div v-if="carroModal" class="opacity-70 fixed inset-0 z-40 bg-black"></div>
+                    </template>
+                </CarroUtilizado>
+
             </template>
         </SubSection>
     </AuthenticatedLayout>

@@ -11,7 +11,7 @@ const content = ref(null);
 
 function openNav() {
     if (sidebar.value.classList.contains('-translate-x-48')) {
-        // max sidebar 
+        // max sidebar
         sidebar.value.classList.remove("-translate-x-48")
         sidebar.value.classList.add("translate-x-none")
         maxSidebar.value.classList.remove("hidden")
@@ -131,7 +131,7 @@ function openNav() {
                 <Link class="flex gap-4" :href="route('frota.cars.index')">
                 <mdicon name="car-multiple" />
                 <div>
-                    Veículos
+                    Carros
                 </div>
                 </Link>
             </div>

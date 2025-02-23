@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Tempo de geração: 21/02/2025 às 00:51
+-- Tempo de geração: 23/02/2025 às 23:29
 -- Versão do servidor: 8.0.41-0ubuntu0.24.04.1
 -- Versão do PHP: 8.3.6
 
@@ -38,9 +38,11 @@ CREATE TABLE `acl_updates` (
 --
 
 INSERT INTO `acl_updates` (`id`, `updates`, `updated_at`) VALUES
+(1, '{\"user_id\":[0,1,1,1,1],\"roles\":[{\"Super Admin\":1},{\"Super Admin\":1,\"Motorista Administrar\":9},{\"Super Admin\":1,\"Motorista Administrar\":9,\"Garagem Administrar\":14},{\"Super Admin\":1,\"Garagem Administrar\":14},{\"Super Admin\":1}],\"updated_at\":[\"2025-02-22T16:54:48.465713Z\",\"2025-02-22T17:08:07.134476Z\",\"2025-02-22T17:09:00.718745Z\",\"2025-02-22T17:26:34.657456Z\"]}', '2025-02-22 17:26:34'),
 (2, '{\"user_id\":[0,1],\"roles\":[{\"Motorista\":8},{\"Motorista\":8,\"Combustivel Administrar\":15}],\"updated_at\":\"2025-01-16T22:54:52.481769Z\"}', '2025-01-16 22:54:52'),
 (3, '{\"user_id\":[0,1],\"roles\":[[],{\"Solicitante\":16}],\"updated_at\":\"2025-01-19T11:50:29.103162Z\"}', '2025-01-19 11:50:29'),
-(5, '{\"user_id\":[0,1],\"roles\":[[],{\"Motorista\":8}],\"updated_at\":\"2025-02-09T21:05:40.759744Z\"}', '2025-02-09 21:05:40');
+(5, '{\"user_id\":[0,1],\"roles\":[[],{\"Motorista\":8}],\"updated_at\":\"2025-02-09T21:05:40.759744Z\"}', '2025-02-09 21:05:40'),
+(6, '{\"user_id\":[0,1,1,1,1,1],\"roles\":[[],{\"Liberador\":17},{\"Tarefa Administrar\":12,\"Liberador\":17},{\"Agenda Administrar\":11,\"Tarefa Administrar\":12,\"Liberador\":17},{\"Tarefa Administrar\":12,\"Liberador\":17},{\"Tarefa Administrar\":12,\"Solicitante\":16,\"Liberador\":17}],\"updated_at\":[\"2025-02-22T16:46:42.342565Z\",\"2025-02-22T17:27:57.715426Z\",\"2025-02-22T17:28:21.219891Z\",\"2025-02-22T17:28:30.072565Z\",\"2025-02-22T17:33:15.781415Z\"]}', '2025-02-22 17:33:15');
 
 -- --------------------------------------------------------
 
@@ -135,9 +137,9 @@ CREATE TABLE `cars` (
 --
 
 INSERT INTO `cars` (`id`, `marca`, `modelo`, `placa`, `patrimonio`, `tombo`, `garagem_id`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(1, 'VW', 'Polo', 'ABC0D12', 0, NULL, NULL, '2025-02-13 23:14:25', '2025-01-16 23:00:12', '2025-02-13 23:14:25'),
+(1, 'VW', 'Polo', 'ABC0D12', 0, NULL, NULL, NULL, '2025-01-16 23:00:12', '2025-02-23 20:51:04'),
 (2, 'Fiat', 'Novo Uno', 'EFG3H45', 1, '123654', NULL, NULL, '2025-01-16 23:00:52', '2025-01-16 23:00:52'),
-(3, 'Ford', 'Ka', 'IJK7L89', 1, '98745', 3, NULL, '2025-01-16 23:03:01', '2025-02-13 23:23:46');
+(3, 'Ford', 'Ka', 'IJK7L89', 1, '98745', 3, NULL, '2025-01-16 23:03:01', '2025-02-23 21:42:14');
 
 -- --------------------------------------------------------
 
@@ -161,7 +163,13 @@ INSERT INTO `cars_log` (`id`, `route`, `car`, `type`, `km`) VALUES
 (1, 91, 2, 'start', 120),
 (2, 91, 2, 'end', 123),
 (3, 92, 2, 'start', 129),
-(4, 92, 2, 'end', 135);
+(4, 92, 2, 'end', 135),
+(5, 102, 1, 'start', 100),
+(6, 102, 1, 'end', 103),
+(7, 103, 3, 'start', 103),
+(8, 103, 3, 'end', 106),
+(9, 104, 3, 'start', 106),
+(10, 104, 3, 'end', 109);
 
 -- --------------------------------------------------------
 
@@ -221,7 +229,8 @@ CREATE TABLE `drivers` (
 INSERT INTO `drivers` (`id`, `garagem_id`, `carro_favorito`, `proprio`, `matricula`, `cnh`, `deleted_at`, `created_at`, `updated_at`) VALUES
 (2, 2, 2, 0, NULL, 1, NULL, '2025-01-16 22:54:33', '2025-01-16 23:03:47'),
 (4, 5, NULL, 0, NULL, 0, NULL, '2025-01-26 21:04:41', '2025-02-13 23:57:31'),
-(5, 2, 2, 0, NULL, 1, NULL, '2025-01-16 22:54:33', '2025-01-16 23:03:47');
+(5, 2, 2, 0, NULL, 1, NULL, '2025-01-16 22:54:33', '2025-02-23 23:21:44'),
+(7, 5, 3, 0, NULL, 0, NULL, '2025-02-23 23:21:31', '2025-02-23 23:21:31');
 
 -- --------------------------------------------------------
 
@@ -285,7 +294,8 @@ INSERT INTO `fuels` (`id`, `car`, `driver`, `km`, `quantidade`, `valor`, `local`
 (19, 2, 2, 1201, '10', '56.50', 'Posto Sete', 'Logo ali!', NULL, '2025-01-17 00:52:43', NULL, '2025-01-17 00:52:43', '2025-01-17 00:52:43'),
 (20, 2, 2, 1202, '1', '5,48', NULL, NULL, NULL, '2025-01-17 00:59:07', NULL, '2025-01-17 00:54:07', '2025-01-17 00:54:07'),
 (21, 2, 5, 1203, '10', '58.60', 'Posto Marcela Almoxarifado', 'Somente reserva', NULL, '2025-02-15 18:55:00', NULL, '2025-02-15 19:07:05', '2025-02-15 19:07:05'),
-(22, 2, 5, 1205, '10', '58.35', NULL, NULL, NULL, '2025-02-10 11:30:00', NULL, '2025-02-15 21:05:14', '2025-02-15 21:05:14');
+(22, 2, 5, 1205, '10', '58.35', NULL, NULL, NULL, '2025-02-10 11:30:00', NULL, '2025-02-15 21:05:14', '2025-02-15 21:05:14'),
+(23, 1, 5, 100, '10', '58.60', 'Posto Sete', 'Teste abastecimento.', NULL, '2025-02-23 21:01:00', NULL, '2025-02-23 21:01:56', '2025-02-23 21:01:56');
 
 -- --------------------------------------------------------
 
@@ -305,7 +315,7 @@ CREATE TABLE `garages` (
 --
 
 INSERT INTO `garages` (`id`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(2, '2025-02-13 23:37:56', '2025-01-16 22:57:41', '2025-02-13 23:37:56'),
+(2, NULL, '2025-01-16 22:57:41', '2025-02-22 17:12:53'),
 (3, NULL, '2025-02-06 15:59:08', '2025-02-06 15:59:08'),
 (5, NULL, '2025-01-16 22:58:11', '2025-01-16 22:58:11'),
 (6, NULL, '2025-02-06 16:01:34', '2025-02-06 16:01:34');
@@ -453,7 +463,11 @@ INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 (15, 'App\\Models\\User', 2),
 (16, 'App\\Models\\User', 3),
 (8, 'App\\Models\\User', 4),
-(8, 'App\\Models\\User', 5);
+(8, 'App\\Models\\User', 5),
+(12, 'App\\Models\\User', 6),
+(16, 'App\\Models\\User', 6),
+(17, 'App\\Models\\User', 6),
+(8, 'App\\Models\\User', 7);
 
 -- --------------------------------------------------------
 
@@ -551,7 +565,8 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 (51, 'Solicitacao Criar', 'web', '2025-01-19 11:44:54', '2025-01-19 11:44:54'),
 (52, 'Solicitacao Ver', 'web', '2025-01-19 11:45:40', '2025-01-19 11:45:40'),
 (53, 'Solicitacao Apagar', 'web', '2025-01-19 11:46:01', '2025-01-19 11:46:01'),
-(54, 'Solicitacao Editar', 'web', '2025-01-19 11:46:37', '2025-01-19 11:46:37');
+(54, 'Solicitacao Editar', 'web', '2025-01-19 11:46:37', '2025-01-19 11:46:37'),
+(55, 'Liberador', 'web', '2025-02-22 16:35:53', '2025-02-22 16:35:53');
 
 -- --------------------------------------------------------
 
@@ -610,7 +625,8 @@ CREATE TABLE `real_branches` (
 --
 
 INSERT INTO `real_branches` (`route`, `name`) VALUES
-(92, 'Pracinha Centro');
+(92, 'Pracinha Centro'),
+(103, 'Abastecer');
 
 -- --------------------------------------------------------
 
@@ -678,7 +694,8 @@ INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VAL
 (13, 'Ocorrencia Administrar', 'web', '2025-01-16 22:38:12', '2025-01-16 22:38:12'),
 (14, 'Garagem Administrar', 'web', '2025-01-16 22:38:12', '2025-01-16 22:38:12'),
 (15, 'Combustivel Administrar', 'web', '2025-01-16 22:38:12', '2025-01-16 22:38:12'),
-(16, 'Solicitante', 'web', '2025-01-19 11:48:47', '2025-01-19 11:48:47');
+(16, 'Solicitante', 'web', '2025-01-19 11:48:47', '2025-01-19 11:48:47'),
+(17, 'Liberador', 'web', '2025-02-22 16:40:19', '2025-02-22 16:40:19');
 
 -- --------------------------------------------------------
 
@@ -757,7 +774,14 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (51, 16),
 (52, 16),
 (53, 16),
-(54, 16);
+(54, 16),
+(19, 17),
+(24, 17),
+(28, 17),
+(32, 17),
+(36, 17),
+(44, 17),
+(55, 17);
 
 -- --------------------------------------------------------
 
@@ -844,7 +868,11 @@ INSERT INTO `routes` (`id`, `task`, `user`, `mediator`, `to`, `vacancy`, `passen
 (97, 27, 1, NULL, 4, NULL, '[{\"passenger\":\"Messias\",\"contact\":\"278587891\"}]', NULL, NULL, '2025-02-20', '22:00:00', '01:20:00', NULL, NULL, NULL, 1, 1),
 (98, 27, 1, NULL, 3, NULL, '[{\"passenger\":\"Teste de atualiza\\u00e7\\u00e3o\",\"contact\":\"2748458645\"}]', NULL, NULL, '2025-02-20', '22:30:00', '13:00:00', NULL, NULL, NULL, 1, 1),
 (99, 28, 1, NULL, 2, NULL, '[{\"passenger\":\"Malu\",\"contact\":\"321456987\"}]', NULL, NULL, '2025-02-21', '07:45:00', '12:01:00', NULL, NULL, 'obs', 1, 1),
-(100, 26, 1, NULL, 5, NULL, '[{\"passenger\":\"Mot\\u00f4\",\"contact\":\"279878987\"}]', NULL, NULL, '2025-02-20', '20:45:00', '12:00:00', NULL, NULL, NULL, 0, 0);
+(100, 26, 1, NULL, 5, NULL, '[{\"passenger\":\"Mot\\u00f4\",\"contact\":\"279878987\"}]', NULL, NULL, '2025-02-20', '20:45:00', '12:00:00', NULL, NULL, NULL, 0, 0),
+(101, 29, 1, NULL, 2, NULL, '[{\"passenger\":\"Monica\",\"contact\":\"124458798\"}]', NULL, NULL, '2025-02-22', '18:00:00', '01:00:00', NULL, NULL, NULL, 0, 0),
+(102, 30, 5, NULL, 5, NULL, '[{\"passenger\":\"Mot\\u00f4\",\"contact\":\"278987980\"}]', 'Guardar na garagem.', NULL, '2025-02-23', '18:02:38', '00:00:00', '2025-02-23 21:02:38', '2025-02-23 21:03:07', NULL, 0, 0),
+(103, 30, 5, NULL, 1, NULL, '[{\"passenger\":\"Mot\\u00f4\",\"contact\":\"279898584\"}]', 'Testar Troca de carro...', NULL, '2025-02-23', '18:03:53', '00:00:00', '2025-02-23 21:03:53', '2025-02-23 21:04:58', NULL, 0, 0),
+(104, 30, 5, NULL, 5, NULL, '[{\"passenger\":\"Mot\\u00f4\",\"contact\":\"279898787\"}]', NULL, NULL, '2025-02-23', '18:05:54', '00:00:00', '2025-02-23 21:05:54', '2025-02-23 21:06:35', NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -947,7 +975,9 @@ INSERT INTO `tasks` (`id`, `driver`, `obs`, `date`) VALUES
 (25, 5, NULL, '2025-02-21'),
 (26, 5, NULL, '2025-02-20'),
 (27, 4, NULL, '2025-02-20'),
-(28, 4, NULL, '2025-02-21');
+(28, 4, NULL, '2025-02-21'),
+(29, 5, NULL, '2025-02-22'),
+(30, 5, NULL, '2025-02-23');
 
 -- --------------------------------------------------------
 
@@ -1092,11 +1122,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `cpf`, `branch_id`, `notes`, `email_verified_at`, `password`, `two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `remember_token`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Super Admin', 'crebs@crebs.dev', '11736707779', NULL, 'Default User', '2025-01-16 22:38:12', '$2y$12$BhF5T93.4ygycHaknuLgZeTkngSEZHPt0i4oCXc5cD.hAQ0OG1zkC', NULL, NULL, NULL, 'ijgEyNQfkGqc68vgpIAia7Gj6AUGcMDt8dnTGgwdoc7pBXs7cSVXJs4UAy2d', '2025-01-16 22:38:12', '2025-01-16 22:38:12', NULL),
+(1, 'Super Admin', 'crebs@crebs.dev', '11736707779', NULL, 'Default User', '2025-01-16 22:38:12', '$2y$12$BhF5T93.4ygycHaknuLgZeTkngSEZHPt0i4oCXc5cD.hAQ0OG1zkC', NULL, NULL, NULL, 'e9WjIjdOnr6fkum16OEoOXZbN6CzkbHP7SJfvaqlUTTrxZNsdetA71z43jV9', '2025-01-16 22:38:12', '2025-01-16 22:38:12', NULL),
 (2, '-', '-', '', NULL, NULL, '2025-01-16 22:53:00', '$2y$12$gs6KzYo6BAEj.gQ6TKomQ.JPUOpyCPrhNRXK/xHz7jBQXepmCOnAW', NULL, NULL, NULL, 'RDvTF0mG2sGJkPHyi7jbQWN2vDCghBoXGCHODXuKVsxt9ZT5zPcFmxjc0Nvb', '2025-01-16 22:52:44', '2025-01-16 22:53:12', NULL),
-(3, 'Usuario Um', 'usuarioum@email.com', '56528145784', NULL, NULL, '2025-01-19 11:40:57', '$2y$12$08dWw7wEraRG47swgQiGouzuRLmtSNN29n4P/4CoWVqqWPROtM7bm', NULL, NULL, NULL, '3S0NeyUqIpkzw6Fc14QfcQozotNBkSDqXE6HHH9preqPvAuddLQP23bZj3jG', '2025-01-19 11:40:45', '2025-01-19 12:35:47', NULL),
+(3, 'Usuario Um', 'usuarioum@email.com', '56528145784', NULL, NULL, '2025-01-19 11:40:57', '$2y$12$08dWw7wEraRG47swgQiGouzuRLmtSNN29n4P/4CoWVqqWPROtM7bm', NULL, NULL, NULL, 'Ikch8vAuZteZLVdjo7kR9kWQG0acserqeRigKaMb6ymMUafsGH3UjnNm8cLq', '2025-01-19 11:40:45', '2025-01-19 12:35:47', NULL),
 (4, 'Motorista Tres', 'motoristatres@email.com', '31290354863', NULL, NULL, '2025-01-26 21:03:18', '$2y$12$rhz5TP4.EbX0u4o9.1HfmOZry1MEB6JSMk0tBMXmTx4PVS0EqtbZm', NULL, NULL, NULL, 'Esg9W7EfAfLvvRevqWjm7xuzLL28WPd2OYKQKwYpRhmoIBj9i0Bs9227AW5d', '2025-01-26 21:03:06', '2025-01-26 21:03:18', NULL),
-(5, 'Motorista Um', 'motoristaum@email.com', '51611338565', NULL, NULL, '2025-01-16 22:53:00', '$2y$12$gs6KzYo6BAEj.gQ6TKomQ.JPUOpyCPrhNRXK/xHz7jBQXepmCOnAW', NULL, NULL, NULL, 'y0c8WxTUfSrzjLPyib71kjv5udhU4hJsGVgOqSbmD7MWBG8z95d4TGv6tnh0', '2025-01-16 22:52:44', '2025-01-16 22:53:12', NULL);
+(5, 'Motorista Um', 'motoristaum@email.com', '51611338565', NULL, NULL, '2025-01-16 22:53:00', '$2y$12$gs6KzYo6BAEj.gQ6TKomQ.JPUOpyCPrhNRXK/xHz7jBQXepmCOnAW', NULL, NULL, NULL, 'WDmP3ri8tj89JIxy4cXnSC6sBOFvaHGXYDm6JUOjafGBkIGEDouIXju1HnKY', '2025-01-16 22:52:44', '2025-01-16 22:53:12', NULL),
+(6, 'Liberador Um', 'liberadorum@email.com', '76113458008', NULL, 'Testar funcionamento do APP e dos menus', '2025-02-22 16:46:23', '$2y$12$VTH67K70i7RQcUcg6h5CeeOlm9E2V8/i2mJpYdIdx2dkpMrpIL5Fq', NULL, NULL, NULL, 'P5x3b9wprpgY3w9igu90hJTRKwBnFxQ3kQfCgBnQcbRwavNTilOyGxkJL6cx', '2025-02-22 16:46:11', '2025-02-22 16:46:23', NULL),
+(7, 'Motorista Dois', 'motoristadois@email.com', '35696275001', NULL, NULL, NULL, '$2y$12$3nPlKHSGvalT7J2VgbY3zeQilA6zkiTze.XukksU/52Mu1pirSN2y', NULL, NULL, NULL, NULL, '2025-02-23 23:21:12', '2025-02-23 23:21:12', NULL);
 
 -- --------------------------------------------------------
 
@@ -1117,7 +1149,8 @@ CREATE TABLE `user_updates` (
 INSERT INTO `user_updates` (`id`, `updates`, `updated_at`) VALUES
 (2, '{\"user_id\":[0,1,1],\"name\":[\"Motorista Um\",\"Motorista Um\",\"Motorista Um\"],\"email\":[\"motoristaum@email.com\",\"motoristaum@email.com\",\"motoristaum@email.com\"],\"cpf\":[\"51611338565\",\"51611338565\",\"51611338565\"],\"branch_id\":[null,null,null],\"notes\":[null,null,null],\"email_verified_at\":[null,\"2025-01-16T22:53:00.000000Z\",\"2025-01-16T22:53:00.000000Z\"],\"updated_at\":[\"2025-01-16 22:52:44\",\"2025-01-16 22:53:00\",\"2025-01-16 22:53:12\"],\"deleted_at\":[null,null,null]}', '2025-01-16 22:53:12'),
 (3, '{\"user_id\":[0,1,1],\"name\":[\"Usuario Um\",\"Usuario Um\",\"Usuario Um\"],\"email\":[\"usuarioum@email.com\",\"usuarioum@email.com\",\"usuarioum@email.com\"],\"cpf\":[\"56528145784\",\"56528145784\",\"56528145784\"],\"branch_id\":[null,null,null],\"notes\":[null,null,null],\"email_verified_at\":[null,\"2025-01-19T11:40:57.000000Z\",\"2025-01-19T11:40:57.000000Z\"],\"updated_at\":[\"2025-01-19 11:40:45\",\"2025-01-19 11:40:57\",\"2025-01-19 12:35:47\"],\"deleted_at\":[null,null,null]}', '2025-01-19 12:35:47'),
-(4, '{\"user_id\":[0,1,1],\"name\":[\"Motorista Tres\",\"Motorista Tres\",\"Motorista Tres\"],\"email\":[\"motoristatres@email.com\",\"motoristatres@email.com\",\"motoristatres@email.com\"],\"cpf\":[\"31290354863\",\"31290354863\",\"31290354863\"],\"branch_id\":[null,null,null],\"notes\":[null,null,null],\"email_verified_at\":[null,null,\"2025-01-26T21:03:18.000000Z\"],\"updated_at\":[\"2025-01-26 21:03:06\",\"2025-01-26 21:03:16\",\"2025-01-26 21:03:18\"],\"deleted_at\":[null,null,null]}', '2025-01-26 21:03:18');
+(4, '{\"user_id\":[0,1,1],\"name\":[\"Motorista Tres\",\"Motorista Tres\",\"Motorista Tres\"],\"email\":[\"motoristatres@email.com\",\"motoristatres@email.com\",\"motoristatres@email.com\"],\"cpf\":[\"31290354863\",\"31290354863\",\"31290354863\"],\"branch_id\":[null,null,null],\"notes\":[null,null,null],\"email_verified_at\":[null,null,\"2025-01-26T21:03:18.000000Z\"],\"updated_at\":[\"2025-01-26 21:03:06\",\"2025-01-26 21:03:16\",\"2025-01-26 21:03:18\"],\"deleted_at\":[null,null,null]}', '2025-01-26 21:03:18'),
+(6, '{\"user_id\":[0,1,1],\"name\":[\"Liberador Um\",\"Liberador Um\",\"Liberador Um\"],\"email\":[\"liberadorum@email.com\",\"liberadorum@email.com\",\"liberadorum@email.com\"],\"cpf\":[\"76113458008\",\"76113458008\",\"76113458008\"],\"branch_id\":[null,null,null],\"notes\":[\"Testar funcionamento do APP e dos menus\",\"Testar funcionamento do APP e dos menus\",\"Testar funcionamento do APP e dos menus\"],\"email_verified_at\":[null,null,\"2025-02-22T16:46:23.000000Z\"],\"updated_at\":[\"2025-02-22 16:46:11\",\"2025-02-22 16:46:20\",\"2025-02-22 16:46:23\"],\"deleted_at\":[null,null,null]}', '2025-02-22 16:46:23');
 
 --
 -- Índices para tabelas despejadas
@@ -1413,7 +1446,7 @@ ALTER TABLE `cars`
 -- AUTO_INCREMENT de tabela `cars_log`
 --
 ALTER TABLE `cars_log`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de tabela `clients`
@@ -1431,7 +1464,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT de tabela `fuels`
 --
 ALTER TABLE `fuels`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de tabela `incidents`
@@ -1455,7 +1488,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT de tabela `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT de tabela `personal_access_tokens`
@@ -1473,13 +1506,13 @@ ALTER TABLE `requests`
 -- AUTO_INCREMENT de tabela `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de tabela `routes`
 --
 ALTER TABLE `routes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT de tabela `settings`
@@ -1491,7 +1524,7 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT de tabela `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT de tabela `timetables`
@@ -1503,7 +1536,7 @@ ALTER TABLE `timetables`
 -- AUTO_INCREMENT de tabela `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Restrições para tabelas despejadas

@@ -58,7 +58,7 @@ function saveCar() {
         </template>
         <SubSection>
             <template #header>
-                Novo Veículo
+                Novo Carro
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.75)]">

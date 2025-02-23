@@ -35,6 +35,8 @@ Route::prefix('/frota')->middleware(
     Route::get('rotas/{date}/{driver}/editar', [RoutesController::class, 'edit'])->name('routes.driver.edit');
     Route::put('rotas/{route}/atualizar', [RoutesController::class, 'routeUpdate'])->name('routes.route.update');
 
+    Route::post('/carro/favorito', [CarsController::class, 'driverFavoriteCar'])->name('favorite.car');
+
     Route::resource('/agendas', SchedulesController::class, ['names' => 'schedules'])->parameter('agendas', 'schedule')->withTrashed(['show', 'edit', 'update', 'restore']);
     Route::post('/agendas/motorista/{driver}', [SchedulesController::class, 'verifyDriverSchedule'])->name('schedules.driver');
 

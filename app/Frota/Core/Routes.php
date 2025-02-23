@@ -91,7 +91,7 @@ trait Routes
     public function runMyRoutes(Request $request): Response
     {
         $request->merge(['driver' => auth()->id()]);
-        $request->date ?? $request->merge(['date' => date('Y-m-d')]);
+            $request->date ?? $request->merge(['date' => date('Y-m-d')]);
 
         $cars = activeCars();
         $cars->each(function ($car) {
@@ -105,10 +105,12 @@ trait Routes
         if ($driver?->car?->id) {
             $driver->car->token = setGetKey($driver->car->id, 'car_token');
         }
+
         return Inertia::render('Frota/Routes/MyRoutes', [
             'myRoutesByDate' => $this->runGetTaskByDriver($request),
             'driver' => $driver,
-            'cars' => $cars
+            'cars' => $cars,
+            'lifetime' => cache()->forever('lifetime_' . auth()->id(), now()->addSeconds(60 * 60 * 2)->format('YmdHis'))
         ]);
     }
 

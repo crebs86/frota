@@ -57,7 +57,7 @@ function setNumber() {
 
 <template>
 
-    <Head title="Veículo"/>
+    <Head title="Carro"/>
 
     <AuthenticatedLayout>
 
@@ -66,7 +66,7 @@ function setNumber() {
         </template>
         <SubSection>
             <template #header>
-                Veículo
+                Carro
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
@@ -74,13 +74,24 @@ function setNumber() {
                          :class="$page.props.app.settingsStyles.main.innerSection">
 
                         <div class="relative">
-                            <label class="text-sm text-gray-500 dark:text-gray-400">
-                                Ativo?
+
+                            <label for="active" class="flex items-center cursor-pointer">
+                                <div class="relative">
+                                    <input type="checkbox" id="active" class="sr-only" :checked="carForm.active"
+                                           :disabled="!canEdit" v-model="carForm.active" @change="setNumber"/>
+                                    <div class="bg-gray-200 w-10 h-4 rounded-full shadow-inner"
+                                         :class="carForm.active ? 'bg-teal-200' : ''">
+                                    </div>
+                                    <div
+                                        class="dot absolute w-6 h-4 bg-gray-400 rounded-full shadow -left-1 -top-0 transition"
+                                        :class="carForm.active ? 'dot-dis bg-green-500' : ''">
+                                    </div>
+                                </div>
+                                <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
+                                    Carro Ativo*
+                                </div>
                             </label>
-                            <input :disabled="!canEdit" type="checkbox" v-model="carForm.active" placeholder="Marca"
-                                   maxlength="25" :checked="carForm.active"
-                                   class="rounded-md border text-[#35495e] text-[14px] placeholder-[#adadad] bg-slate-100 ring-1 ring-blue-200"
-                                   :class="!canEdit ? 'bg-slate-300' : ''">
+
                         </div>
 
                         <div class="relative">
@@ -129,11 +140,12 @@ function setNumber() {
                                     <div class="relative">
                                         <input type="checkbox" id="patrimonio" class="sr-only" checked="checked"
                                                :disabled="!canEdit" v-model="carForm.patrimonio" @change="setNumber"/>
-                                        <div class="bg-teal-200 dark:bg-gray-500 w-10 h-4 rounded-full shadow-inner">
+                                        <div class="bg-gray-200 w-10 h-4 rounded-full shadow-inner"
+                                             :class="carForm.patrimonio ? 'bg-teal-200' : ''">
                                         </div>
                                         <div
-                                            class="dot absolute w-6 h-4 bg-white rounded-full shadow -left-1 -top-0 transition"
-                                            :class="!canEdit ? 'dot-dis' : ''">
+                                            class="dot absolute w-6 h-4 bg-gray-400 rounded-full shadow -left-1 -top-0 transition"
+                                            :class="carForm.patrimonio ? 'dot-dis bg-green-500' : ''">
                                         </div>
                                     </div>
                                     <div class="ml-3 text-gray-500 dark:text-gray-400 text-sm">
@@ -214,13 +226,12 @@ function setNumber() {
     </AuthenticatedLayout>
 </template>
 <style scoped>
+
 input:checked ~ .dot {
     transform: translateX(100%);
-    background-color: #0ae465;
 }
 
 input:checked ~ .dot-dis {
     transform: translateX(100%);
-    background-color: #9afbbc;
 }
 </style>
