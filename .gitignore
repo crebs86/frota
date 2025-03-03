@@ -43,6 +43,10 @@
 !/app/Http/Requests/Admin/UserRequest.php
 !/app/Http/Requests/Admin/BranchRequest.php
 
+!/app/Http/Middleware/
+/app/Http/Middleware/*
+!/app/Http/Middleware/HandleInertiaRequests.php
+
 !/app/Models
 /app/Models/*
 !/app/Models/User.php
@@ -98,10 +102,12 @@ resources/js/Pages/Auth/*
 !/resources/js/Pages/Frota
 !/resources/views/Frota
 
+
 !/resources/js/Pages/Admin
 /resources/js/Pages/Admin/*
 !/resources/js/Pages/Admin/UserEdit.vue
 !/resources/js/Pages/Admin/UserCreate.vue
+!/resources/js/Pages/Admin/Account.vue
 
 !/routes
 /routes/*
@@ -118,7 +124,7 @@ resources/js/Pages/Auth/*
 !/database/migrations/2023_06_02_*
 !/database/migrations/2014_10_12_000000_create_users_table.php
 !/database/migrations/2014_09_29_100932_create_branches_table.php
-
+!/database/migrations/2025_03_02_105049_create_avatar_table.php
 !/database/seeders
 /database/seeders/*
 
@@ -137,3 +143,4 @@ resources/js/Pages/Auth/*
 !/public/logos/
 /public/logos/*
 !/public/logos/logo_VV.*
+!/public/logos/default_avatar.*

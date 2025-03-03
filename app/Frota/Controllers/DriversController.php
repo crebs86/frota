@@ -4,6 +4,8 @@ namespace App\Frota\Controllers;
 
 use App\Traits\ACL;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Traits\Helpers;
@@ -13,6 +15,7 @@ use App\Frota\Models\Driver;
 use App\Http\Controllers\Controller;
 use App\Frota\Requests\DriverRequest;
 use Illuminate\Http\RedirectResponse;
+use Intervention\Image\ImageManager;
 
 class DriversController extends Controller
 {
@@ -105,7 +108,7 @@ class DriversController extends Controller
      */
     public function showUserPage(bool $canEdit = false): Response
     {
-        if ($this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar', 'Motorista Criar')) {
+        if (request('driver') != 2 && $this->can('Motorista Ver', 'Motorista Editar', 'Motorista Apagar', 'Motorista Criar')) {
             $driver = drivers()->where('id', request('driver'))->first();
             if ($driver?->user) {
                 return Inertia::render('Frota/Drivers/Show', [
@@ -113,12 +116,17 @@ class DriversController extends Controller
                     'garages' => activeGarages(),
                     'cars' => cars()->select('id', 'placa', 'modelo'),
                     '_checker' => setGetKey(request('driver'), 'edit_driver'),
-                    'canEdit' => $canEdit
+                    'canEdit' => $canEdit,
+                    'avatar' => Storage::exists('avatar/' . $driver->id . '.webp')
+                        ? 'data:image/webp;base64,' . base64_encode(Storage::get('avatar/' . $driver->id . '.webp'))
+                        : null,
                 ]);
             }
-            return Inertia::render('Admin/403', [
-                'message' => 'Usuário base do motorista está inativo. <a href ="' . route('admin.acl.users.show', $driver->id) . '" style="text-decoration:underline;">Ver</a>'
-            ]);
+            if($driver?->id) {
+                return Inertia::render('Admin/403', [
+                    'message' => 'Usuário base do motorista está inativo. <a href ="' . route('admin.acl.users.show', $driver->id) . '" style="text-decoration:underline;">Ver</a>'
+                ]);
+            }
         }
         return Inertia::render('Admin/403');
     }
@@ -153,5 +161,22 @@ class DriversController extends Controller
             }
         }
         return Inertia::render('Admin/403');
+    }
+
+    /**
+     * Atualiza ou insere imagem na pasta privada 'avatar'.
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function updateAvatar(Request $request): RedirectResponse
+    {
+        $avatar = $request->avatar;
+        $data = file_get_contents($avatar);
+        $manager = new ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
+        $imageOrigen = $manager->read($data);
+        if (Storage::disk('local')->put('avatar/' . auth()->id() . '.webp', $imageOrigen->toWebp())) {
+            return redirect()->back()->with('success', 'Imagem atualizada com sucesso.');
+        }
+        return redirect()->back()->with('error', 'Ocorreu um erro ao atualizar a imagem.');
     }
 }

@@ -11,7 +11,8 @@ import has from "@/arrayHelpers.js";
 const props = defineProps({
     canEdit: Boolean,
     driver: Object,
-    _checker: String
+    _checker: String,
+    avatar: String,
 });
 
 const canEdit = ref(props.canEdit);
@@ -68,7 +69,10 @@ function saveDriver() {
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5">
                     <div class="p-2 rounded-lg min-h-[calc(100vh/1.33)]"
                          :class="$page.props.app.settingsStyles.main.innerSection">
-
+                        <div>
+                            <img :src="props.avatar" v-if="props.avatar" alt="Avatar" class="max-w-28 my-2"/>
+                            <img src="/logos/default_avatar.webp" alt="Avatar Padrão" class="max-w-28 my-2" v-else/>
+                        </div>
                         <div class="relative">
                             <label class="text-sm text-gray-500 dark:text-gray-400 flex">
                                 Nome

@@ -26,11 +26,12 @@ use Illuminate\Support\Facades\Mail;
 class UserController extends Controller
 {
     use ACL, Helpers;
+
     /**
-     * página inicial de controle de acesso de usuários
+     * Página inicial de controle de acesso de usuários
      *
      * @param Request $request
-     * 
+     *
      * @return Response
      */
     public function index(Request $request): Response
@@ -59,7 +60,7 @@ class UserController extends Controller
      * termos exatos: id e CPF.
      *
      * @param string $keyword
-     * 
+     *
      * @return LengthAwarePaginator
      */
     private function findUsers(string $keyword): LengthAwarePaginator
@@ -105,11 +106,12 @@ class UserController extends Controller
                 }
             );
     }
+
     /**
-     * lança dados da pesquisa do usuário em um array
+     * Lança dados da pesquisa do usuário em um array
      *
      * @param User $user
-     * 
+     *
      * @return array
      */
     private function setUser(User $user): array
@@ -127,11 +129,12 @@ class UserController extends Controller
     {
         return $this->showUserAndRoles($request);
     }
+
     /**
-     * página exibe dados básicos do usuário e papéis vinculados a este
+     * Página exibe dados básicos do usuário e papéis vinculados a este
      *
      * @param Request $request
-     * 
+     *
      * @return Response
      */
     public function showUserAndRoles(Request $request): Response
@@ -172,12 +175,13 @@ class UserController extends Controller
         }
         return Inertia::render('Admin/403');
     }
+
     /**
-     * define a situação de cada papél em relaçao ao usuário
+     * Define a situação de cada papél em relaçao ao usuário
      *
      * @param mixed $allRoles
      * @param mixed $r
-     * 
+     *
      * @return array
      */
     private function setCurrentRoles($allRoles, $r): array
@@ -195,11 +199,12 @@ class UserController extends Controller
         }
         return $ur;
     }
+
     /**
-     * busca papeis de usuários
+     * Busca papeis de usuários
      *
      * @param mixed $id
-     * 
+     *
      * @return User
      */
     private function getUserRoles($id): User
@@ -214,11 +219,12 @@ class UserController extends Controller
             )
             ->first();
     }
+
     /**
      * Sincroniza papéis dos usuários
      *
      * @param Request $request
-     * 
+     *
      * @return JsonResponse
      */
     public function editUserRole(Request $request): JsonResponse|User
@@ -279,8 +285,9 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Inertia\Response
+     * @param Request $request
+     * @param User $user
+     * @return Response|RedirectResponse
      */
     public function store(Request $request, User $user): Response|RedirectResponse
     {
@@ -299,7 +306,7 @@ class UserController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'cpf' =>  preg_replace("/[^0-9]/", "", $request->cpf),
+                'cpf' => preg_replace("/[^0-9]/", "", $request->cpf),
                 'branch_id' => $request->branch_id,
                 'notes' => $request->notes,
                 'password' => Hash::make($pass),
@@ -316,7 +323,7 @@ class UserController extends Controller
                     Mail::to($user)->send(new WelcomeUser($user, $pass));
                 }
             } catch (Exception $e) {
-                $message  = 'Usuário ' . $user->name . ' foi criado com sucesso! Erro ao enviar email de boas vindas';
+                $message = 'Usuário ' . $user->name . ' foi criado com sucesso! Erro ao enviar email de boas vindas';
                 $type = 'warning';
             }
 
@@ -329,8 +336,9 @@ class UserController extends Controller
         }
         return Inertia::render('Admin/403');
     }
+
     /**
-     * exibe formulário de edição do usuário selecionado
+     * Exibe formulário de edição do usuário selecionado
      */
     public function show(Request $request): Response
     {
@@ -339,7 +347,7 @@ class UserController extends Controller
 
     /**
      * @param Request $request
-     * 
+     *
      * @return Response
      */
     public function edit(Request $request): Response
@@ -364,18 +372,19 @@ class UserController extends Controller
         }
         return Inertia::render('Admin/403');
     }
+
     /**
-     * atualiza usuário com dados recebidos do formulário
+     * Atualiza usuário com dados recebidos do formulário
      *
      * @param UserRequest $request
-     * 
+     *
      * @return Response
      */
     public function update(UserRequest $request): Response|RedirectResponse
     {
         if ($this->can('Usuario Editar', 'Usuario Apagar')) {
 
-            if ((int) getKeyValue($request->_checker, 'edit_user_account') === (int) $request->user) {
+            if ((int)getKeyValue($request->_checker, 'edit_user_account') === (int)$request->user) {
 
                 $user = User::withTrashed()
                     ->find($request->user);
@@ -393,6 +402,9 @@ class UserController extends Controller
                 );
 
                 if ($updated) {
+                    if (!$u['deleted_at'] != $request->active) {
+                        resetCache('drivers');
+                    }
                     //se sucesso na atualização do usuário e pedido de reset de senha.
                     if ($request->password) {
                         $password = $user->forceFill([
@@ -401,7 +413,7 @@ class UserController extends Controller
                     }
 
                     $this->auditable('users') ? $this->saveUpdates($u, $user, UserUpdate::class, ['name', 'email', 'cpf', 'email_verified_at', 'notes', 'deleted_at', 'branch_id', 'updated_at'], ['branch_id']) : null;
-                    return redirect()->back()->with('success', 'O usuário foi atuzalizado');
+                    return redirect()->back()->with('success', 'O usuário foi atualizado');
                 } else {
                     return redirect()->back()->with('error', 'Erro ao atualizar conta do usuário');
                 }
@@ -416,17 +428,18 @@ class UserController extends Controller
             ]
         );
     }
+
     /**
      * marca e-mail como verificado
      *
      * @param Request $request
-     * 
+     *
      * @return Response
      */
     public function userVerifyEmail(Request $request): Response|RedirectResponse
     {
         if ($this->can('Usuario Editar')) {
-            if ((int) getKeyValue($request->_checker, 'edit_user_account') === (int) $request->id) {
+            if ((int)getKeyValue($request->_checker, 'edit_user_account') === (int)$request->id) {
                 $user = User::withTrashed()
                     ->find($request->id);
                 $u = collect($user)->all();
@@ -448,16 +461,16 @@ class UserController extends Controller
     }
 
     /**
-     * envia link de verificação de e-mail para o endereço cadastrado
+     * Envia link de verificação de e-mail para o endereço cadastrado
      *
      * @param Request $request
-     * 
+     *
      * @return [type]
      */
     public function requireEmailVerification(Request $request)
     {
         if ($this->can('Usuario Editar')) {
-            if ((int) getKeyValue($request->_checker, 'edit_user_account') === (int) $request->id) {
+            if ((int)getKeyValue($request->_checker, 'edit_user_account') === (int)$request->id) {
                 $user = User::withTrashed()
                     ->find($request->id);
                 $u = collect($user)->all();
@@ -477,8 +490,9 @@ class UserController extends Controller
         }
         return Inertia::render('Admin/403')->with('error', 'Você não possui permissão para usar este recurso');
     }
+
     /**
-     * página da conta do usuário
+     * Página da conta do usuário
      *
      * @return Response
      */
@@ -488,10 +502,10 @@ class UserController extends Controller
     }
 
     /**
-     * atualiza os dados do usuário
+     * Atualiza os dados do usuário
      *
      * @param Request $request
-     * 
+     *
      * @return Response
      */
     public function updateAccount(Request $request): Response
@@ -520,7 +534,7 @@ class UserController extends Controller
      * atualiza senha
      *
      * @param Request $request
-     * 
+     *
      * @return [type]
      */
     public function updatePassword(Request $request)

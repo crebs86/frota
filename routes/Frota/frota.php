@@ -64,4 +64,6 @@ Route::prefix('/frota')->middleware(
     Route::post('/solicitacoes/criar', [RequestsController::class, 'store'])->name('requests.store');
     Route::put('/solicitacoes/{route}/update', [RequestsController::class, 'update'])->name('requests.update');
     Route::post('/solicitacoes/rotasESolicitacoes', [RequestsController::class, 'getRoutesAndRequests'])->name('requests.get-routes-and-requests');
+
+    Route::post('/avatar', [DriversController::class, 'updateAvatar'])->name('update.avatar');
 });
