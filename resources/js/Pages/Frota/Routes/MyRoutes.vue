@@ -661,13 +661,13 @@ onUpdated(() => {
                     </div>
                 </div>
                 <!-- modal single route -->
-                <div class="fixed z-50 inset-0 flex items-center justify-center overflow-hidden mx-1"
+                <div class="fixed z-50 inset-0 flex items-center justify-center overflow-y-auto mx-1"
                      :class="modalSingleRoute ? 'block' : 'hidden'">
                     <div class="fixed inset-0 transition-opacity">
                         <div class="absolute inset-0 bg-gray-500 opacity-95"></div>
                     </div>
                     <div
-                        class="bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-11/12 md:max-w-[768px] dark:bg-gray-600">
+                        class="bg-white rounded-lg text-left overflow-hidden overflow-y-auto shadow-xl transform transition-all w-11/12 md:max-w-[768px] max-h-[95%] dark:bg-gray-600">
                         <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                                 Adicionar Nova Rota Avulsa
@@ -712,7 +712,7 @@ onUpdated(() => {
                                                     {{ error }}
                                                 </small>
                                             </div>
-                                            <div class="grid grid-cols-6 gap-2 mt-0.5 border">
+                                            <div class="grid grid-cols-6 gap-2 mt-0.5 border rounded-md p-0.5">
                                                 <h2 class="col-span-6">Opcional</h2>
                                                 <div class="col-span-4 md:col-span-2">
                                                     <label class="text-sm">
