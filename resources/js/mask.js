@@ -23,15 +23,15 @@ const docsMask = (value) => {
     return value;
 };
 
-const currencyMask = (value) => {
+const currencyMask = (value, locales = "pt-BR") => {
     if (!value) return "";
     value = value.replace(".", "").replace(",", "").replace(/\D/g, "");
-    let options = { minimumFractionDigits: 2 };
-    value = new Intl.NumberFormat("pt-BR", options).format(
+    let options = {minimumFractionDigits: 2};
+    value = new Intl.NumberFormat(locales, options).format(
         parseFloat(value) / 100
     );
 
     return value;
 };
 
-export { phoneMask, docsMask, currencyMask };
+export {phoneMask, docsMask, currencyMask};

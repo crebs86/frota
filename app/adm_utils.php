@@ -126,17 +126,26 @@ if (!function_exists('timetable')) {
 
 if (!function_exists('definedFavoriteCar')) {
 
-    function definedFavoriteCar($lifetime = 60 * 60)
+    function definedFavoriteCar()
     {
-        return cache()->remember('definedFavoriteCar_' . auth()->id(), $lifetime, function () {
-            return true;
-        });
+        if (cache()->has('defineFavoriteCar_' . auth()->id())) {
+            return cache()->get('defineFavoriteCar_' . auth()->id());
+        }
+        return null;
+    }
+}
+
+if (!function_exists('defineFavoriteCar')) {
+
+    function defineFavoriteCar(int|float $lifetime = 60 * 60): void
+    {
+        cache()->forever('defineFavoriteCar_' . auth()->id(), now()->addSeconds($lifetime)->format('YmdHis'));
     }
 }
 
 if (!function_exists('resetCache')) {
 
-    function resetCache($name)
+    function resetCache($name): void
     {
         cache()->forget($name);
     }

@@ -294,7 +294,7 @@ function saveSingleRoute() {
 }
 
 const abastecerModal = ref(false)
-const carroModal = ref(parseInt(props.lifetime) <= parseInt(moment().format('YYYYMMDDHHmmss')))
+const carroModal = ref(props.driver.carro_favorito === null || props.lifetime === null || parseInt(props.lifetime) <= parseInt(moment().format('YYYYMMDDHHmmss')))
 
 function abastecerModalStatus(status) {
     abastecerModal.value = status

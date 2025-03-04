@@ -56,7 +56,7 @@ function saveCar() {
                     </button>
                 </div>
                 <div class="relative p-6 grid grid-cols-1">
-                    <div>Carro atual: {{ props.currentCar.modelo }} {{ props.currentCar.placa }}</div>
+                    <div>Carro atual: {{ props.currentCar?.modelo }} {{ props.currentCar?.placa }}</div>
                     <div class="my-2" v-if="moment().isSame(myRoutes?.date, 'day')">
                         <label class="text-sm text-gray-500 dark:text-gray-400">
                             Carro utilizado

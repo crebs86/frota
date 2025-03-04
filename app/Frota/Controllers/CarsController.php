@@ -127,24 +127,20 @@ class CarsController extends Controller
 
     public function driverFavoriteCar(Request $request): JsonResponse
     {
-        cache()->forget('lifetime_' . auth()->id());
-        if ((int)$request->currentCar['id'] === (int)getKeyValue($request->currentCar['token'], 'car_token')) {
+        cache()->forget('defineFavoriteCar_' . auth()->id());
+        if (!isset($request->currentCar['id']) || (int)$request->currentCar['id'] === (int)getKeyValue($request->currentCar['token'], 'car_token')) {
             $driver = Driver::find(auth()->id());
             if ($driver->carro_favorito != $request->car['id']) {
                 $driver->update([
                     'carro_favorito' => $request->car['id']
                 ]);
-                $this->cacheCar();
+                defineFavoriteCar();
                 return response()->json('Carro favorito atualizado.');
             }
-            $this->cacheCar();
+            defineFavoriteCar();
             return response()->json('Carro favorito confirmado.');
         }
         return response()->json('Ocorreu um erro ao salvar os dados do carro. dfv(500-1)', 500);
     }
 
-    private function cacheCar(): void
-    {
-        cache()->forever('lifetime_' . auth()->id(), now()->addSeconds(60 * 60 * 2)->format('YmdHis'));
-    }
 }

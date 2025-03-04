@@ -110,7 +110,7 @@ trait Routes
             'myRoutesByDate' => $this->runGetTaskByDriver($request),
             'driver' => $driver,
             'cars' => $cars,
-            'lifetime' => cache()->forever('lifetime_' . auth()->id(), now()->addSeconds(60 * 60 * 2)->format('YmdHis'))
+            'lifetime' => definedFavoriteCar()
         ]);
     }
 
@@ -634,5 +634,7 @@ trait Routes
         Driver::find($driver)->update([
             'carro_favorito' => $car
         ]);
+        resetCache('defineFavoriteCar');
+        defineFavoriteCar();
     }
 }
