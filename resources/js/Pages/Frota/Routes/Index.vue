@@ -140,7 +140,7 @@ function verifyDriverRoute() {
             <template #header>
                 Rotas
                 <Link :href="route('frota.routes.create')" class="mt-0.5">
-                <mdicon name="plus" />
+                    <img src="/icons/add.svg" alt="Inserir Rota" class="w-6 ml-1">
                 </Link>
             </template>
             <template #content>
