@@ -352,28 +352,34 @@ onUpdated(() => {
                                     <small>{{ date.error }}</small>
                                 </div>
                             </div>
-                            <div class="my-2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                            <div class="mt-3 flex flex-wrap gap-2 place-content-center">
                                 <button @click="singleRouteModal()"
-                                        class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
-                                    Inserir Rota Avulsa
+                                        class="border rounded-md p-1.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline grid place-items-center w-28"
+                                        :class="car ? 'border-blue-600 bg-blue-100/60 text-blue-600 hover:bg-blue-50' : 'border-gray-600 bg-gray-600 text-gray-100 opacity-30'"
+                                        :disabled="!car">
+                                    <img src="/icons/iniciar_rota.svg" alt="Iniciar Rota Avulsa" class="w-12"/>
+                                    <span class="text-sm" style="line-height: 1">Inserir Rota Avulsa</span>
                                 </button>
                                 <button @click="abastecerModalStatus(true)"
-                                        class="border rounded-md px-4 py-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
-                                        :class="car ? 'border-yellow-600 bg-yellow-700 text-yellow-100 hover:bg-yellow-500' : 'border-gray-600 bg-gray-600 text-gray-100'"
+                                        class="border rounded-md p-1.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline grid place-items-center w-28"
+                                        :class="car ? 'border-yellow-600 bg-yellow-100/60 text-yellow-700 hover:bg-yellow-50' : 'border-gray-600 bg-gray-600 text-gray-100 opacity-30'"
                                         :disabled="!car">
-                                    Abastecer
+                                    <img src="/icons/abastecer.svg" alt="Abastecer" class="w-12"/>
+                                    <span class="text-sm">Abastecer</span>
                                 </button>
                                 <button
-                                    class="border rounded-md px-4 py-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
-                                    :class="car ? 'border-green-600 bg-green-500 text-green-100 hover:bg-green-700' : 'border-gray-600 bg-gray-600 text-gray-100'"
+                                    class="border rounded-md p-1.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline grid place-items-center w-28"
+                                    :class="car ? 'border-green-600 bg-green-100/60 text-green-600 hover:bg-green-50' : 'border-gray-600 bg-gray-600 text-gray-100 opacity-30'"
                                     :disabled="!car">
-                                    Manutenção
+                                    <img src="/icons/manutencao_2.svg" alt="Manutenção" class="w-12"/>
+                                    <span class="text-sm">Manutenção</span>
                                 </button>
                                 <button
-                                    class="border rounded-md px-4 py-2 transition duration-500 ease select-none focus:outline-none focus:shadow-outline"
-                                    :class="car ? ' border-red-600 bg-red-700 text-red-100 hover:bg-red-500' : 'border-gray-600 bg-gray-600 text-gray-100'"
+                                    class="border rounded-md p-1.5 transition duration-500 ease select-none focus:outline-none focus:shadow-outline grid place-items-center w-28"
+                                    :class="car ? ' border-red-600 bg-red-100/60 text-red-600 hover:bg-red-50' : 'border-gray-600 bg-gray-600 text-gray-100 opacity-30'"
                                     :disabled="!car">
-                                    Ocorrências
+                                    <img src="/icons/ocorrencia.svg" alt="Ocorrência" class="w-12"/>
+                                    <span class="text-sm">Ocorrências</span>
                                 </button>
                             </div>
                         </div>
