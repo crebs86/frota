@@ -18,3 +18,9 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
 //todo minhas rotas
     opção de confirmar mesmo carro com um clique
     certificar se a hora de término de rota é maior que a hora atual
+
+//todo manutenção
+    criar frontend
+    lógica de já deixar próxima manutenção agendada (usar o campo km_arrival null como manutenção como não pendente)
+    inserir busca por manutenção pendente 1x a cada 24 horas (por em cache)
+

@@ -124,7 +124,7 @@ resources/js/Pages/Auth/*
 !/database/migrations/2023_06_02_*
 !/database/migrations/2014_10_12_000000_create_users_table.php
 !/database/migrations/2014_09_29_100932_create_branches_table.php
-!/database/migrations/2025_03_02_105049_create_avatar_table.php
+!/database/migrations/2025_*
 !/database/seeders
 /database/seeders/*
 
