@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Tempo de geração: 05/03/2025 às 23:00
+-- Tempo de geração: 09/03/2025 às 23:41
 -- Versão do servidor: 8.0.41-0ubuntu0.24.04.1
 -- Versão do PHP: 8.3.6
 
@@ -405,10 +405,10 @@ CREATE TABLE `justifications` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `maintenance`
+-- Estrutura para tabela `maintenances`
 --
 
-CREATE TABLE `maintenance` (
+CREATE TABLE `maintenances` (
   `id` bigint UNSIGNED NOT NULL,
   `car` bigint UNSIGNED NOT NULL,
   `km_arrival` int DEFAULT NULL,
@@ -417,6 +417,7 @@ CREATE TABLE `maintenance` (
   `date_departure` timestamp NULL DEFAULT NULL,
   `type` int NOT NULL,
   `date` date NOT NULL,
+  `time` time DEFAULT NULL,
   `place` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `mechanic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `replaces` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -425,6 +426,14 @@ CREATE TABLE `maintenance` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `maintenances`
+--
+
+INSERT INTO `maintenances` (`id`, `car`, `km_arrival`, `km_departure`, `date_arrival`, `date_departure`, `type`, `date`, `time`, `place`, `mechanic`, `replaces`, `cost`, `obs`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, NULL, NULL, NULL, 1, '2025-03-12', '10:00:00', 'Casa do Silencioso', 'Jurandir', 'Pneus e Freios', 950.5, 'Inserção de teste', '2025-03-09 20:41:15', '2025-03-09 20:41:15'),
+(2, 1, NULL, NULL, NULL, NULL, 2, '2025-03-14', '12:00:00', 'Casa do Silencioso', 'Lucrécio', 'Amortecedor', 950.5, 'Inserção de teste 2', '2025-03-09 21:06:53', '2025-03-09 21:06:53');
 
 -- --------------------------------------------------------
 
@@ -613,7 +622,11 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 (52, 'Solicitacao Ver', 'web', '2025-01-19 11:45:40', '2025-01-19 11:45:40'),
 (53, 'Solicitacao Apagar', 'web', '2025-01-19 11:46:01', '2025-01-19 11:46:01'),
 (54, 'Solicitacao Editar', 'web', '2025-01-19 11:46:37', '2025-01-19 11:46:37'),
-(55, 'Liberador', 'web', '2025-02-22 16:35:53', '2025-02-22 16:35:53');
+(55, 'Liberador', 'web', '2025-02-22 16:35:53', '2025-02-22 16:35:53'),
+(56, 'Manutencao Criar', 'web', '2025-03-09 19:56:15', '2025-03-09 19:56:15'),
+(57, 'Manutencao Ver', 'web', '2025-03-09 19:56:25', '2025-03-09 19:56:25'),
+(58, 'Manutencao Editar', 'web', '2025-03-09 19:56:36', '2025-03-09 19:56:36'),
+(59, 'Manutencao Apagar', 'web', '2025-03-09 19:56:41', '2025-03-09 19:56:41');
 
 -- --------------------------------------------------------
 
@@ -742,7 +755,8 @@ INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VAL
 (14, 'Garagem Administrar', 'web', '2025-01-16 22:38:12', '2025-01-16 22:38:12'),
 (15, 'Combustivel Administrar', 'web', '2025-01-16 22:38:12', '2025-01-16 22:38:12'),
 (16, 'Solicitante', 'web', '2025-01-19 11:48:47', '2025-01-19 11:48:47'),
-(17, 'Liberador', 'web', '2025-02-22 16:40:19', '2025-02-22 16:40:19');
+(17, 'Liberador', 'web', '2025-02-22 16:40:19', '2025-02-22 16:40:19'),
+(18, 'Manutencao Administrar', 'web', '2025-03-09 19:57:14', '2025-03-09 19:57:14');
 
 -- --------------------------------------------------------
 
@@ -828,7 +842,11 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (32, 17),
 (36, 17),
 (44, 17),
-(55, 17);
+(55, 17),
+(56, 18),
+(57, 18),
+(58, 18),
+(59, 18);
 
 -- --------------------------------------------------------
 
@@ -1176,7 +1194,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `cpf`, `branch_id`, `notes`, `email_
 (1, 'Super Admin', 'crebs@crebs.dev', '11736707779', NULL, 'Default User', '2025-01-16 22:38:12', '$2y$12$BhF5T93.4ygycHaknuLgZeTkngSEZHPt0i4oCXc5cD.hAQ0OG1zkC', NULL, NULL, NULL, 'Y9nIjJmDp1Om5ktGrwBABOT6f0cgFMiTtu59yURQdtSK3XtfDXVQmAbn9OpF', '2025-01-16 22:38:12', '2025-01-16 22:38:12', NULL),
 (2, '-', '-', '', NULL, NULL, '2025-01-16 22:53:00', '$2y$12$gs6KzYo6BAEj.gQ6TKomQ.JPUOpyCPrhNRXK/xHz7jBQXepmCOnAW', NULL, NULL, NULL, 'RDvTF0mG2sGJkPHyi7jbQWN2vDCghBoXGCHODXuKVsxt9ZT5zPcFmxjc0Nvb', '2025-01-16 22:52:44', '2025-01-16 22:53:12', NULL),
 (3, 'Usuario Um', 'usuarioum@email.com', '56528145784', NULL, NULL, '2025-01-19 11:40:57', '$2y$12$08dWw7wEraRG47swgQiGouzuRLmtSNN29n4P/4CoWVqqWPROtM7bm', NULL, NULL, NULL, 'Ikch8vAuZteZLVdjo7kR9kWQG0acserqeRigKaMb6ymMUafsGH3UjnNm8cLq', '2025-01-19 11:40:45', '2025-01-19 12:35:47', NULL),
-(4, 'Motorista Tres', 'motoristatres@email.com', '31290354863', NULL, NULL, '2025-01-26 21:03:18', '$2y$12$rhz5TP4.EbX0u4o9.1HfmOZry1MEB6JSMk0tBMXmTx4PVS0EqtbZm', NULL, NULL, NULL, 'SXQ1uV7xXojiwr36xNQpwAhuvRIsJubDanutI1eBBSPukNcQOeEr4RQxFmc2', '2025-01-26 21:03:06', '2025-01-26 21:03:18', NULL),
+(4, 'Motorista Tres', 'motoristatres@email.com', '31290354863', NULL, NULL, '2025-01-26 21:03:18', '$2y$12$rhz5TP4.EbX0u4o9.1HfmOZry1MEB6JSMk0tBMXmTx4PVS0EqtbZm', NULL, NULL, NULL, 'sLyXITE3Y4yCBSoVyb4DuolFd0HsKiXMNgXo6ISa1eLsyjD4JEyed2DAMUDK', '2025-01-26 21:03:06', '2025-01-26 21:03:18', NULL),
 (5, 'Motorista Um', 'motoristaum@email.com', '51611338565', NULL, NULL, '2025-01-16 22:53:00', '$2y$12$gs6KzYo6BAEj.gQ6TKomQ.JPUOpyCPrhNRXK/xHz7jBQXepmCOnAW', NULL, NULL, NULL, 'WxyUXRKb45yH8K6FJYWz2HNmeaJdFA2QvXR46ziyH4iYzup55Fvqvf2gCNId', '2025-01-16 22:52:44', '2025-01-16 22:53:12', NULL),
 (6, 'Liberador Um', 'liberadorum@email.com', '76113458008', NULL, 'Testar funcionamento do APP e dos menus', '2025-02-22 16:46:23', '$2y$12$VTH67K70i7RQcUcg6h5CeeOlm9E2V8/i2mJpYdIdx2dkpMrpIL5Fq', NULL, NULL, NULL, 'P5x3b9wprpgY3w9igu90hJTRKwBnFxQ3kQfCgBnQcbRwavNTilOyGxkJL6cx', '2025-02-22 16:46:11', '2025-02-22 16:46:23', NULL),
 (7, 'Motorista Dois', 'motoristadois@email.com', '35696275001', NULL, NULL, NULL, '$2y$12$3nPlKHSGvalT7J2VgbY3zeQilA6zkiTze.XukksU/52Mu1pirSN2y', NULL, NULL, NULL, NULL, '2025-02-23 23:21:12', '2025-02-23 23:21:12', NULL);
@@ -1331,9 +1349,9 @@ ALTER TABLE `justifications`
   ADD KEY `justifications_user_foreign` (`user`);
 
 --
--- Índices de tabela `maintenance`
+-- Índices de tabela `maintenances`
 --
-ALTER TABLE `maintenance`
+ALTER TABLE `maintenances`
   ADD PRIMARY KEY (`id`),
   ADD KEY `maintenance_car_foreign` (`car`);
 
@@ -1550,10 +1568,10 @@ ALTER TABLE `jobs`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `maintenance`
+-- AUTO_INCREMENT de tabela `maintenances`
 --
-ALTER TABLE `maintenance`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `maintenances`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `migrations`
@@ -1565,7 +1583,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT de tabela `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT de tabela `personal_access_tokens`
@@ -1583,7 +1601,7 @@ ALTER TABLE `requests`
 -- AUTO_INCREMENT de tabela `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de tabela `routes`
@@ -1629,7 +1647,7 @@ ALTER TABLE `acl_updates`
 -- Restrições para tabelas `attaches`
 --
 ALTER TABLE `attaches`
-  ADD CONSTRAINT `attaches_maintenance_id_foreign` FOREIGN KEY (`maintenance_id`) REFERENCES `maintenance` (`id`);
+  ADD CONSTRAINT `attaches_maintenance_id_foreign` FOREIGN KEY (`maintenance_id`) REFERENCES `maintenances` (`id`);
 
 --
 -- Restrições para tabelas `branch_updates`
@@ -1691,9 +1709,9 @@ ALTER TABLE `justifications`
   ADD CONSTRAINT `justifications_user_foreign` FOREIGN KEY (`user`) REFERENCES `users` (`id`);
 
 --
--- Restrições para tabelas `maintenance`
+-- Restrições para tabelas `maintenances`
 --
-ALTER TABLE `maintenance`
+ALTER TABLE `maintenances`
   ADD CONSTRAINT `maintenance_car_foreign` FOREIGN KEY (`car`) REFERENCES `cars` (`id`);
 
 --

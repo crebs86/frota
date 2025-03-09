@@ -16,7 +16,6 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
     linha 154. Alterar para DB e não trazer solicitações
 
 //todo minhas rotas
-    opção de confirmar mesmo carro com um clique
     certificar se a hora de término de rota é maior que a hora atual
 
 //todo manutenção

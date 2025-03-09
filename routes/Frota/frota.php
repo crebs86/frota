@@ -1,5 +1,6 @@
 <?php
 
+use App\Frota\Controllers\MaintenanceController;
 use App\Frota\Controllers\RequestsController;
 use Illuminate\Support\Facades\Route;
 use App\Frota\Controllers\CarsController;
@@ -64,6 +65,8 @@ Route::prefix('/frota')->middleware(
     Route::post('/solicitacoes/criar', [RequestsController::class, 'store'])->name('requests.store');
     Route::put('/solicitacoes/{route}/update', [RequestsController::class, 'update'])->name('requests.update');
     Route::post('/solicitacoes/rotasESolicitacoes', [RequestsController::class, 'getRoutesAndRequests'])->name('requests.get-routes-and-requests');
+
+    Route::get('/manutencao/{car}', [MaintenanceController::class, 'show'])->name('maintenance.show');
 
     Route::post('/avatar', [DriversController::class, 'updateAvatar'])->name('update.avatar');
 });

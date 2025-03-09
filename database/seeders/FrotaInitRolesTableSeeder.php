@@ -89,6 +89,22 @@ class FrotaInitRolesTableSeeder extends Seeder
                     'name' => 'Solicitante',
                     'updated_at' => now(),
                 ),
+            9 =>
+                array(
+                    'created_at' => now(),
+                    'guard_name' => 'web',
+                    'id' => 17,
+                    'name' => 'Liberador',
+                    'updated_at' => now(),
+                ),
+            10 =>
+                array(
+                    'created_at' => now(),
+                    'guard_name' => 'web',
+                    'id' => 18,
+                    'name' => 'Manutencao Administrar',
+                    'updated_at' => now(),
+                ),
         ));
     }
 }
