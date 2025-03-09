@@ -72,12 +72,12 @@ import SubSection from '@/Components/Admin/SubSection.vue';
                                         <Link :href="route('frota.drivers.show', d.user.id)" title="Ver"
                                               v-if="has(
                                                     $page.props.auth.permissions, ['Motorista Editar', 'Motorista Ver', 'Motorista Criar', 'Motorista Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
-                                            <img src="/icons/ver_2.svg" alt="Ver Motorista" class="w-10 hover:opacity-75">
+                                            <img src="/icons/ver_2.svg" alt="Ver Motorista" class="min-w-9 w-9 hover:opacity-75">
                                         </Link>
                                         <Link :href="route('frota.drivers.edit', d.user.id)" title="Editar"
                                               v-if="has(
                                                     $page.props.auth.permissions, ['Motorista Editar', 'Motorista Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
-                                            <img src="/icons/editar.svg" alt="Editar Motorista" class="w-9 hover:opacity-75">
+                                            <img src="/icons/editar.svg" alt="Editar Motorista" class="min-w-9 w-9 hover:opacity-75">
                                         </Link>
                                     </div>
                                 </td>

@@ -62,12 +62,12 @@ import has from '@/arrayHelpers'
                                         <Link :href="route('frota.garages.show', g.id)" title="Ver"
                                               v-if="has(
                                                     $page.props.auth.permissions, ['Garagem Editar', 'Garagem Ver', 'Garagem Criar', 'Garagem Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
-                                            <img src="/icons/ver_2.svg" alt="Ver Garagem" class="w-9 hover:opacity-75">
+                                            <img src="/icons/ver_2.svg" alt="Ver Garagem" class="min-w-9 w-9 hover:opacity-75">
                                         </Link>
                                         <Link :href="route('frota.garages.edit', g.id)" title="Editar"
                                               v-if="has(
                                                     $page.props.auth.permissions, ['Garagem Editar', 'Garagem Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
-                                            <img src="/icons/editar.svg" alt="Editar Garagem" class="w-9 hover:opacity-75">
+                                            <img src="/icons/editar.svg" alt="Editar Garagem" class="min-w-9 w-9 hover:opacity-75">
                                         </Link>
                                     </div>
                                 </td>
