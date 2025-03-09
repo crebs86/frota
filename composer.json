@@ -13,7 +13,7 @@
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "predis/predis": "^2.2",
+        "predis/predis": "^2.0",
         "spatie/laravel-permission": "^6.10",
         "tightenco/ziggy": "^2.0"
     },
