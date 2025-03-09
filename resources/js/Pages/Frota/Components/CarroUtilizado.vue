@@ -55,8 +55,12 @@ function saveCar() {
                         &cross;
                     </button>
                 </div>
+
                 <div class="relative p-6 grid grid-cols-1">
-                    <div>Carro atual: {{ props.currentCar?.modelo }} {{ props.currentCar?.placa }}</div>
+                    <div>
+                        Carro atual: {{ props.currentCar?.modelo }} {{ props.currentCar?.placa }}
+                        <button @click="model.car = model.currentCar" class="ml-2 p-1 border border-yellow-400 bg-yellow-700 hover:opacity-80 text-yellow-950 rounded-md">Manter Carro Atual</button>
+                    </div>
                     <div class="my-2" v-if="moment().isSame(myRoutes?.date, 'day')">
                         <label class="text-sm text-gray-500 dark:text-gray-400">
                             Carro utilizado
