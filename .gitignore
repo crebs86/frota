@@ -13,6 +13,8 @@
 !/app/Frota
 !/app/Frota/helpers.php
 
+!/app/Regulacao
+
 !/app/Http
 /app/Http/*
 !/app/Http/Controllers
@@ -102,6 +104,7 @@ resources/js/Pages/Auth/*
 !/resources/js/Pages/Frota
 !/resources/views/Frota
 
+!/resources/js/Pages/Regulacao
 
 !/resources/js/Pages/Admin
 /resources/js/Pages/Admin/*

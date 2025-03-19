@@ -1,17 +1,18 @@
 <?php
 
-use App\Frota\Controllers\MaintenanceController;
-use App\Frota\Controllers\RequestsController;
 use Illuminate\Support\Facades\Route;
 use App\Frota\Controllers\CarsController;
+use App\Frota\Controllers\FuelController;
 use App\Frota\Controllers\HomeController;
 use App\Frota\Controllers\RoutesController;
 use App\Frota\Controllers\DriversController;
-use App\Frota\Controllers\FuelController;
 use App\Frota\Controllers\GaragesController;
 use App\Frota\Controllers\ReportsController;
+use App\Frota\Controllers\RequestsController;
 use App\Frota\Controllers\IncidentsController;
 use App\Frota\Controllers\SchedulesController;
+use App\Frota\Controllers\MaintenanceController;
+
 
 Route::prefix('/frota')->middleware(
     getSettingMustVerifyEmail() ? ['auth', 'verified'] : ['auth']

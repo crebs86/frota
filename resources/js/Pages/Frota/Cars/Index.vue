@@ -76,13 +76,13 @@ import moment from 'moment';
                                               v-if="has(
                                                     $page.props.auth.permissions, ['Carro Editar', 'Carro Ver', 'Carro Criar', 'Carro Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <img src="/icons/ver_2.svg" alt="Ver Carro"
-                                                 class="min-w-8 hover:opacity-75">
+                                                 class="min-w-9 w-9 hover:opacity-75">
                                         </Link>
                                         <Link :href="route('frota.cars.edit', c.id)" title="Editar"
                                               v-if="has(
                                                     $page.props.auth.permissions, ['Carro Editar', 'Carro Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <img src="/icons/editar.svg" alt="Editar Carro"
-                                                 class="min-w-8 hover:opacity-75">
+                                                 class="min-w-9 w-9 hover:opacity-75">
                                         </Link>
                                         <Link
                                             :href="route('frota.load-history-fill', [c.id]) + '?de=' + moment().subtract('15', 'days').format('YYYY-MM-DD')"
@@ -90,7 +90,7 @@ import moment from 'moment';
                                             v-if="has(
                                                     $page.props.auth.permissions, ['Combustivel Editar', 'Combustivel Apagar', 'Combustivel Ver', 'Combustivel Criar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <img src="/icons/bomba_gas_3.svg" alt="Histórico de Abastecimento"
-                                                 class="min-w-9 hover:opacity-75">
+                                                 class="min-w-9 w-9 hover:opacity-75">
                                         </Link>
                                         <Link
                                             :href="route('frota.maintenance.show', [c.id])"
@@ -98,7 +98,7 @@ import moment from 'moment';
                                             v-if="has(
                                                     $page.props.auth.permissions, ['Manutencao Editar', 'Manutencao Apagar', 'Manutencao Ver', 'Manutencao Criar']) || has($page.props.auth.roles, ['Super Admin'])">
                                             <img src="/icons/carro_reparado.svg" alt="Manutenção"
-                                                 class="min-w-9 hover:opacity-75">
+                                                 class="min-w-9 w-9 hover:opacity-75">
                                         </Link>
                                     </div>
                                 </td>

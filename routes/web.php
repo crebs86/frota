@@ -18,4 +18,5 @@ Route::any('pagina-expirada/', [MiscController::class, 'redirect'])->name('redir
 require __DIR__ . '/admin.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/Frota/frota.php';
+require __DIR__ . '/Regulacao/contrato.php';
 }
