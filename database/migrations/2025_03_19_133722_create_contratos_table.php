@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('contratos', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('user')->unique();
+            $table->unsignedBigInteger('user');
             $table->foreign('user')
                 ->references('id')
                 ->on('users');
@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('contratada_cnpj', 14);
             $table->date('vigencia_inicio');
             $table->date('vigencia_fim');
+            $table->decimal('valor_global', 11, 2);
+            $table->text('aditivos');
             $table->string('descricao', 550);
             $table->boolean('ativo');
             $table->softDeletes();

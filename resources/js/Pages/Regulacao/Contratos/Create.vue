@@ -5,22 +5,69 @@ import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
 import moment from 'moment';
+import { toast } from '@/toast';
+import { currencyMask } from '@/mask';
+import { onMounted } from 'vue';
+
+const props = defineProps({
+    editar: Boolean,
+    contrato: Object | null,
+    hash: String
+})
 
 const contrato = useForm({
-    contrato: '241',
-    ano: '2022',
-    contratada_nome: 'Laboratório AAA',
-    contratada_cnpj: '12345678901234',
-    vigencia_inicio: '2022-03-19',
-    vigencia_fim: '2025-03-19',
-    descricao: 'blablabla',
+    contrato: '',
+    ano: '',
+    contratada_nome: '',
+    contratada_cnpj: '',
+    vigencia_inicio: '',
+    vigencia_fim: '',
+    valor_global: 0,
+    aditivos: '',
+    descricao: '',
     ativo: true,
+    valor: null,
+    hash: null
 })
 
 function salvar() {
-    contrato.post(route('regulacao.contratos.store'))
-    //console.log(contrato)
+    if (props.editar) {
+        contrato.valor_global = contrato.valor.replaceAll('.', '').replace(',', '.')
+        contrato.put(route('regulacao.contratos.update', props.hash), {
+            onSuccess: () => {
+                toast.success('Contrato atualizado com sucesso.')
+            }
+        })
+    } else {
+        contrato.valor_global = contrato.valor.replaceAll('.', '').replace(',', '.')
+        contrato.post(route('regulacao.contratos.store'), {
+            onSuccess: () => {
+                toast.success('Contrato cadastrado com sucesso.')
+            }
+        })
+    }
 }
+
+const maskCurrency = (event) => {
+    let input = event.target;
+    contrato.valor = currencyMask(input.value);
+}
+
+onMounted(() => {
+    if (props.editar) {
+        contrato.contrato = props.contrato.contrato
+        contrato.ano = props.contrato.ano
+        contrato.contratada_nome = props.contrato.contratada_nome
+        contrato.contratada_cnpj = props.contrato.contratada_cnpj
+        contrato.vigencia_inicio = props.contrato.vigencia_inicio
+        contrato.vigencia_fim = props.contrato.vigencia_fim
+        contrato.valor = currencyMask(props.contrato.valor_global)
+        contrato.aditivos = props.contrato.aditivos
+        contrato.descricao = props.contrato.descricao
+        contrato.ativo = props.contrato.ativo
+        contrato.hash = props.hash
+    }
+})
 
 </script>
 
@@ -31,15 +78,28 @@ function salvar() {
 
     <AuthenticatedLayout>
 
-        <!--template #inner_menu>
-            <FrotaMenu />
-        </template-->
         <SubSection>
             <template #header>
-                Novo Contrato
+                {{ props.editar ? 'Editando Contrato ' + contrato.contrato + '/' + contrato.ano : 'Novo Contrato' }}
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.57)]">
+                    <div class="inline-flex">
+                        <Link
+                            v-if="props.edit && has(
+                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.contratos.create')" title="Novo Contrato">
+                        <img src="/icons/add.svg" alt="Novo Contrato" class="w-6">
+                        </Link>
+                        <Link
+                            v-if="props.edit && has(
+                                $page.props.auth.permissions, ['Contrato Ver', 'Contrato Editar', 'Contrato Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.contratos.index')" title="Listar Contratos">
+                        <img src="/icons/lista2.svg" alt="Listar Contratos" class="w-6">
+                        </Link>
+                    </div>
                     <div class="p-2 rounded-lg overflow-y-auto"
                         :class="$page.props.app.settingsStyles.main.innerSection">
                         <form @submit.prevent="salvar()">
@@ -49,7 +109,9 @@ function salvar() {
                                         Contrato*
                                     </label>
                                     <input type="text" v-model="contrato.contrato"
-                                        class="w-full rounded border border-black text-gray-700" required />
+                                        :class="props.editar ? 'bg-gray-400 cursor-not-allowed' : ''"
+                                        class="w-full rounded border border-black text-gray-700" required
+                                        :disabled="props.editar" />
 
                                     <div v-if="contrato.errors?.contrato"
                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
@@ -62,12 +124,20 @@ function salvar() {
                                         Ano*
                                     </label>
                                     <input type="text" v-model="contrato.ano"
-                                        class="w-full rounded border border-black text-gray-700" required />
+                                        :class="props.editar ? 'bg-gray-400 cursor-not-allowed' : ''"
+                                        class="w-full rounded border border-black text-gray-700" required
+                                        :disabled="props.editar" />
 
                                     <div v-if="contrato.errors?.ano"
                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                         <small v-for="error in contrato.errors?.ano">{{ error }}</small>
                                     </div>
+                                </div>
+
+                                <div class="col-span-5 md:col-span-2 w-full">
+                                    <small class="text-red-500">
+                                        Após cadastrado, não é possível editar o número e ano do contrato.
+                                    </small>
                                 </div>
 
                                 <div class="col-span-5 w-full grid grid-cols-5 gap-3">
@@ -126,6 +196,20 @@ function salvar() {
                                     </div>
                                 </div>
 
+                                <div class="col-span-5 md:col-span-2 w-full">
+                                    <label class="text-sm inline-flex">
+                                        Valor Global (R$)*
+                                    </label>
+                                    <input type="text" v-model="contrato.valor" @keyup="maskCurrency($event)"
+                                        class="w-full rounded border border-black text-gray-700" maxlength="14"
+                                        required />
+
+                                    <div v-if="contrato.errors?.valor_global"
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        <small v-for="error in contrato.errors?.valor_global">{{ error }}</small>
+                                    </div>
+                                </div>
+
                                 <div class="col-span-5 w-full">
                                     <label class="text-sm">
                                         Descrição*
@@ -159,11 +243,19 @@ function salvar() {
                                     </label>
 
                                 </div>
-                                <div class="col-span-5 w-full">
-                                    <button type="submit" @click="saveCar"
-                                        class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
-                                        Cadastrar Contrato
-                                    </button>
+                                <div class="col-span-5 inline-flex gap-3">
+                                    <div v-if="props.editar">
+                                        <button type="submit"
+                                            class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
+                                            Salvar Contrato
+                                        </button>
+                                    </div>
+                                    <div v-else>
+                                        <button type="submit"
+                                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                                            Cadastrar Contrato
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </form>

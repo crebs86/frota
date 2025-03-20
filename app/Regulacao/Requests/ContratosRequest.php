@@ -28,13 +28,14 @@ class ContratosRequest extends FormRequest
         //$req = $this;
         return [
             'contrato' => 'max:25',
-            'ano' => 'max:4',
+            'ano' => 'max:4|date_format:Y',
             'contratada_nome' => 'required|max:255',
             'contratada_cnpj' => 'required|cnpj',
-            'cigencia_inicio' => 'required|date_format:Y-m-d',
+            'vigencia_inicio' => 'required|date_format:Y-m-d',
             'vigencia_fim' => 'required|date_format:Y-m-d',
             'descricao' => 'required|max:255',
             'ativo' => 'required',
+            'valor_global' => 'required|decimal:0,2'
         ];
     }
 
