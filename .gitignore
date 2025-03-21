@@ -117,6 +117,7 @@ resources/js/Pages/Auth/*
 
 !/routes/web.php
 !/routes/Frota
+!/routes/Regulacao
 
 !/database
 /database/*
