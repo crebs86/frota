@@ -213,30 +213,30 @@ if (!function_exists('cripto')) {
     {
         $original = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcedfghijklmnopqrstuvwxyz0123456789/+';
         $variants = [
-            'A' => 'ALNknuzXUM1bxYGrBwQtC90HdDZ7se+P5h8Tv2VIJmKpyEiaSOc6Wg43Fqfo-lRj',
-            'Z' => 'ZD3SyCIjn2WMgAcsHXa8JK9B1VfbOk+6PuzYLEq5xQ7RUwNihtdFm-Tpo40leGvr',
-            'C' => 'C8iAgo-rLB0fwjc35SJOhI1Q6XtxqkzURHpWnYD+4VPGMes2lb7FZNvuyTm9dKaE',
-            'Y' => 'YajZTDq0Kygivdxe5hSIzRX3AMGJ-Nc62PWOLot9kVCUuElwF+HQm4r7fbpB1sn8',
-            'e' => 'eUqsZnbO9PAu4+Ll32MhzFrpG5TSQD-cgEJNa7WkYBxHw68fItX10yimCvodVjKR',
-            'W' => 'WBY4Ay5JQzU1DjqbH7eclEKG0iOFgRwo39MvZudk6LICp8Xs2xSahfrNmT+n-PtV',
-            'G' => 'G8rSXytaOfLK0QJnP9i5MNuxYAcq+63m47hoVBgWHjs-CpEFZvklUzewb1I2dTRD',
-            'k' => 'kwayfBq12pIuXKgjPGDteOvFNo5-CJ6AniTVLZUr3YQ7dxmsScMEzH80b+hlWR49',
-            'G' => 'GUX3EBrnpwFZqjcbDJk20tylCLaVi58N4+Y6HRof9PS-Qed7uzxIKAs1MhgWOvTm',
-            'M' => 'MFopuSZmOBzhY97cGibWJy+fU8D4lCXT1KkwAdtxP3VQ02HRIsgnq6eLNaEr5vj-',
-            'n' => 'nlIDStsHE-yqWziJ2Q+1dmC73N8K0YPoj6hkfMxpXFVO9bgAZr4cvGBTuRa5eLUw',
-            'h' => 'hwvdYyPL6aWIDQiU2kqJBt5n+ZuCNso9KX-0H8czOpxlEgjrTASb731VMG4fFeRm',
-            'j' => 'jfgukW-GeVRh91Lvy+ErlptIPDd6nSKiHXZq4w3xYOUATs8bacFm7z5MCQBJ02oN',
-            'b' => 'bDm8Q3daC2ps71YekqUncl5ZSu-GHvW6zLfEiPwyV4OoThjKJxNMt+0rIRABgF9X',
-            'u' => 'uko09RywpPr+DCQEMSHhidcOUbGlxemWZt26KBAfngJXL8sI5zqYF7Nj31V-v4aT',
+            'A' => 'ALNknuzXUM1bxYGrBwQtC90HdDZ7se+P5h8Tv2VIJmKpyEiaSOc6Wg43Fqfo/lRj',
+            'Z' => 'ZD3SyCIjn2WMgAcsHXa8JK9B1VfbOk+6PuzYLEq5xQ7RUwNihtdFm/Tpo40leGvr',
+            'C' => 'C8iAgo/rLB0fwjc35SJOhI1Q6XtxqkzURHpWnYD+4VPGMes2lb7FZNvuyTm9dKaE',
+            'Y' => 'YajZTDq0Kygivdxe5hSIzRX3AMGJ/Nc62PWOLot9kVCUuElwF+HQm4r7fbpB1sn8',
+            'e' => 'eUqsZnbO9PAu4+Ll32MhzFrpG5TSQD/cgEJNa7WkYBxHw68fItX10yimCvodVjKR',
+            'W' => 'WBY4Ay5JQzU1DjqbH7eclEKG0iOFgRwo39MvZudk6LICp8Xs2xSahfrNmT+n/PtV',
+            'G' => 'G8rSXytaOfLK0QJnP9i5MNuxYAcq+63m47hoVBgWHjs/CpEFZvklUzewb1I2dTRD',
+            'k' => 'kwayfBq12pIuXKgjPGDteOvFNo5/CJ6AniTVLZUr3YQ7dxmsScMEzH80b+hlWR49',
+            'B' => 'BUX3EGrnpwFZqjcbDJk20tylCLaVi58N4+Y6HRof9PS/Qed7uzxIKAs1MhgWOvTm',
+            'M' => 'MFopuSZmOBzhY97cGibWJy+fU8D4lCXT1KkwAdtxP3VQ02HRIsgnq6eLNaEr5vj/',
+            'n' => 'nlIDStsHE/yqWziJ2Q+1dmC73N8K0YPoj6hkfMxpXFVO9bgAZr4cvGBTuRa5eLUw',
+            'h' => 'hwvdYyPL6aWIDQiU2kqJBt5n+ZuCNso9KX/0H8czOpxlEgjrTASb731VMG4fFeRm',
+            'j' => 'jfgukW/GeVRh91Lvy+ErlptIPDd6nSKiHXZq4w3xYOUATs8bacFm7z5MCQBJ02oN',
+            'b' => 'bDm8Q3daC2ps71YekqUncl5ZSu/GHvW6zLfEiPwyV4OoThjKJxNMt+0rIRABgF9X',
+            'u' => 'uko09RywpPr+DCQEMSHhidcOUbGlxemWZt26KBAfngJXL8sI5zqYF7Nj31V/v4aT',
         ];
 
         if ($type === 1) {
-            $b64 = str_replace('/', '-', base64_encode($original[rand(1, 63)] . $string . '_' . auth()->id() . '_' . $chave));
-            //incluir uma chave e id do usuário logado além da letra ramdômica
+            $b64 = base64_encode($original[rand(1, 63)] . $string . '_' . auth()->id() . '_' . $chave);
             return encode($b64, $original, $variants[array_rand($variants)]);
         } elseif ($type = 2) {
-            return decode($string, $variants[$string[0]], $original, $chave);
+            return decode(str_replace('|', '/', $string), $variants[$string[0]], $original, $chave);
         }
+        abort(403);
     }
 
     function encode($string, $original, $alternativo)
@@ -244,7 +244,7 @@ if (!function_exists('cripto')) {
         $codigo = $alternativo[0];
         for ($i = 0; $i < strlen($string); $i++) {
             $caractere = $string[$i];
-            if ($caractere != '=' && $caractere != '_') {
+            if ($caractere != '=') {
                 $posicao = strpos($alternativo, $caractere);
                 if ($posicao !== false) {
                     $codigo .= $original[$posicao];
@@ -264,7 +264,7 @@ if (!function_exists('cripto')) {
                 $codigo .= $caractere;
             }
         }
-        return $codigo;
+        return str_replace('/', '|', $codigo);
     }
 
     function decode($string, $alternativo, $original, $chave)
@@ -272,7 +272,7 @@ if (!function_exists('cripto')) {
         $codigo = '';
         for ($i = 1; $i < strlen($string); $i++) {
             $caractere = $string[$i];
-            if ($caractere != '=' && $caractere != '_') {
+            if ($caractere != '=') {
                 $posicao = strpos($original, $caractere);
                 if ($posicao !== false) {
                     $codigo .= $alternativo[$posicao];
@@ -292,7 +292,7 @@ if (!function_exists('cripto')) {
                 $codigo .= $caractere;
             }
         }
-        $hash = explode('_', substr(str_replace('-', '/', base64_decode($codigo)), 1));
+        $hash = explode('_', substr(base64_decode($codigo), 1));
         if ($hash[1] != auth()->id() || $chave != $hash[2]) {
             abort(403);
         }

@@ -89,6 +89,9 @@
 !/resources/js/Pages
 /resources/js/Pages/*
 
+!resources/js/Pages/403.vue
+!resources/js/Pages/409.vue
+
 !resources/js/Pages/Auth
 resources/js/Pages/Auth/*
 !resources/js/Pages/Auth/Login.vue

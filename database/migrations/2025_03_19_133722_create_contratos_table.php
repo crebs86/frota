@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -23,6 +22,7 @@ return new class extends Migration
             $table->integer('ano');
             $table->string('contratada_nome');
             $table->string('contratada_cnpj', 14);
+            $table->string('contratante');
             $table->date('vigencia_inicio');
             $table->date('vigencia_fim');
             $table->decimal('valor_global', 11, 2);

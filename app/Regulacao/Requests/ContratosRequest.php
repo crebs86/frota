@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class ContratosRequest extends FormRequest
 {
     use ACL;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,7 +26,6 @@ class ContratosRequest extends FormRequest
      */
     public function rules(): array
     {
-        //$req = $this;
         return [
             'contrato' => 'max:25',
             'ano' => 'max:4|date_format:Y',
@@ -33,9 +33,10 @@ class ContratosRequest extends FormRequest
             'contratada_cnpj' => 'required|cnpj',
             'vigencia_inicio' => 'required|date_format:Y-m-d',
             'vigencia_fim' => 'required|date_format:Y-m-d',
-            'descricao' => 'required|max:255',
+            'descricao' => 'required|max:550',
             'ativo' => 'required',
-            'valor_global' => 'required|decimal:0,2'
+            'valor_global' => 'required|decimal:0,2',
+            'contratante' => 'required|max:255',
         ];
     }
 

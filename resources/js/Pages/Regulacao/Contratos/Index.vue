@@ -17,9 +17,6 @@ import Column from 'primevue/column';
 
     <AuthenticatedLayout>
 
-        <!--template #inner_menu>
-            <FrotaMenu />
-        </template-->
         <SubSection>
             <template #header>
                 Contratos

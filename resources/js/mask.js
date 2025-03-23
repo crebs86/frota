@@ -23,6 +23,16 @@ const docsMask = (value) => {
     return value;
 };
 
+const cnpjMask = (value) => {
+    if (!value) return "";
+    value = value.replace(/\D/g, "");
+    value = value.replace(/^(\d{2})(\d)/, "$1.$2");
+    value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+    value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
+    value = value.replace(/(\d{4})(\d)/, "$1-$2");
+    return value;
+};
+
 const currencyMask = (value, locales = "pt-BR") => {
     if (!value) return "";
     value = value.replace(".", "").replace(",", "").replace(/\D/g, "");
@@ -34,4 +44,4 @@ const currencyMask = (value, locales = "pt-BR") => {
     return value;
 };
 
-export {phoneMask, docsMask, currencyMask};
+export {phoneMask, docsMask, currencyMask, cnpjMask};

@@ -23,3 +23,6 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
     lógica de já deixar próxima manutenção agendada (usar o campo km_arrival null como manutenção como não pendente)
     inserir busca por manutenção pendente 1x a cada 24 horas (por em cache)
 
+//todo
+    corrigir valor salvo de valores baixos nos aditivos
+    corrigir soma total do contrato com aditivos

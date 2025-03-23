@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Traits\ACL;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Traits\Helpers;
 use App\Http\Controllers\Controller;
@@ -45,5 +46,10 @@ class MiscController extends Controller
         return Inertia::render('Admin/419', [
             'url' => url()->previous()
         ]);
+    }
+
+    public function redirect409(Request $request): Response
+    {
+        return Inertia::render('409', ['error' => $request->session()->get('error')]);
     }
 }

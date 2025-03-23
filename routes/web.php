@@ -15,6 +15,8 @@ Route::get('/painel', [MiscController::class, 'dashboard'])->middleware(
 
 Route::any('pagina-expirada/', [MiscController::class, 'redirect'])->name('redirect');
 
+Route::get('/409', [MiscController::class, 'redirect409'])->name('redirect.409');
+
 require __DIR__ . '/admin.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/Frota/frota.php';
