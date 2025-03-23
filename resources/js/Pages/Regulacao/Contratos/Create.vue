@@ -87,13 +87,13 @@ const maskCNPJ = (event) => {
 
 
 function somar(aditivos) {
-    console.log(props.contrato.valor_global);
-    let total = props.contrato.valor_global;
+    let total = (props.contrato.valor_global);
+    //console.log(total, props.contrato.valor_global);
     JSON.parse(aditivos).forEach((item) => {
-        console.log(item.valor.toFixed(2));
-        total = total + item.valor.toFixed(2)
+        //console.log(parseFloat(total) + parseFloat(item.valor));
+        total = parseFloat(total) + parseFloat(item.valor);
     });
-    return 'R$ ' + currencyMask(total.toString())
+    return 'R$ ' + currencyMask(parseFloat(total.toString()).toFixed(2))
 }
 
 const aditivoEditar = useForm({
@@ -104,9 +104,9 @@ const aditivoEditar = useForm({
 })
 
 function editarAditivo(aditivo) {
-    console.log(aditivo);
+    //console.log(parseFloat(aditivo.valor).toFixed(2));
     modal.value.editarAditivo = true;
-    aditivoEditar.previa = currencyMask(aditivo.valor.toString())
+    aditivoEditar.previa = currencyMask(parseFloat(aditivo.valor).toFixed(2))
     aditivoEditar.descricao = aditivo.descricao
     aditivoEditar.indice = aditivo.indice
 }
@@ -128,9 +128,36 @@ function atualizarAditivo() {
     })
 }
 
-function excluirAditivo($aditivo) {
-    modal.value.excluirAditivo = true;
-    console.log($aditivo);
+const aditivoExcluir = useForm({
+    indice: '',
+    valor: 0,
+    descricao: '',
+})
+
+function excluirAditivo(aditivo) {
+    modal.value.excluirAditivo = true
+    aditivoExcluir.valor = currencyMask(parseFloat(aditivo.valor).toFixed(2))
+    aditivoExcluir.descricao = aditivo.descricao
+    aditivoExcluir.indice = aditivo.indice
+}
+
+function removerAditivo() {
+    aditivoExcluir.delete(route('regulacao.contratos.aditivo.remover', props.hash), {
+        preserveScroll: true,
+        onSuccess: (r) => {
+            if (r.props.flash.error) {
+                toast.error(r.props.flash.error)
+                throw r.props.flash.error
+            }
+            modal.value.excluirAditivo = false;
+            toast.success('Aditivo removido do contrato.')
+            contrato.aditivos = r.props.contrato.aditivos;
+            aditivoExcluir.reset()
+        },
+        onError: () => {
+            toast.error('Erro ao remover aditivo do contrato.')
+        },
+    })
 }
 
 onBeforeMount(() => {
@@ -350,7 +377,7 @@ onBeforeMount(() => {
                                     <DataTable :value="contrato.aditivos ? JSON.parse(contrato.aditivos) : []">
                                         <Column field="valor" header="Valor" sortable style="width: 40%">
                                             <template #body="slotProps">
-                                                R$ {{ currencyMask(slotProps.data.valor.toString()) }}
+                                                R$ {{ currencyMask(slotProps.data.valor.toFixed(2)) }}
                                             </template>
                                         </Column>
                                         <Column field="descricao" header="Descrição" sortable style="width: 40%"/>
@@ -380,7 +407,7 @@ onBeforeMount(() => {
                                     </DataTable>
 
                                     <div class="col-span-5 w-full">
-                                        Total:
+                                        Total atual do contrato:
                                         {{ somar(contrato.aditivos) }}
                                     </div>
                                 </div>
@@ -427,7 +454,7 @@ onBeforeMount(() => {
                             </div>
                             <div class="grid gap-4 mb-8">
                                 <label for="detalhes" class="font-semibold w-24">Detalhes</label>
-                                <Textarea id="detalhes" class="flex-auto" maxlength="255"
+                                <Textarea id="detalhes" class="flex-auto" maxlength="550"
                                           v-model="aditivo.descricao" autocomplete="off"/>
                             </div>
                             <div class="flex justify-end gap-2">
@@ -448,14 +475,34 @@ onBeforeMount(() => {
                             </div>
                             <div class="grid gap-4 mb-8">
                                 <label for="detalhes" class="font-semibold w-24">Detalhes</label>
-                                <Textarea id="detalhes" class="flex-auto" maxlength="255"
+                                <Textarea id="detalhes" class="flex-auto" maxlength="550"
                                           v-model="aditivoEditar.descricao" autocomplete="off"/>
                             </div>
                             <div class="flex justify-end gap-2">
                                 <Button type="button" label="Cancelar" severity="secondary"
                                         @click="modal.editarAditivo = false"></Button>
-                                <Button type="button" label="Inserir"
+                                <Button type="button" label="Atualizar"
                                         @click="atualizarAditivo()"></Button>
+                            </div>
+                        </Dialog>
+
+                        <Dialog v-model:visible="modal.excluirAditivo" modal header="Remover Aditivo"
+                                :style="{ width: '98%', maxWidth: '500px' }">
+                            <div class="grid gap-4 mb-4">
+                                <label for="valor" class="font-semibold w-24">Valor (R$)</label>
+                                <InputText v-model="aditivoExcluir.valor" id="valor" class="flex-auto"
+                                           autocomplete="off" readonly/>
+                            </div>
+                            <div class="grid gap-4 mb-8">
+                                <label for="detalhes" class="font-semibold w-24">Detalhes</label>
+                                <Textarea id="detalhes" class="flex-auto" maxlength="550"
+                                          v-model="aditivoExcluir.descricao" autocomplete="off" readonly/>
+                            </div>
+                            <div class="flex justify-end gap-2">
+                                <Button type="button" label="Cancelar" severity="secondary"
+                                        @click="modal.excluirAditivo = false"></Button>
+                                <Button type="button" label="Remover" severity="danger"
+                                        @click="removerAditivo()"></Button>
                             </div>
                         </Dialog>
 

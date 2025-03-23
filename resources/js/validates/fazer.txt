@@ -24,5 +24,4 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
     inserir busca por manutenção pendente 1x a cada 24 horas (por em cache)
 
 //todo
-    corrigir valor salvo de valores baixos nos aditivos
-    corrigir soma total do contrato com aditivos
+    inserir método para auditoria das auterações

@@ -19,4 +19,5 @@ Route::prefix('/regulacao')->middleware(
 
     Route::post('/contratos/aditivo/{contract}', [ContratosController::class, 'aditivoInserir'])->name('contratos.aditivo.insert');
     Route::put('contratos/aditivo/{contract}/atualizarAditivo', [ContratosController::class, 'aditivoAtualizar'])->name('contratos.aditivo.update');
+    Route::delete('contratos/aditivo/{contract}/removerAditivo', [ContratosController::class, 'aditivoRemover'])->name('contratos.aditivo.remover');
 });

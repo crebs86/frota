@@ -11,7 +11,12 @@ use function Laravel\Prompts\error;
 trait ContratoCore
 {
 
-    public function inserirAditivo($contrato, $request)
+    /**
+     * @param $contrato
+     * @param $request
+     * @return RedirectResponse
+     */
+    public function inserirAditivo($contrato, $request): RedirectResponse
     {
         if ($contrato->aditivos === null) {
             $contrato->aditivos = json_encode([
@@ -36,7 +41,11 @@ trait ContratoCore
         return redirect()->to(route('redirect.409'))->with('error', 'Não foi possível inserir o aditivo de contrato.');
     }
 
-    public function atualizarAditivo($request)
+    /**
+     * @param $request
+     * @return RedirectResponse
+     */
+    public function atualizarAditivo($request): RedirectResponse
     {
         $contrato = $this->getContrato(cripto($request->contract, 'editar', 2));
         $aditivos = json_decode($contrato->aditivos);
@@ -53,7 +62,30 @@ trait ContratoCore
         return redirect()->to(route('redirect.409'))->with('error', 'Não foi possível inserir o aditivo de contrato.');
     }
 
-    public function getContrato($id)
+    /**
+     * @param $request
+     * @return RedirectResponse
+     */
+    public function removerAditivo($request): RedirectResponse
+    {
+        $contrato = $this->getContrato(cripto($request->contract, 'editar', 2));
+        $aditivos = json_decode($contrato->aditivos);
+        $contrato->aditivos = json_encode(collect($aditivos)->reject(function ($item) use ($request) {
+            return $request->indice === $item->indice;
+        }));
+        $contrato->user = auth()->id();
+        //dd($contrato->aditivos);
+        if ($contrato->save()) {
+            return redirect()->back();
+        }
+        return redirect()->to(route('redirect.409'))->with('error', 'Não foi possível remover o aditivo do contrato.');
+    }
+
+    /**
+     * @param $id
+     * @return Contrato
+     */
+    public function getContrato($id): Contrato
     {
         return Contrato::find($id);
     }

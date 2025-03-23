@@ -126,4 +126,12 @@ class ContratosController extends Controller
         }
         return Inertia::render('Admin/403');
     }
+
+    public function aditivoRemover(Request $request): Response|RedirectResponse
+    {
+        if ($this->can('Contratos Apagar')) {
+            return $this->removerAditivo($request);
+        }
+        return Inertia::render('Admin/403');
+    }
 }
