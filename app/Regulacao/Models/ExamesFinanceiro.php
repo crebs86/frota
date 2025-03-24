@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ExamesFinanceiro extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = 'exames_financeiro';
+
+    protected $fillable = ['user', 'CodExameLaboratorial', 'contrato', 'valor', 'observacao'];
 }

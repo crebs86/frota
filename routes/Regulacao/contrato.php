@@ -1,7 +1,9 @@
 <?php
 
+use App\Regulacao\Controllers\CotaController;
 use App\Regulacao\Controllers\ExamesController;
 use App\Regulacao\Controllers\FinanceiroController;
+use App\Regulacao\Controllers\PostoColetaController;
 use Illuminate\Support\Facades\Route;
 use App\Regulacao\Controllers\ContratosController;
 use App\Regulacao\Controllers\HomeController;
@@ -27,9 +29,16 @@ Route::prefix('/regulacao')->middleware(
     Route::prefix('/financeiro')->name('financeiro.')->group(function () {
         Route::get('/', [FinanceiroController::class, 'index'])->name('index');
         Route::prefix('/exames')->name('exames.')->group(function () {
-            Route::get('/', [ExamesController::class, 'index'])->name('index');
-            Route::match(['get', 'post'],'/exames-por-contrato', [ExamesController::class, 'buscarExamesContrato'])->name('exames-por-contrato');
+            Route::get('/contrato/{contract?}', [ExamesController::class, 'index'])->name('index');
+            Route::match(['get', 'post'], '/exames-por-contrato', [ExamesController::class, 'buscarExamesContrato'])->name('exames-por-contrato');
             Route::post('/exames-por-contrato/{contract}/salvar', [ExamesController::class, 'salvarExamesContrato'])->name('salvar-exames-por-contrato');
+            Route::put('/exame-valor/{exame}/atualizar', [ExamesController::class, 'atualizarValorExame'])->name('atualizar-valor-exame');
+        });
+        Route::prefix('/posto-coleta')->name('posto-coleta.')->group(function () {
+            Route::get('/', [PostoColetaController::class, 'index'])->name('index');
+        });
+        Route::prefix('/cota')->name('cota.')->group(function () {
+            Route::get('/', [CotaController::class, 'index'])->name('index');
         });
     });
 });

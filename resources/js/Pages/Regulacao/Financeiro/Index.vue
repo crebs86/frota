@@ -30,6 +30,20 @@ import moment from 'moment';
                                 </button>
                             </Link>
 
+                            <Link :href="route('regulacao.financeiro.cota.index')">
+                                <button class="flex flex-col items-center max-w-fit hover:opacity-75">
+                                    <img src="/icons/cash3.svg" alt="Cotas" class="min-w-16 w-24">
+                                    <span>Cotas</span>
+                                </button>
+                            </Link>
+
+                            <Link :href="route('regulacao.financeiro.posto-coleta.index')">
+                                <button class="flex flex-col items-center max-w-fit hover:opacity-75">
+                                    <img src="/icons/hospital6.svg" alt="Cotas" class="min-w-16 w-24">
+                                    <span>Postos de Coleta</span>
+                                </button>
+                            </Link>
+
                         </div>
                     </div>
                 </div>
