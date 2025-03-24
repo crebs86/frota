@@ -24,4 +24,9 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
     inserir busca por manutenção pendente 1x a cada 24 horas (por em cache)
 
 //todo
-    inserir método para auditoria das auterações
+    inserir metodo para auditoria das auterações
+    cachear contratos
+    inserir bloqueios de permissão no front-end
+    ao selecionar um contrato para cadastrar exames, limpar lista
+    ao enviar valores dos exames, certificar-se que já não existe
+    fazer um preg_match para verificar se os valores R$ são válidos

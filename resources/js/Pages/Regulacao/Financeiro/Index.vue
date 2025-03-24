@@ -10,17 +10,12 @@ import moment from 'moment';
 
 <template>
 
-    <Head title="Regulação"/>
-
+    <Head title="Financeiro"/>
 
     <AuthenticatedLayout>
-
-        <!--template #inner_menu>
-            <FrotaMenu />
-        </template-->
         <SubSection>
             <template #header>
-                Regulação
+                Financeiro
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.75)]">
@@ -28,22 +23,10 @@ import moment from 'moment';
                          :class="$page.props.app.settingsStyles.main.innerSection">
                         <div class="grid grid-cols-3 gap-3 place-items-center">
 
-                            <button class="flex flex-col items-center max-w-fit hover:opacity-75">
-                                <img src="/icons/agenda.svg" alt="Agenda Unidade" class="min-w-16 w-24">
-                                <span>Agenda</span>
-                            </button>
-
-                            <Link :href="route('regulacao.financeiro.index')">
+                            <Link :href="route('regulacao.financeiro.exames.index')">
                                 <button class="flex flex-col items-center max-w-fit hover:opacity-75">
-                                    <img src="/icons/financeiro.svg" alt="Controle Financeiro" class="min-w-16 w-24">
-                                    <span>Financeiro</span>
-                                </button>
-                            </Link>
-
-                            <Link :href="route('regulacao.contratos.index')">
-                                <button class="flex flex-col items-center max-w-fit hover:opacity-75">
-                                    <img src="/icons/laboratorio5.svg" alt="Contratos" class="min-w-16 w-24">
-                                    <span>Contratos</span>
+                                    <img src="/icons/laboratorio4.svg" alt="Exames" class="min-w-16 w-24">
+                                    <span>Exames</span>
                                 </button>
                             </Link>
 

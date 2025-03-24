@@ -293,6 +293,7 @@ if (!function_exists('cripto')) {
             }
         }
         $hash = explode('_', substr(base64_decode($codigo), 1));
+        //dd($hash);
         if ($hash[1] != auth()->id() || $chave != $hash[2]) {
             abort(403);
         }

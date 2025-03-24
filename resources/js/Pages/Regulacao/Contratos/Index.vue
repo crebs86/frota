@@ -14,7 +14,6 @@ import Column from 'primevue/column';
 
     <Head title="Contratos" />
 
-
     <AuthenticatedLayout>
 
         <SubSection>

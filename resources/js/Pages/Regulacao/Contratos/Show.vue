@@ -5,6 +5,7 @@ import {Head, Link} from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
 import moment from 'moment';
 import {cnpjMask, currencyMask} from "@/mask.js";
+import {Column, DataTable} from "primevue";
 
 </script>
 
@@ -87,7 +88,16 @@ import {cnpjMask, currencyMask} from "@/mask.js";
                                     {{ currencyMask($page.props.contrato.valor_global) }}
                                 </li>
                                 <li class="py-2 hover:opacity-70">
-                                    <span class="font-bold">Aditivos:</span> {{ $page.props.contrato.aditivos }}
+                                    <span class="font-bold">Aditivos:</span>
+                                    <DataTable
+                                        :value="$page.props.contrato.aditivos ? JSON.parse($page.props.contrato.aditivos) : []">
+                                        <Column field="valor" header="Valor" sortable style="width: 40%">
+                                            <template #body="slotProps">
+                                                R$ {{ currencyMask(slotProps.data.valor.toFixed(2)) }}
+                                            </template>
+                                        </Column>
+                                        <Column field="descricao" header="Descrição" sortable style="width: 40%"/>
+                                    </DataTable>
                                 </li>
                             </ul>
                         </div>

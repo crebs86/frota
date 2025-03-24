@@ -61,6 +61,10 @@ const aditivo = useForm({
 })
 
 function inserirAditivo() {
+    if (!aditivo.previa || !aditivo.descricao) {
+        toast.warning('Informe os campos obrigatórios.')
+        throw 'Informe os campos obrigatórios.'
+    }
     aditivo.valor = aditivo.previa.replaceAll('.', '').replace(',', '.')
     aditivo.post(route('regulacao.contratos.aditivo.insert', props.hash), {
         preserveScroll: true,
@@ -89,10 +93,12 @@ const maskCNPJ = (event) => {
 function somar(aditivos) {
     let total = (props.contrato.valor_global);
     //console.log(total, props.contrato.valor_global);
-    JSON.parse(aditivos).forEach((item) => {
-        //console.log(parseFloat(total) + parseFloat(item.valor));
-        total = parseFloat(total) + parseFloat(item.valor);
-    });
+    if (aditivos) {
+        JSON.parse(aditivos).forEach((item) => {
+            //console.log(parseFloat(total) + parseFloat(item.valor));
+            total = parseFloat(total) + parseFloat(item.valor);
+        });
+    }
     return 'R$ ' + currencyMask(parseFloat(total.toString()).toFixed(2))
 }
 
@@ -112,6 +118,10 @@ function editarAditivo(aditivo) {
 }
 
 function atualizarAditivo() {
+    if (!aditivoEditar.previa || !aditivoEditar.descricao) {
+        toast.warning('Informe os campos obrigatórios.')
+        throw 'Informe os campos obrigatórios.'
+    }
     aditivoEditar.valor = aditivoEditar.previa.replaceAll('.', '').replace(',', '.')
     aditivoEditar.put(route('regulacao.contratos.aditivo.update', props.hash), {
         preserveScroll: true,
@@ -446,44 +456,46 @@ onBeforeMount(() => {
 
                         <Dialog v-model:visible="modal.aditivo" modal header="Inserir Aditivo"
                                 :style="{ width: '98%', maxWidth: '500px' }">
-                            <div class="grid gap-4 mb-4">
-                                <label for="valor" class="font-semibold w-24">Valor (R$)</label>
-                                <InputText v-model="aditivo.previa" id="valor" class="flex-auto"
-                                           @keyup="aditivo.previa = currencyMask($event.target.value)"
-                                           autocomplete="off"/>
-                            </div>
-                            <div class="grid gap-4 mb-8">
-                                <label for="detalhes" class="font-semibold w-24">Detalhes</label>
-                                <Textarea id="detalhes" class="flex-auto" maxlength="550"
-                                          v-model="aditivo.descricao" autocomplete="off"/>
-                            </div>
-                            <div class="flex justify-end gap-2">
-                                <Button type="button" label="Cancelar" severity="secondary"
-                                        @click="modal.aditivo = false"></Button>
-                                <Button type="button" label="Inserir"
-                                        @click="inserirAditivo()"></Button>
-                            </div>
+                            <form @submit.prevent="inserirAditivo()">
+                                <div class="grid gap-4 mb-4">
+                                    <label for="valor" class="font-semibold w-24">Valor (R$)</label>
+                                    <InputText v-model="aditivo.previa" id="valor" class="flex-auto"
+                                               @keyup="aditivo.previa = currencyMask($event.target.value)"
+                                               autocomplete="off" required/>
+                                </div>
+                                <div class="grid gap-4 mb-8">
+                                    <label for="detalhes" class="font-semibold w-24">Detalhes</label>
+                                    <Textarea id="detalhes" class="flex-auto" maxlength="255"
+                                              v-model="aditivo.descricao" autocomplete="off" required/>
+                                </div>
+                                <div class="flex justify-end gap-2">
+                                    <Button type="button" label="Cancelar" severity="secondary"
+                                            @click="modal.aditivo = false"></Button>
+                                    <Button type="submit" label="Inserir"></Button>
+                                </div>
+                            </form>
                         </Dialog>
 
                         <Dialog v-model:visible="modal.editarAditivo" modal header="Editar Aditivo"
                                 :style="{ width: '98%', maxWidth: '500px' }">
-                            <div class="grid gap-4 mb-4">
-                                <label for="valor" class="font-semibold w-24">Valor (R$)</label>
-                                <InputText v-model="aditivoEditar.previa" id="valor" class="flex-auto"
-                                           @keyup="aditivoEditar.previa = currencyMask($event.target.value)"
-                                           autocomplete="off"/>
-                            </div>
-                            <div class="grid gap-4 mb-8">
-                                <label for="detalhes" class="font-semibold w-24">Detalhes</label>
-                                <Textarea id="detalhes" class="flex-auto" maxlength="550"
-                                          v-model="aditivoEditar.descricao" autocomplete="off"/>
-                            </div>
-                            <div class="flex justify-end gap-2">
-                                <Button type="button" label="Cancelar" severity="secondary"
-                                        @click="modal.editarAditivo = false"></Button>
-                                <Button type="button" label="Atualizar"
-                                        @click="atualizarAditivo()"></Button>
-                            </div>
+                            <form @submit.prevent="atualizarAditivo()">
+                                <div class="grid gap-4 mb-4">
+                                    <label for="valor" class="font-semibold w-24">Valor (R$)</label>
+                                    <InputText v-model="aditivoEditar.previa" id="valor" class="flex-auto"
+                                               @keyup="aditivoEditar.previa = currencyMask($event.target.value)"
+                                               autocomplete="off" required/>
+                                </div>
+                                <div class="grid gap-4 mb-8">
+                                    <label for="detalhes" class="font-semibold w-24">Detalhes</label>
+                                    <Textarea id="detalhes" class="flex-auto" maxlength="255"
+                                              v-model="aditivoEditar.descricao" autocomplete="off" required/>
+                                </div>
+                                <div class="flex justify-end gap-2">
+                                    <Button type="button" label="Cancelar" severity="secondary"
+                                            @click="modal.editarAditivo = false"></Button>
+                                    <Button type="submit" label="Atualizar"></Button>
+                                </div>
+                            </form>
                         </Dialog>
 
                         <Dialog v-model:visible="modal.excluirAditivo" modal header="Remover Aditivo"
@@ -495,7 +507,7 @@ onBeforeMount(() => {
                             </div>
                             <div class="grid gap-4 mb-8">
                                 <label for="detalhes" class="font-semibold w-24">Detalhes</label>
-                                <Textarea id="detalhes" class="flex-auto" maxlength="550"
+                                <Textarea id="detalhes" class="flex-auto"
                                           v-model="aditivoExcluir.descricao" autocomplete="off" readonly/>
                             </div>
                             <div class="flex justify-end gap-2">
