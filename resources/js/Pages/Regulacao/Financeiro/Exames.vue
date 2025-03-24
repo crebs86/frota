@@ -1,13 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
-import {Head, Link, router, useForm} from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
 import moment from 'moment';
-import {Select, Button} from "primevue";
-import {ref} from "vue";
-import {toast} from "@/toast";
-import {currencyMask} from "@/mask.js";
+import { Select, Button } from "primevue";
+import { ref } from "vue";
+import { toast } from "@/toast";
+import { currencyMask } from "@/mask.js";
 
 const props = defineProps({
     exames_clinicos: Object | null,
@@ -64,7 +64,7 @@ function maskCurrency(event) {
 
 <template>
 
-    <Head title="Financeiro - Exames"/>
+    <Head title="Financeiro - Exames" />
 
     <AuthenticatedLayout>
         <SubSection>
@@ -74,11 +74,11 @@ function maskCurrency(event) {
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.71)]">
                     <div class="p-2 rounded-lg overflow-y-auto"
-                         :class="$page.props.app.settingsStyles.main.innerSection">
+                        :class="$page.props.app.settingsStyles.main.innerSection">
                         <div class="grid grid-cols-6 gap-3 place-items-center">
                             <Select v-model="contrato.dados" :options="props.contratos"
-                                    placeholder="Selecione um contrato" class="w-full col-span-5" filter
-                                    option-label="contratada_nome">
+                                placeholder="Selecione um contrato" class="w-full col-span-5" filter
+                                option-label="contratada_nome">
                                 <template #option="slotProps">
                                     <div class="flex items-center">
                                         <div>{{ slotProps.option.contrato }}/{{ slotProps.option.ano }} -
@@ -88,7 +88,7 @@ function maskCurrency(event) {
                                 </template>
                             </Select>
                             <Button label="Selecionar" severity="success" @click="buscarExamesContrato()"
-                                    :disabled="!contrato.dados"/>
+                                :disabled="!contrato.dados" />
 
                             <div class="col-span-6 w-full" v-if="contrato.dados">
                                 <ul> Detalhes do Contrato:
@@ -100,28 +100,35 @@ function maskCurrency(event) {
                                 </ul>
                             </div>
 
-                            <div class="col-span-6 w-full"
-                                 v-if="props.exames_financeiro && props.exames_financeiro.length > 0">
-                                exames clínicos
-                            </div>
-
                             <div class="col-span-6 w-full grid grid-cols-6"
-                                 v-else-if="props.exames_financeiro && props.exames_financeiro.length === 0">
-                                <p class="col-span-6 uppercase text-lg font-extrabold border-s-2 pl-2 mt-4 mb-2">
+                                v-else-if="props.exames_financeiro && props.exames_financeiro.length > 0">
+                                <p
+                                    class="col-span-6 uppercase text-lg font-extrabold border-s-2 pl-2 mt-4 mb-2 border-s-blue-500 bg-blue-400/40">
                                     Cadastrar exames para este contrato
                                 </p>
                                 <form @submit.prevent="verificarESalvar()" class="col-span-6" id="valores">
                                     <Button type="submit" label="Verificar e Salvar" severity="success"
-                                            :disabled="!contrato.dados"/>
+                                        :disabled="!contrato.dados" />
+                                </form>
+                            </div>
+
+                            <div class="col-span-6 w-full grid grid-cols-6"
+                                v-else-if="props.exames_financeiro && props.exames_financeiro.length === 0">
+                                <p
+                                    class="col-span-6 uppercase text-lg font-extrabold border-s-2 pl-2 mt-4 mb-2 border-s-blue-500 bg-blue-400/40">
+                                    Cadastrar exames para este contrato
+                                </p>
+                                <form @submit.prevent="verificarESalvar()" class="col-span-6" id="valores">
+                                    <Button type="submit" label="Verificar e Salvar" severity="success"
+                                        :disabled="!contrato.dados" />
                                     <div class="cols-span-6 w-full my-2 border-b"
-                                         v-for="(v, i) in props.exames_clinicos" :key="i">
+                                        v-for="(v, i) in props.exames_clinicos" :key="i">
                                         <label class="text-sm flex" :for="v.id">
                                             {{ v.Descricao }}*
                                         </label>
-                                        <input type="text" :name="v.id" :id="v.id"
-                                               @keyup="maskCurrency($event)"
-                                               class="w-full rounded border border-black text-gray-700"
-                                               placeholder="Valor unitário (R$)"/>
+                                        <input type="text" :name="v.id" :id="v.id" @keyup="maskCurrency($event)"
+                                            class="w-full rounded border border-black text-gray-700"
+                                            placeholder="Valor unitário (R$)" />
                                         <div>
                                             <ul> Detalhes
                                                 <li><span class="font-bold">Código Externo: </span>
