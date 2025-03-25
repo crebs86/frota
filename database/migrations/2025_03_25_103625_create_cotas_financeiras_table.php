@@ -30,7 +30,7 @@ return new class extends Migration
                 ->on('users');
 
             $table->decimal('valor');
-            $table->text('alteracoes');
+            $table->text('alteracoes')->nullable();
 
             $table->timestamp('inicio');
             $table->timestamp('fim');

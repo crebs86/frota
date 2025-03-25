@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Tempo de geração: 24/03/2025 às 01:44
+-- Tempo de geração: 25/03/2025 às 23:40
 -- Versão do servidor: 8.0.41-0ubuntu0.24.04.1
 -- Versão do PHP: 8.3.6
 
@@ -90,7 +90,9 @@ INSERT INTO `branches` (`id`, `name`, `cnpj`, `email`, `phones`, `cep`, `notes`,
 (4, 'US Araçás', NULL, NULL, NULL, NULL, NULL, 'Praça de Araçás', NULL, '2025-01-16 22:56:44', '2025-01-16 22:56:44'),
 (5, 'Garagem Vila Nova', NULL, NULL, NULL, NULL, NULL, 'Anexo a US Vila Nova', NULL, '2025-01-16 22:58:04', '2025-01-16 22:58:04'),
 (6, 'Central', NULL, NULL, NULL, NULL, NULL, 'Garagem Central', NULL, '2025-02-06 16:01:30', '2025-02-06 16:01:30'),
-(7, 'US Paul', NULL, NULL, NULL, NULL, NULL, 'Praça de Paul', NULL, '2025-02-14 00:05:19', '2025-02-14 00:05:19');
+(7, 'US Paul', NULL, NULL, NULL, NULL, NULL, 'Praça de Paul', NULL, '2025-02-14 00:05:19', '2025-02-14 00:05:19'),
+(8, 'US Ponta da Fruta', NULL, NULL, NULL, NULL, NULL, 'Pŕoxima a Lagoa', NULL, '2025-03-25 21:16:34', '2025-03-25 21:16:34'),
+(9, 'US Ibes', NULL, NULL, NULL, NULL, NULL, 'Próximo a praça do Ibes', NULL, '2025-03-25 21:17:16', '2025-03-25 21:17:16');
 
 -- --------------------------------------------------------
 
@@ -245,6 +247,7 @@ CREATE TABLE `contratos` (
   `aditivos` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `descricao` varchar(550) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ativo` tinyint(1) NOT NULL,
+  `versao` tinyint NOT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -254,9 +257,37 @@ CREATE TABLE `contratos` (
 -- Despejando dados para a tabela `contratos`
 --
 
-INSERT INTO `contratos` (`id`, `user`, `contrato`, `ano`, `contratada_nome`, `contratada_cnpj`, `contratante`, `vigencia_inicio`, `vigencia_fim`, `valor_global`, `aditivos`, `descricao`, `ativo`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(1, 1, 241, 2022, 'Target Soluções Inteligentes', '22840676000126', 'SEMSA/FMS', '2024-03-22', '2025-03-22', 1000000.00, '[{\"valor\":1075482.5,\"descricao\":\"1\\u00ba Aditivo|2023-2024\",\"indice\":\"GDpOJUkRiwAzMHEwx\"},{\"valor\":75482.5,\"descricao\":\"1\\u00b0 reajuste 2023-2024\",\"indice\":\"jqA7B3JMLiHU8whiP\"}]', 'Unidades A, B e C\nContrato inicial de R$ 1.000.000,00\nReajuste e 1º aditivo em 22/03/2025', 1, NULL, '2025-03-22 12:12:04', '2025-03-23 14:21:11'),
-(2, 1, 45987, 2025, 'Laboratório A', '24516876000153', 'FMS', '2025-03-07', '2026-03-22', 456987.15, NULL, 'Emergencial', 1, NULL, '2025-03-22 14:07:37', '2025-03-22 14:10:33');
+INSERT INTO `contratos` (`id`, `user`, `contrato`, `ano`, `contratada_nome`, `contratada_cnpj`, `contratante`, `vigencia_inicio`, `vigencia_fim`, `valor_global`, `aditivos`, `descricao`, `ativo`, `versao`, `deleted_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 241, 2022, 'Target Soluções Inteligentes', '22840676000126', 'SEMSA/FMS', '2024-03-22', '2025-03-22', 1000000.00, '[{\"valor\":1075482.5,\"descricao\":\"1\\u00ba Aditivo|2023-2024\",\"indice\":\"GDpOJUkRiwAzMHEwx\"},{\"valor\":75482.5,\"descricao\":\"1\\u00b0 reajuste 2023-2024\",\"indice\":\"jqA7B3JMLiHU8whiP\"}]', 'Unidades A, B e C\nContrato inicial de R$ 1.000.000,00\nReajuste e 1º aditivo em 22/03/2025', 1, 1, NULL, '2025-03-22 12:12:04', '2025-03-23 14:21:11'),
+(2, 1, 45987, 2025, 'Laboratório A', '24516876000153', 'FMS', '2025-03-07', '2026-03-22', 456987.15, NULL, 'Emergencial', 1, 1, NULL, '2025-03-22 14:07:37', '2025-03-22 14:10:33');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `cotas_financeiras`
+--
+
+CREATE TABLE `cotas_financeiras` (
+  `id` bigint UNSIGNED NOT NULL,
+  `posto_coleta` bigint UNSIGNED NOT NULL,
+  `contrato` bigint UNSIGNED NOT NULL,
+  `user` bigint UNSIGNED NOT NULL,
+  `valor` decimal(8,2) NOT NULL,
+  `alteracoes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `inicio` date NOT NULL,
+  `fim` date NOT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `cotas_financeiras`
+--
+
+INSERT INTO `cotas_financeiras` (`id`, `posto_coleta`, `contrato`, `user`, `valor`, `alteracoes`, `inicio`, `fim`, `deleted_at`, `created_at`, `updated_at`) VALUES
+(1, 4, 1, 1, 234.23, NULL, '2024-04-01', '2025-04-01', NULL, '2025-03-25 21:36:30', '2025-03-25 21:36:30'),
+(2, 8, 2, 1, 1222.22, NULL, '2025-03-01', '2025-03-29', NULL, '2025-03-25 21:39:10', '2025-03-25 21:39:10');
 
 -- --------------------------------------------------------
 
@@ -620,20 +651,20 @@ CREATE TABLE `exames_financeiro` (
 --
 
 INSERT INTO `exames_financeiro` (`id`, `user`, `CodExameLaboratorial`, `contrato`, `valor`, `observacao`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 2, 12.34, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
-(2, 1, 2, 2, 4.12, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
-(3, 1, 3, 2, 12.34, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
+(1, 1, 1, 2, 2.99, NULL, '2025-03-24 01:43:29', '2025-03-24 19:48:36'),
+(2, 1, 2, 2, 2.25, NULL, '2025-03-24 01:43:29', '2025-03-24 19:46:04'),
+(3, 1, 3, 2, 3.21, NULL, '2025-03-24 01:43:29', '2025-03-24 21:23:58'),
 (4, 1, 4, 2, 12.34, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (5, 1, 5, 2, 2.21, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
-(6, 1, 6, 2, 12.34, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
-(7, 1, 7, 2, 93.75, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
-(8, 1, 8, 2, 94.21, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
+(6, 1, 6, 2, 1.98, NULL, '2025-03-24 01:43:29', '2025-03-24 19:36:46'),
+(7, 1, 7, 2, 1.53, NULL, '2025-03-24 01:43:29', '2025-03-24 20:00:36'),
+(8, 1, 8, 2, 3.12, NULL, '2025-03-24 01:43:29', '2025-03-24 19:51:39'),
 (9, 1, 9, 2, 14.99, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (10, 1, 10, 2, 59.76, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (11, 1, 11, 2, 30.67, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (12, 1, 12, 2, 37.31, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (13, 1, 13, 2, 7.22, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
-(14, 1, 14, 2, 64.13, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
+(14, 1, 14, 2, 99.99, NULL, '2025-03-24 01:43:29', '2025-03-24 20:02:46'),
 (15, 1, 15, 2, 3.18, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (16, 1, 16, 2, 22.24, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (17, 1, 17, 2, 7.80, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
@@ -641,7 +672,7 @@ INSERT INTO `exames_financeiro` (`id`, `user`, `CodExameLaboratorial`, `contrato
 (19, 1, 19, 2, 61.32, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (20, 1, 20, 2, 28.89, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (21, 1, 21, 2, 64.90, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
-(22, 1, 22, 2, 32.25, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
+(22, 1, 22, 2, 322.51, NULL, '2025-03-24 01:43:29', '2025-03-24 20:02:08'),
 (23, 1, 23, 2, 18.23, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (24, 1, 24, 2, 9.56, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (25, 1, 25, 2, 43.77, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
@@ -903,7 +934,291 @@ INSERT INTO `exames_financeiro` (`id`, `user`, `CodExameLaboratorial`, `contrato
 (281, 1, 281, 2, 19.98, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (282, 1, 282, 2, 35.68, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (283, 1, 283, 2, 67.48, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
-(284, 1, 284, 2, 71.32, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29');
+(284, 1, 284, 2, 71.32, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
+(569, 1, 1, 1, 0.01, NULL, NULL, NULL),
+(570, 1, 2, 1, 0.12, NULL, NULL, NULL),
+(571, 1, 3, 1, 1.23, NULL, NULL, NULL),
+(572, 1, 4, 1, 12.34, NULL, NULL, NULL),
+(573, 1, 5, 1, 123.45, NULL, NULL, NULL),
+(574, 1, 6, 1, 1234.56, NULL, NULL, NULL),
+(575, 1, 7, 1, 12345.67, NULL, NULL, NULL),
+(576, 1, 8, 1, 123456.78, NULL, NULL, NULL),
+(577, 1, 9, 1, 123456.78, NULL, NULL, NULL),
+(578, 1, 10, 1, 9.86, NULL, NULL, '2025-03-24 22:51:07'),
+(579, 1, 11, 1, 88.41, NULL, NULL, NULL),
+(580, 1, 12, 1, 11.50, NULL, NULL, NULL),
+(581, 1, 13, 1, 73.20, NULL, NULL, NULL),
+(582, 1, 14, 1, 72.16, NULL, NULL, NULL),
+(583, 1, 15, 1, 95.44, NULL, NULL, NULL),
+(584, 1, 16, 1, 47.52, NULL, NULL, NULL),
+(585, 1, 17, 1, 84.82, NULL, NULL, NULL),
+(586, 1, 18, 1, 55.45, NULL, NULL, NULL),
+(587, 1, 19, 1, 13.37, NULL, NULL, NULL),
+(588, 1, 20, 1, 39.71, NULL, NULL, NULL),
+(589, 1, 21, 1, 51.46, NULL, NULL, NULL),
+(590, 1, 22, 1, 47.72, NULL, NULL, NULL),
+(591, 1, 23, 1, 16.24, NULL, NULL, NULL),
+(592, 1, 24, 1, 87.45, NULL, NULL, NULL),
+(593, 1, 25, 1, 42.30, NULL, NULL, NULL),
+(594, 1, 26, 1, 26.72, NULL, NULL, NULL),
+(595, 1, 27, 1, 54.22, NULL, NULL, NULL),
+(596, 1, 28, 1, 71.27, NULL, NULL, NULL),
+(597, 1, 29, 1, 90.75, NULL, NULL, NULL),
+(598, 1, 30, 1, 28.37, NULL, NULL, NULL),
+(599, 1, 31, 1, 38.61, NULL, NULL, NULL),
+(600, 1, 32, 1, 36.49, NULL, NULL, NULL),
+(601, 1, 33, 1, 42.81, NULL, NULL, NULL),
+(602, 1, 34, 1, 100.80, NULL, NULL, NULL),
+(603, 1, 35, 1, 39.42, NULL, NULL, NULL),
+(604, 1, 36, 1, 6.26, NULL, NULL, NULL),
+(605, 1, 37, 1, 40.19, NULL, NULL, NULL),
+(606, 1, 38, 1, 2.35, NULL, NULL, NULL),
+(607, 1, 39, 1, 59.84, NULL, NULL, NULL),
+(608, 1, 40, 1, 95.83, NULL, NULL, NULL),
+(609, 1, 41, 1, 76.33, NULL, NULL, NULL),
+(610, 1, 42, 1, 43.71, NULL, NULL, NULL),
+(611, 1, 43, 1, 96.07, NULL, NULL, NULL),
+(612, 1, 44, 1, 94.16, NULL, NULL, NULL),
+(613, 1, 45, 1, 0.98, NULL, NULL, NULL),
+(614, 1, 46, 1, 82.02, NULL, NULL, NULL),
+(615, 1, 47, 1, 0.92, NULL, NULL, NULL),
+(616, 1, 48, 1, 96.64, NULL, NULL, NULL),
+(617, 1, 49, 1, 60.48, NULL, NULL, NULL),
+(618, 1, 50, 1, 63.29, NULL, NULL, NULL),
+(619, 1, 51, 1, 81.00, NULL, NULL, NULL),
+(620, 1, 52, 1, 9.93, NULL, NULL, NULL),
+(621, 1, 53, 1, 94.78, NULL, NULL, NULL),
+(622, 1, 54, 1, 85.10, NULL, NULL, NULL),
+(623, 1, 55, 1, 8.35, NULL, NULL, NULL),
+(624, 1, 56, 1, 80.12, NULL, NULL, NULL),
+(625, 1, 57, 1, 63.16, NULL, NULL, NULL),
+(626, 1, 58, 1, 17.11, NULL, NULL, NULL),
+(627, 1, 59, 1, 61.17, NULL, NULL, NULL),
+(628, 1, 60, 1, 66.35, NULL, NULL, NULL),
+(629, 1, 61, 1, 29.18, NULL, NULL, NULL),
+(630, 1, 62, 1, 36.09, NULL, NULL, NULL),
+(631, 1, 63, 1, 99.94, NULL, NULL, NULL),
+(632, 1, 64, 1, 4.52, NULL, NULL, NULL),
+(633, 1, 65, 1, 5.75, NULL, NULL, NULL),
+(634, 1, 66, 1, 25.73, NULL, NULL, NULL),
+(635, 1, 67, 1, 49.11, NULL, NULL, NULL),
+(636, 1, 68, 1, 5.35, NULL, NULL, NULL),
+(637, 1, 69, 1, 72.26, NULL, NULL, NULL),
+(638, 1, 70, 1, 29.63, NULL, NULL, NULL),
+(639, 1, 71, 1, 7.85, NULL, NULL, NULL),
+(640, 1, 72, 1, 50.75, NULL, NULL, NULL),
+(641, 1, 73, 1, 6.55, NULL, NULL, NULL),
+(642, 1, 74, 1, 100.58, NULL, NULL, NULL),
+(643, 1, 75, 1, 60.12, NULL, NULL, NULL),
+(644, 1, 76, 1, 16.59, NULL, NULL, NULL),
+(645, 1, 77, 1, 17.55, NULL, NULL, NULL),
+(646, 1, 78, 1, 99.04, NULL, NULL, NULL),
+(647, 1, 79, 1, 59.40, NULL, NULL, NULL),
+(648, 1, 80, 1, 15.80, NULL, NULL, NULL),
+(649, 1, 81, 1, 51.83, NULL, NULL, NULL),
+(650, 1, 82, 1, 18.71, NULL, NULL, NULL),
+(651, 1, 83, 1, 84.81, NULL, NULL, NULL),
+(652, 1, 84, 1, 7.88, NULL, NULL, NULL),
+(653, 1, 85, 1, 80.90, NULL, NULL, NULL),
+(654, 1, 86, 1, 98.66, NULL, NULL, NULL),
+(655, 1, 87, 1, 35.50, NULL, NULL, NULL),
+(656, 1, 88, 1, 34.26, NULL, NULL, NULL),
+(657, 1, 89, 1, 31.21, NULL, NULL, NULL),
+(658, 1, 90, 1, 68.09, NULL, NULL, NULL),
+(659, 1, 91, 1, 42.13, NULL, NULL, NULL),
+(660, 1, 92, 1, 85.47, NULL, NULL, NULL),
+(661, 1, 93, 1, 11.59, NULL, NULL, NULL),
+(662, 1, 94, 1, 73.78, NULL, NULL, NULL),
+(663, 1, 95, 1, 4.48, NULL, NULL, NULL),
+(664, 1, 96, 1, 88.56, NULL, NULL, NULL),
+(665, 1, 97, 1, 28.31, NULL, NULL, NULL),
+(666, 1, 98, 1, 96.21, NULL, NULL, NULL),
+(667, 1, 99, 1, 31.51, NULL, NULL, NULL),
+(668, 1, 100, 1, 27.61, NULL, NULL, NULL),
+(669, 1, 101, 1, 52.97, NULL, NULL, NULL),
+(670, 1, 102, 1, 55.65, NULL, NULL, NULL),
+(671, 1, 103, 1, 38.99, NULL, NULL, NULL),
+(672, 1, 104, 1, 15.47, NULL, NULL, NULL),
+(673, 1, 105, 1, 30.46, NULL, NULL, NULL),
+(674, 1, 106, 1, 41.33, NULL, NULL, NULL),
+(675, 1, 107, 1, 17.46, NULL, NULL, NULL),
+(676, 1, 108, 1, 29.95, NULL, NULL, NULL),
+(677, 1, 109, 1, 51.65, NULL, NULL, NULL),
+(678, 1, 110, 1, 66.83, NULL, NULL, NULL),
+(679, 1, 111, 1, 8.70, NULL, NULL, NULL),
+(680, 1, 112, 1, 15.45, NULL, NULL, NULL),
+(681, 1, 113, 1, 75.37, NULL, NULL, NULL),
+(682, 1, 114, 1, 85.95, NULL, NULL, NULL),
+(683, 1, 115, 1, 68.84, NULL, NULL, NULL),
+(684, 1, 116, 1, 57.26, NULL, NULL, NULL),
+(685, 1, 117, 1, 59.88, NULL, NULL, NULL),
+(686, 1, 118, 1, 68.72, NULL, NULL, NULL),
+(687, 1, 119, 1, 86.85, NULL, NULL, NULL),
+(688, 1, 120, 1, 80.57, NULL, NULL, NULL),
+(689, 1, 121, 1, 75.66, NULL, NULL, NULL),
+(690, 1, 122, 1, 73.61, NULL, NULL, NULL),
+(691, 1, 123, 1, 52.66, NULL, NULL, NULL),
+(692, 1, 124, 1, 48.21, NULL, NULL, NULL),
+(693, 1, 125, 1, 32.44, NULL, NULL, NULL),
+(694, 1, 126, 1, 59.48, NULL, NULL, NULL),
+(695, 1, 127, 1, 17.56, NULL, NULL, NULL),
+(696, 1, 128, 1, 42.66, NULL, NULL, NULL),
+(697, 1, 129, 1, 22.93, NULL, NULL, NULL),
+(698, 1, 130, 1, 63.60, NULL, NULL, NULL),
+(699, 1, 131, 1, 37.26, NULL, NULL, NULL),
+(700, 1, 132, 1, 60.91, NULL, NULL, NULL),
+(701, 1, 133, 1, 97.19, NULL, NULL, NULL),
+(702, 1, 134, 1, 94.06, NULL, NULL, NULL),
+(703, 1, 135, 1, 80.60, NULL, NULL, NULL),
+(704, 1, 136, 1, 93.37, NULL, NULL, NULL),
+(705, 1, 137, 1, 95.19, NULL, NULL, NULL),
+(706, 1, 138, 1, 78.34, NULL, NULL, NULL),
+(707, 1, 139, 1, 78.77, NULL, NULL, NULL),
+(708, 1, 140, 1, 19.65, NULL, NULL, NULL),
+(709, 1, 141, 1, 80.42, NULL, NULL, NULL),
+(710, 1, 142, 1, 34.06, NULL, NULL, NULL),
+(711, 1, 143, 1, 87.57, NULL, NULL, NULL),
+(712, 1, 144, 1, 83.13, NULL, NULL, NULL),
+(713, 1, 145, 1, 45.78, NULL, NULL, NULL),
+(714, 1, 146, 1, 47.65, NULL, NULL, NULL),
+(715, 1, 147, 1, 74.18, NULL, NULL, NULL),
+(716, 1, 148, 1, 16.04, NULL, NULL, NULL),
+(717, 1, 149, 1, 47.01, NULL, NULL, NULL),
+(718, 1, 150, 1, 66.71, NULL, NULL, NULL),
+(719, 1, 151, 1, 48.56, NULL, NULL, NULL),
+(720, 1, 152, 1, 69.23, NULL, NULL, NULL),
+(721, 1, 153, 1, 55.59, NULL, NULL, NULL),
+(722, 1, 154, 1, 79.58, NULL, NULL, NULL),
+(723, 1, 155, 1, 37.10, NULL, NULL, NULL),
+(724, 1, 156, 1, 1.86, NULL, NULL, NULL),
+(725, 1, 157, 1, 14.61, NULL, NULL, NULL),
+(726, 1, 158, 1, 100.32, NULL, NULL, NULL),
+(727, 1, 159, 1, 38.02, NULL, NULL, NULL),
+(728, 1, 160, 1, 94.52, NULL, NULL, NULL),
+(729, 1, 161, 1, 72.93, NULL, NULL, NULL),
+(730, 1, 162, 1, 98.70, NULL, NULL, NULL),
+(731, 1, 163, 1, 51.38, NULL, NULL, NULL),
+(732, 1, 164, 1, 53.26, NULL, NULL, NULL),
+(733, 1, 165, 1, 32.91, NULL, NULL, NULL),
+(734, 1, 166, 1, 7.49, NULL, NULL, NULL),
+(735, 1, 167, 1, 12.42, NULL, NULL, NULL),
+(736, 1, 168, 1, 73.07, NULL, NULL, NULL),
+(737, 1, 169, 1, 95.19, NULL, NULL, NULL),
+(738, 1, 170, 1, 38.01, NULL, NULL, NULL),
+(739, 1, 171, 1, 45.56, NULL, NULL, NULL),
+(740, 1, 172, 1, 36.08, NULL, NULL, NULL),
+(741, 1, 173, 1, 2.84, NULL, NULL, NULL),
+(742, 1, 174, 1, 84.81, NULL, NULL, NULL),
+(743, 1, 175, 1, 38.09, NULL, NULL, NULL),
+(744, 1, 176, 1, 11.00, NULL, NULL, NULL),
+(745, 1, 177, 1, 86.84, NULL, NULL, NULL),
+(746, 1, 178, 1, 46.67, NULL, NULL, NULL),
+(747, 1, 179, 1, 99.06, NULL, NULL, NULL),
+(748, 1, 180, 1, 8.17, NULL, NULL, NULL),
+(749, 1, 181, 1, 55.65, NULL, NULL, NULL),
+(750, 1, 182, 1, 26.58, NULL, NULL, NULL),
+(751, 1, 183, 1, 61.35, NULL, NULL, NULL),
+(752, 1, 184, 1, 37.43, NULL, NULL, NULL),
+(753, 1, 185, 1, 19.03, NULL, NULL, NULL),
+(754, 1, 186, 1, 69.82, NULL, NULL, NULL),
+(755, 1, 187, 1, 71.74, NULL, NULL, NULL),
+(756, 1, 188, 1, 28.89, NULL, NULL, NULL),
+(757, 1, 189, 1, 99.85, NULL, NULL, NULL),
+(758, 1, 190, 1, 24.88, NULL, NULL, NULL),
+(759, 1, 191, 1, 95.32, NULL, NULL, NULL),
+(760, 1, 192, 1, 70.00, NULL, NULL, NULL),
+(761, 1, 193, 1, 97.74, NULL, NULL, NULL),
+(762, 1, 194, 1, 11.27, NULL, NULL, NULL),
+(763, 1, 195, 1, 71.19, NULL, NULL, NULL),
+(764, 1, 196, 1, 80.41, NULL, NULL, NULL),
+(765, 1, 197, 1, 64.48, NULL, NULL, NULL),
+(766, 1, 198, 1, 44.10, NULL, NULL, NULL),
+(767, 1, 199, 1, 98.20, NULL, NULL, NULL),
+(768, 1, 200, 1, 18.46, NULL, NULL, NULL),
+(769, 1, 201, 1, 47.52, NULL, NULL, NULL),
+(770, 1, 202, 1, 8.16, NULL, NULL, NULL),
+(771, 1, 203, 1, 95.49, NULL, NULL, NULL),
+(772, 1, 204, 1, 28.22, NULL, NULL, NULL),
+(773, 1, 205, 1, 33.67, NULL, NULL, NULL),
+(774, 1, 206, 1, 53.48, NULL, NULL, NULL),
+(775, 1, 207, 1, 70.23, NULL, NULL, NULL),
+(776, 1, 208, 1, 37.40, NULL, NULL, NULL),
+(777, 1, 209, 1, 15.81, NULL, NULL, NULL),
+(778, 1, 210, 1, 70.87, NULL, NULL, NULL),
+(779, 1, 211, 1, 79.61, NULL, NULL, NULL),
+(780, 1, 212, 1, 25.05, NULL, NULL, NULL),
+(781, 1, 213, 1, 100.80, NULL, NULL, NULL),
+(782, 1, 214, 1, 30.98, NULL, NULL, NULL),
+(783, 1, 215, 1, 48.81, NULL, NULL, NULL),
+(784, 1, 216, 1, 44.26, NULL, NULL, NULL),
+(785, 1, 217, 1, 93.65, NULL, NULL, NULL),
+(786, 1, 218, 1, 29.98, NULL, NULL, NULL),
+(787, 1, 219, 1, 28.94, NULL, NULL, NULL),
+(788, 1, 220, 1, 19.20, NULL, NULL, NULL),
+(789, 1, 221, 1, 86.50, NULL, NULL, NULL),
+(790, 1, 222, 1, 29.71, NULL, NULL, NULL),
+(791, 1, 223, 1, 28.22, NULL, NULL, NULL),
+(792, 1, 224, 1, 41.58, NULL, NULL, NULL),
+(793, 1, 225, 1, 8.08, NULL, NULL, NULL),
+(794, 1, 226, 1, 31.87, NULL, NULL, NULL),
+(795, 1, 227, 1, 63.35, NULL, NULL, NULL),
+(796, 1, 228, 1, 66.45, NULL, NULL, NULL),
+(797, 1, 229, 1, 62.20, NULL, NULL, NULL),
+(798, 1, 230, 1, 47.45, NULL, NULL, NULL),
+(799, 1, 231, 1, 0.14, NULL, NULL, NULL),
+(800, 1, 232, 1, 35.32, NULL, NULL, NULL),
+(801, 1, 233, 1, 91.27, NULL, NULL, NULL),
+(802, 1, 234, 1, 45.60, NULL, NULL, NULL),
+(803, 1, 235, 1, 72.58, NULL, NULL, NULL),
+(804, 1, 236, 1, 11.24, NULL, NULL, NULL),
+(805, 1, 237, 1, 23.88, NULL, NULL, NULL),
+(806, 1, 238, 1, 33.13, NULL, NULL, NULL),
+(807, 1, 239, 1, 42.52, NULL, NULL, NULL),
+(808, 1, 240, 1, 79.91, NULL, NULL, NULL),
+(809, 1, 241, 1, 19.81, NULL, NULL, NULL),
+(810, 1, 242, 1, 83.11, NULL, NULL, NULL),
+(811, 1, 243, 1, 76.67, NULL, NULL, NULL),
+(812, 1, 244, 1, 59.14, NULL, NULL, NULL),
+(813, 1, 245, 1, 0.03, NULL, NULL, NULL),
+(814, 1, 246, 1, 90.56, NULL, NULL, NULL),
+(815, 1, 247, 1, 4.85, NULL, NULL, NULL),
+(816, 1, 248, 1, 18.77, NULL, NULL, NULL),
+(817, 1, 249, 1, 42.74, NULL, NULL, NULL),
+(818, 1, 250, 1, 48.39, NULL, NULL, NULL),
+(819, 1, 251, 1, 21.74, NULL, NULL, NULL),
+(820, 1, 252, 1, 25.25, NULL, NULL, NULL),
+(821, 1, 253, 1, 68.68, NULL, NULL, NULL),
+(822, 1, 254, 1, 88.19, NULL, NULL, NULL),
+(823, 1, 255, 1, 53.46, NULL, NULL, NULL),
+(824, 1, 256, 1, 97.75, NULL, NULL, NULL),
+(825, 1, 257, 1, 99.85, NULL, NULL, NULL),
+(826, 1, 258, 1, 61.44, NULL, NULL, NULL),
+(827, 1, 259, 1, 25.58, NULL, NULL, NULL),
+(828, 1, 260, 1, 27.51, NULL, NULL, NULL),
+(829, 1, 261, 1, 76.54, NULL, NULL, NULL),
+(830, 1, 262, 1, 55.05, NULL, NULL, NULL),
+(831, 1, 263, 1, 55.42, NULL, NULL, NULL),
+(832, 1, 264, 1, 74.30, NULL, NULL, NULL),
+(833, 1, 265, 1, 53.46, NULL, NULL, NULL),
+(834, 1, 266, 1, 27.79, NULL, NULL, NULL),
+(835, 1, 267, 1, 44.24, NULL, NULL, NULL),
+(836, 1, 268, 1, 1.74, NULL, NULL, NULL),
+(837, 1, 269, 1, 17.15, NULL, NULL, NULL),
+(838, 1, 270, 1, 9.52, NULL, NULL, NULL),
+(839, 1, 271, 1, 42.26, NULL, NULL, NULL),
+(840, 1, 272, 1, 80.27, NULL, NULL, NULL),
+(841, 1, 273, 1, 54.70, NULL, NULL, NULL),
+(842, 1, 274, 1, 89.59, NULL, NULL, NULL),
+(843, 1, 275, 1, 8.86, NULL, NULL, NULL),
+(844, 1, 276, 1, 28.03, NULL, NULL, NULL),
+(845, 1, 277, 1, 90.53, NULL, NULL, NULL),
+(846, 1, 278, 1, 67.77, NULL, NULL, NULL),
+(847, 1, 279, 1, 70.25, NULL, NULL, NULL),
+(848, 1, 280, 1, 72.37, NULL, NULL, NULL),
+(849, 1, 281, 1, 60.15, NULL, NULL, NULL),
+(850, 1, 282, 1, 32.45, NULL, NULL, NULL),
+(851, 1, 283, 1, 15.84, NULL, NULL, NULL),
+(852, 1, 284, 1, 97.31, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1137,7 +1452,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (35, '2025_03_05_150027_create_maintenances_table', 4),
 (36, '2025_03_05_153048_create_attaches_table', 4),
 (37, '2025_03_19_133722_create_contratos_table', 5),
-(38, '2025_03_23_174252_create_exames_financeiro_table', 6);
+(38, '2025_03_23_174252_create_exames_financeiro_table', 6),
+(39, '2025_03_25_080903_create_postos_coleta_table', 7),
+(40, '2025_03_25_103625_create_cotas_financeiras_table', 7);
 
 -- --------------------------------------------------------
 
@@ -1322,6 +1639,29 @@ CREATE TABLE `personal_access_tokens` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `postos_coleta`
+--
+
+CREATE TABLE `postos_coleta` (
+  `id` bigint UNSIGNED NOT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `postos_coleta`
+--
+
+INSERT INTO `postos_coleta` (`id`, `deleted_at`, `created_at`, `updated_at`) VALUES
+(4, NULL, '2025-03-25 21:16:13', '2025-03-25 21:16:13'),
+(7, NULL, '2025-03-25 21:16:16', '2025-03-25 21:16:16'),
+(8, NULL, '2025-03-25 21:16:41', '2025-03-25 21:16:41'),
+(9, NULL, '2025-03-25 21:17:22', '2025-03-25 21:17:22');
 
 -- --------------------------------------------------------
 
@@ -1955,6 +2295,15 @@ ALTER TABLE `contratos`
   ADD KEY `contratos_user_foreign` (`user`);
 
 --
+-- Índices de tabela `cotas_financeiras`
+--
+ALTER TABLE `cotas_financeiras`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `cotas_financeiras_posto_coleta_foreign` (`posto_coleta`),
+  ADD KEY `cotas_financeiras_contrato_foreign` (`contrato`),
+  ADD KEY `cotas_financeiras_user_foreign` (`user`);
+
+--
 -- Índices de tabela `drivers`
 --
 ALTER TABLE `drivers`
@@ -2084,6 +2433,12 @@ ALTER TABLE `personal_access_tokens`
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
 
 --
+-- Índices de tabela `postos_coleta`
+--
+ALTER TABLE `postos_coleta`
+  ADD UNIQUE KEY `postos_coleta_id_unique` (`id`);
+
+--
 -- Índices de tabela `real_branches`
 --
 ALTER TABLE `real_branches`
@@ -2198,7 +2553,7 @@ ALTER TABLE `attaches`
 -- AUTO_INCREMENT de tabela `branches`
 --
 ALTER TABLE `branches`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de tabela `cars`
@@ -2225,6 +2580,12 @@ ALTER TABLE `contratos`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT de tabela `cotas_financeiras`
+--
+ALTER TABLE `cotas_financeiras`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de tabela `exames_clinicos`
 --
 ALTER TABLE `exames_clinicos`
@@ -2234,7 +2595,7 @@ ALTER TABLE `exames_clinicos`
 -- AUTO_INCREMENT de tabela `exames_financeiro`
 --
 ALTER TABLE `exames_financeiro`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=285;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=853;
 
 --
 -- AUTO_INCREMENT de tabela `failed_jobs`
@@ -2270,7 +2631,7 @@ ALTER TABLE `maintenances`
 -- AUTO_INCREMENT de tabela `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT de tabela `permissions`
@@ -2380,6 +2741,14 @@ ALTER TABLE `contratos`
   ADD CONSTRAINT `contratos_user_foreign` FOREIGN KEY (`user`) REFERENCES `users` (`id`);
 
 --
+-- Restrições para tabelas `cotas_financeiras`
+--
+ALTER TABLE `cotas_financeiras`
+  ADD CONSTRAINT `cotas_financeiras_contrato_foreign` FOREIGN KEY (`contrato`) REFERENCES `contratos` (`id`),
+  ADD CONSTRAINT `cotas_financeiras_posto_coleta_foreign` FOREIGN KEY (`posto_coleta`) REFERENCES `postos_coleta` (`id`),
+  ADD CONSTRAINT `cotas_financeiras_user_foreign` FOREIGN KEY (`user`) REFERENCES `users` (`id`);
+
+--
 -- Restrições para tabelas `drivers`
 --
 ALTER TABLE `drivers`
@@ -2437,6 +2806,12 @@ ALTER TABLE `model_has_roles`
 --
 ALTER TABLE `permission_updates`
   ADD CONSTRAINT `permission_updates_id_foreign` FOREIGN KEY (`id`) REFERENCES `permissions` (`id`);
+
+--
+-- Restrições para tabelas `postos_coleta`
+--
+ALTER TABLE `postos_coleta`
+  ADD CONSTRAINT `postos_coleta_id_foreign` FOREIGN KEY (`id`) REFERENCES `branches` (`id`);
 
 --
 -- Restrições para tabelas `real_branches`

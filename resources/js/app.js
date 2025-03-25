@@ -37,7 +37,6 @@ createInertiaApp({
                 locale: {
                     monthNames: ['Janeiro', 'Fevereiro', 'Março' ,'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
                     dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
-                    dateFormat: 'dd/mm/yy'
                 }
             })
             .mount(el);

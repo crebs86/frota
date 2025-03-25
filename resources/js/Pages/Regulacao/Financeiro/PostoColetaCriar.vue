@@ -125,13 +125,13 @@ function salvarPostoColeta() {
 
                             <div class="relative mb-6 w-full z-auto col-span-3">
                                 <div class="mt-2">
-                                    <label class="text-sm text-gray-500 dark:text-gray-400 flex">
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 flex">
                                         Selecione uma unidade para cadastrar Posto de Coleta
                                         <button @click="modal.novoPosto = true"
                                             class="border-2 border-teal-500 rounded-md mx-2 -mt-0.5 hover:opacity-70 hover:text-green-500 mb-2">
                                             <mdicon name="source-branch-plus" title="Nova Unidade" />
                                         </button>
-                                    </label>
+                                    </div>
 
                                     <Select v-model="_branch" :options="props.branches"
                                         placeholder="Selecione um contrato" class="w-full col-span-5" filter

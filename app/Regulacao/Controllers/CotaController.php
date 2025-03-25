@@ -45,23 +45,33 @@ class CotaController extends Controller
         if (!$request->contrato || !$request->posto_coleta)
             return response()->json('Selecione um Posto de Coleta e um Contrato', 422);
 
+        if (!$this->can('Regulacao Editar', 'Regulacao Apagar'))
+            return response()->json('Sem permissão para acessar recurso', 403);
+
         return response()->json([
             'cotas_financeiras' => CotaFinanceira::where([
                 'posto_coleta' => cripto($request->posto_coleta, 'posto-coleta', 2),
                 'contrato' => cripto($request->contrato, 'contrato', 2)
-            ])->get()
+            ])->join('branches', 'cotas_financeiras.posto_coleta', 'branches.id')
+                ->select('cotas_financeiras.id', 'name', 'valor', 'inicio', 'fim', 'alteracoes')
+                ->get()
+                ->each(function ($cota) {
+                    $cota->hash = cripto($cota->id, 'cota-financeira');
+                })
         ]);
     }
 
     public function salvarCota(Request $request)
     {
+        if (!$this->can('Regulacao Editar', 'Regulacao Apagar'))
+            return response()->json('Sem permissão para acessar recurso', 403);
         $request->merge(
             [
                 'posto_coleta' => cripto($request->posto_coleta, 'posto-coleta', 2),
                 'contrato' => cripto($request->contrato, 'contrato', 2),
                 'valor' => str_replace(['.', ','], ['', '.'], $request->cota['valor']),
-                'inicio' => $request->cota['inicio'],
-                'fim' => $request->cota['fim']
+                'inicio' => substr($request->cota['inicio'], 0, 10),
+                'fim' => substr($request->cota['fim'], 0, 10)
             ]
         );
         $request->validate([
@@ -72,7 +82,7 @@ class CotaController extends Controller
             'fim' => 'date',
         ]);
 
-        $cotaFinanceira = CotaFinanceira::where([
+        $cotasFinanceiras = CotaFinanceira::where([
             'contrato' => $request->contrato,
             'posto_coleta' => $request->posto_coleta,
         ])->whereBetween('inicio', [
@@ -80,10 +90,33 @@ class CotaController extends Controller
             'fim' => $request->fim
         ])->get();
 
-        if ($cotaFinanceira->count() === 0) {
+        if ($cotasFinanceiras->count() === 0) {
             $cota = CotaFinanceira::create(array_merge(['user' => auth()->id()], $request->only('contrato', 'posto_coleta', 'valor', 'inicio', 'fim')));
-            return response()->json(['cota' => $cota]);
+            return response()->json(['cotas_financeiras' => $cota]);
         }
-        return response()->json(['cota' => $cotaFinanceira]);
+        return response()->json(['cotas_financeiras' => $cotasFinanceiras]);
+    }
+
+    public function atualizarCota(Request $request)
+    {
+        if (!$this->can('Regulacao Editar', 'Regulacao Apagar'))
+            return response()->json('Sem permissão para acessar recurso', 403);
+
+        $request->merge(
+            [
+                'posto_coleta' => cripto($request->posto_coleta, 'posto-coleta', 2),
+                'contrato' => cripto($request->contrato, 'contrato', 2),
+                'valor' => str_replace(['.', ','], ['', '.'], $request->cota['valor']),
+                'id' => cripto($request->cota['hash'], 'cota-financeira', 2)
+            ]
+        );
+
+
+        $cota = CotaFinanceira::where($request->only('id', 'posto_coleta', 'contrato'))->first();
+        $cotaOriginal = $cota->toArray();
+
+        $cota->valor = str_replace(['.', ','], ['', '.'], $cotaOriginal['valor']);
+
+        dd($cota, $cotaOriginal);
     }
 }
