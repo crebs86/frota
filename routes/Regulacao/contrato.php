@@ -36,9 +36,13 @@ Route::prefix('/regulacao')->middleware(
         });
         Route::prefix('/posto-coleta')->name('posto-coleta.')->group(function () {
             Route::get('/', [PostoColetaController::class, 'index'])->name('index');
+            Route::get('/novo', [PostoColetaController::class, 'create'])->name('create');
+            Route::post('/novo', [PostoColetaController::class, 'store'])->name('store');
         });
         Route::prefix('/cota')->name('cota.')->group(function () {
             Route::get('/', [CotaController::class, 'index'])->name('index');
+            Route::post('/buscar-cota', [CotaController::class, 'buscarCota'])->name('buscar-cota');
+            Route::post('/salvar-cota-unidade', [CotaController::class, 'salvarCota'])->name('salvar-cota');
         });
     });
 });

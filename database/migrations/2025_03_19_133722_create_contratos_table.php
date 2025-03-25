@@ -29,6 +29,7 @@ return new class extends Migration {
             $table->text('aditivos');
             $table->string('descricao', 550);
             $table->boolean('ativo');
+            $table->tinyInteger('versao');
             $table->softDeletes();
             $table->timestamps();
         });

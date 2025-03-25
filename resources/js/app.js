@@ -10,7 +10,6 @@ import PrimeVue from "primevue/config";
 import Aura from "@primeuix/themes/aura";
 
 import "vue-toast-notification/dist/theme-sugar.css";
-//import "vue-multiselect/dist/vue-multiselect.css";
 
 import mdiVue from "mdi-vue/v3";
 import * as mdijs from "@mdi/js";
@@ -35,6 +34,11 @@ createInertiaApp({
                 theme: {
                     preset: Aura,
                 },
+                locale: {
+                    monthNames: ['Janeiro', 'Fevereiro', 'Março' ,'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                    dayNamesMin: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+                    dateFormat: 'dd/mm/yy'
+                }
             })
             .mount(el);
     },

@@ -37,6 +37,7 @@ class ContratosRequest extends FormRequest
             'ativo' => 'required',
             'valor_global' => 'required|decimal:0,2',
             'contratante' => 'required|max:255',
+            'versao' => 'required|max:2'
         ];
     }
 

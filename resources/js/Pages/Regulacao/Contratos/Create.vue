@@ -1,12 +1,12 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
-import {Head, Link, useForm} from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
-import {toast} from '@/toast';
-import {currencyMask, cnpjMask} from '@/mask';
-import {onBeforeMount, ref} from 'vue';
-import {Button, Dialog, InputText, Textarea, DataTable, Column, Row} from 'primevue';
+import { toast } from '@/toast';
+import { currencyMask, cnpjMask } from '@/mask';
+import { onBeforeMount, ref } from 'vue';
+import { Button, Dialog, InputText, Textarea, DataTable, Column, Row } from 'primevue';
 
 const props = defineProps({
     editar: Boolean,
@@ -27,6 +27,7 @@ const contrato = useForm({
     descricao: '',
     ativo: true,
     valor: null,
+    versao: '',
     hash: null
 })
 
@@ -183,6 +184,7 @@ onBeforeMount(() => {
         contrato.aditivos = props.contrato.aditivos
         contrato.descricao = props.contrato.descricao
         contrato.ativo = props.contrato.ativo
+        contrato.versao = props.contrato.versao
         contrato.hash = props.hash
     }
 })
@@ -191,7 +193,7 @@ onBeforeMount(() => {
 
 <template>
 
-    <Head title="Novo Contrato"/>
+    <Head title="Novo Contrato" />
 
 
     <AuthenticatedLayout>
@@ -208,18 +210,18 @@ onBeforeMount(() => {
                                 $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
                             class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
                             :href="route('regulacao.contratos.create')" title="Novo Contrato">
-                            <img src="/icons/add.svg" alt="Novo Contrato" class="w-6">
+                        <img src="/icons/add.svg" alt="Novo Contrato" class="w-6">
                         </Link>
                         <Link
                             v-if="props.edit && has(
                                 $page.props.auth.permissions, ['Contrato Ver', 'Contrato Editar', 'Contrato Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
                             class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
                             :href="route('regulacao.contratos.index')" title="Listar Contratos">
-                            <img src="/icons/lista2.svg" alt="Listar Contratos" class="w-6">
+                        <img src="/icons/lista2.svg" alt="Listar Contratos" class="w-6">
                         </Link>
                     </div>
                     <div class="p-2 rounded-lg overflow-y-auto"
-                         :class="$page.props.app.settingsStyles.main.innerSection">
+                        :class="$page.props.app.settingsStyles.main.innerSection">
                         <form @submit.prevent="salvar()">
                             <div class="grid grid-cols-5 gap-3 place-items-center">
                                 <div class="col-span-5 md:col-span-2 w-full">
@@ -227,12 +229,12 @@ onBeforeMount(() => {
                                         Contrato*
                                     </label>
                                     <input type="text" v-model="contrato.contrato"
-                                           :class="props.editar ? 'bg-gray-400 cursor-not-allowed' : ''"
-                                           class="w-full rounded border border-black text-gray-700" required
-                                           :disabled="props.editar"/>
+                                        :class="props.editar ? 'bg-gray-400 cursor-not-allowed' : ''"
+                                        class="w-full rounded border border-black text-gray-700" required
+                                        :disabled="props.editar" />
 
                                     <div v-if="contrato.errors?.contrato"
-                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                         <small v-for="error in contrato.errors?.contrato">{{ error }}</small>
                                     </div>
                                 </div>
@@ -242,12 +244,12 @@ onBeforeMount(() => {
                                         Ano*
                                     </label>
                                     <input type="text" v-model="contrato.ano"
-                                           :class="props.editar ? 'bg-gray-400 cursor-not-allowed' : ''"
-                                           class="w-full rounded border border-black text-gray-700" required
-                                           :disabled="props.editar"/>
+                                        :class="props.editar ? 'bg-gray-400 cursor-not-allowed' : ''"
+                                        class="w-full rounded border border-black text-gray-700" required
+                                        :disabled="props.editar" />
 
                                     <div v-if="contrato.errors?.ano"
-                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                         <small v-for="error in contrato.errors?.ano">{{ error }}</small>
                                     </div>
                                 </div>
@@ -260,16 +262,16 @@ onBeforeMount(() => {
 
                                 <div class="col-span-5 w-full grid grid-cols-5 gap-3">
 
-                                    <div class="col-span-5 md:col-span-3 w-full">
+                                    <div class="col-span-5 md:col-span-2 w-full">
                                         <label class="text-sm">
                                             Contratada*
                                         </label>
                                         <input type="text" v-model="contrato.contratada_nome"
-                                               class="w-full rounded border border-black text-gray-700" maxlength="255"
-                                               required/>
+                                            class="w-full rounded border border-black text-gray-700" maxlength="255"
+                                            required />
 
                                         <div v-if="contrato.errors?.contratada_nome"
-                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                             <small v-for="error in contrato.errors?.contratada_nome">{{ error }}</small>
                                         </div>
                                     </div>
@@ -278,13 +280,26 @@ onBeforeMount(() => {
                                         <label class="text-sm inline-flex">
                                             CPF/CNPJ Contratada*
                                         </label>
-                                        <input type="text" v-model="contrato.contratada_cnpj"
-                                               @keyup="maskCNPJ($event)" maxlength="18"
-                                               class="w-full rounded border border-black text-gray-700" required/>
+                                        <input type="text" v-model="contrato.contratada_cnpj" @keyup="maskCNPJ($event)"
+                                            maxlength="18" class="w-full rounded border border-black text-gray-700"
+                                            required />
 
                                         <div v-if="contrato.errors?.contratada_cnpj"
-                                             class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                             <small v-for="error in contrato.errors?.contratada_cnpj">{{ error }}</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-span-5 md:col-span-1 w-full">
+                                        <label class="text-sm inline-flex">
+                                            Versão*
+                                        </label>
+                                        <input type="text" v-model="contrato.versao" maxlength="2" placeholder="1"
+                                            class="w-full rounded border border-black text-gray-700" required />
+
+                                        <div v-if="contrato.errors?.versao"
+                                            class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                            <small v-for="error in contrato.errors?.versao">{{ error }}</small>
                                         </div>
                                     </div>
 
@@ -295,10 +310,10 @@ onBeforeMount(() => {
                                         Início Vigência*
                                     </label>
                                     <input type="date" v-model="contrato.vigencia_inicio"
-                                           class="w-full rounded border border-black text-gray-700" required/>
+                                        class="w-full rounded border border-black text-gray-700" required />
 
                                     <div v-if="contrato.errors?.vigencia_inicio"
-                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                         <small v-for="error in contrato.errors?.vigencia_inicio">{{ error }}</small>
                                     </div>
                                 </div>
@@ -308,10 +323,10 @@ onBeforeMount(() => {
                                         Fim Vigência*
                                     </label>
                                     <input type="date" v-model="contrato.vigencia_fim"
-                                           class="w-full rounded border border-black text-gray-700" required/>
+                                        class="w-full rounded border border-black text-gray-700" required />
 
                                     <div v-if="contrato.errors?.vigencia_fim"
-                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                         <small v-for="error in contrato.errors?.vigencia_fim">{{ error }}</small>
                                     </div>
                                 </div>
@@ -321,12 +336,12 @@ onBeforeMount(() => {
                                         Valor Global (R$)*
                                     </label>
                                     <input type="text" v-model="contrato.valor"
-                                           @keyup="contrato.valor = currencyMask($event.target.value)"
-                                           class="w-full rounded border border-black text-gray-700" maxlength="14"
-                                           required/>
+                                        @keyup="contrato.valor = currencyMask($event.target.value)"
+                                        class="w-full rounded border border-black text-gray-700" maxlength="14"
+                                        required />
 
                                     <div v-if="contrato.errors?.valor_global"
-                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                         <small v-for="error in contrato.errors?.valor_global">{{ error }}</small>
                                     </div>
                                 </div>
@@ -336,11 +351,11 @@ onBeforeMount(() => {
                                         Contratante*
                                     </label>
                                     <input type="text" v-model="contrato.contratante"
-                                           class="w-full rounded border border-black text-gray-700" maxlength="255"
-                                           required/>
+                                        class="w-full rounded border border-black text-gray-700" maxlength="255"
+                                        required />
 
                                     <div v-if="contrato.errors?.contratante"
-                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                         <small v-for="error in contrato.errors?.contratante">{{ error }}</small>
                                     </div>
                                 </div>
@@ -350,13 +365,13 @@ onBeforeMount(() => {
                                         Descrição*
                                     </label>
                                     <textarea type="text" v-model="contrato.descricao" rows="5" maxlength="550"
-                                              class="w-full rounded border border-black text-gray-700">
+                                        class="w-full rounded border border-black text-gray-700">
                                     </textarea>
                                     <small class="text-xs">Insira até {{ 550 - contrato.descricao.length }}
                                         caracteres</small>
 
                                     <div v-if="contrato.errors?.descricao"
-                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                         <small v-for="error in contrato.errors?.descricao">{{ error }}</small>
                                     </div>
                                 </div>
@@ -365,12 +380,11 @@ onBeforeMount(() => {
                                     <label for="active" class="flex items-center cursor-pointer max-w-fit">
                                         <div class="relative">
                                             <input type="checkbox" id="active" class="sr-only" :checked="contrato.ativo"
-                                                   v-model="contrato.ativo"/>
+                                                v-model="contrato.ativo" />
                                             <div class="bg-gray-200 w-10 h-4 rounded-full shadow-inner"
-                                                 :class="contrato.ativo ? 'bg-teal-200' : ''">
+                                                :class="contrato.ativo ? 'bg-teal-200' : ''">
                                             </div>
-                                            <div
-                                                class="dot absolute w-6 h-4 bg-gray-400 rounded-full shadow -left-1 -top-0 transition"
+                                            <div class="dot absolute w-6 h-4 bg-gray-400 rounded-full shadow -left-1 -top-0 transition"
                                                 :class="contrato.ativo ? 'dot-dis bg-green-500' : ''">
                                             </div>
                                         </div>
@@ -390,26 +404,24 @@ onBeforeMount(() => {
                                                 R$ {{ currencyMask(slotProps.data.valor.toFixed(2)) }}
                                             </template>
                                         </Column>
-                                        <Column field="descricao" header="Descrição" sortable style="width: 40%"/>
+                                        <Column field="descricao" header="Descrição" sortable style="width: 40%" />
                                         <Column field="indice" header="Ações" style="width: 20%">
                                             <template #body="slotProps">
                                                 <div class="flex justify-center gap-3">
                                                     <button type="button"
-                                                            @click.prevent="excluirAditivo(slotProps.data)"
-                                                            title="Excluir Aditivo"
-                                                            v-if="has(
-                                                                    $page.props.auth.permissions, ['Contratos Editar', 'Contratos Apagar']) || has($page.props.auth.roles, ['Super Admin'])
-                                                            ">
+                                                        @click.prevent="excluirAditivo(slotProps.data)"
+                                                        title="Excluir Aditivo" v-if="has(
+                                                            $page.props.auth.permissions, ['Contratos Editar', 'Contratos Apagar']) || has($page.props.auth.roles, ['Super Admin'])
+                                                        ">
                                                         <img src="/icons/lixeira3.svg" alt="Excluir Aditivo"
-                                                             class="min-w-9 w-9 hover:opacity-75"/>
+                                                            class="min-w-9 w-9 hover:opacity-75" />
                                                     </button>
-                                                    <button type="button"
-                                                            @click.prevent="editarAditivo(slotProps.data)"
-                                                            title="Excluir Aditivo"
-                                                            v-if="has(
-                                                                    $page.props.auth.permissions, ['Contratos Editar', 'Contratos Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
+                                                    <button type="button" @click.prevent="editarAditivo(slotProps.data)"
+                                                        title="Excluir Aditivo"
+                                                        v-if="has(
+                                                            $page.props.auth.permissions, ['Contratos Editar', 'Contratos Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
                                                         <img src="/icons/editar.svg" alt="Editar Aditivo"
-                                                             class="min-w-9 w-9 hover:opacity-75"/>
+                                                            class="min-w-9 w-9 hover:opacity-75" />
                                                     </button>
                                                 </div>
                                             </template>
@@ -428,11 +440,11 @@ onBeforeMount(() => {
                                     </label>
 
                                     <button type="button" @click.prevent="modal.aditivo = true"
-                                            class="border border-teal-600 bg-teal-500 text-teal-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-teal-700 focus:outline-none focus:shadow-outline">
+                                        class="border border-teal-600 bg-teal-500 text-teal-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-teal-700 focus:outline-none focus:shadow-outline">
                                         Inserir Aditivo
                                     </button>
                                     <div v-if="contrato.errors?.descricao"
-                                         class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
+                                        class="text-sm text-red-500 bg-red-200 py-[0.2px] px-2 m-0.5 rounded-md border border-red-300 max-w-fit">
                                         <small v-for="error in contrato.errors?.descricao">{{ error }}</small>
                                     </div>
                                 </div>
@@ -440,13 +452,13 @@ onBeforeMount(() => {
                                 <div class="col-span-5 inline-flex gap-3">
                                     <div v-if="props.editar">
                                         <button type="submit"
-                                                class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
+                                            class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
                                             Salvar Contrato
                                         </button>
                                     </div>
                                     <div v-else>
                                         <button type="submit"
-                                                class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
+                                            class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
                                             Cadastrar Contrato
                                         </button>
                                     </div>
@@ -455,66 +467,66 @@ onBeforeMount(() => {
                         </form>
 
                         <Dialog v-model:visible="modal.aditivo" modal header="Inserir Aditivo"
-                                :style="{ width: '98%', maxWidth: '500px' }">
+                            :style="{ width: '98%', maxWidth: '500px' }">
                             <form @submit.prevent="inserirAditivo()">
                                 <div class="grid gap-4 mb-4">
                                     <label for="valor" class="font-semibold w-24">Valor (R$)</label>
                                     <InputText v-model="aditivo.previa" id="valor" class="flex-auto"
-                                               @keyup="aditivo.previa = currencyMask($event.target.value)"
-                                               autocomplete="off" required/>
+                                        @keyup="aditivo.previa = currencyMask($event.target.value)" autocomplete="off"
+                                        required />
                                 </div>
                                 <div class="grid gap-4 mb-8">
                                     <label for="detalhes" class="font-semibold w-24">Detalhes</label>
                                     <Textarea id="detalhes" class="flex-auto" maxlength="255"
-                                              v-model="aditivo.descricao" autocomplete="off" required/>
+                                        v-model="aditivo.descricao" autocomplete="off" required />
                                 </div>
                                 <div class="flex justify-end gap-2">
                                     <Button type="button" label="Cancelar" severity="secondary"
-                                            @click="modal.aditivo = false"></Button>
+                                        @click="modal.aditivo = false"></Button>
                                     <Button type="submit" label="Inserir"></Button>
                                 </div>
                             </form>
                         </Dialog>
 
                         <Dialog v-model:visible="modal.editarAditivo" modal header="Editar Aditivo"
-                                :style="{ width: '98%', maxWidth: '500px' }">
+                            :style="{ width: '98%', maxWidth: '500px' }">
                             <form @submit.prevent="atualizarAditivo()">
                                 <div class="grid gap-4 mb-4">
                                     <label for="valor" class="font-semibold w-24">Valor (R$)</label>
                                     <InputText v-model="aditivoEditar.previa" id="valor" class="flex-auto"
-                                               @keyup="aditivoEditar.previa = currencyMask($event.target.value)"
-                                               autocomplete="off" required/>
+                                        @keyup="aditivoEditar.previa = currencyMask($event.target.value)"
+                                        autocomplete="off" required />
                                 </div>
                                 <div class="grid gap-4 mb-8">
                                     <label for="detalhes" class="font-semibold w-24">Detalhes</label>
                                     <Textarea id="detalhes" class="flex-auto" maxlength="255"
-                                              v-model="aditivoEditar.descricao" autocomplete="off" required/>
+                                        v-model="aditivoEditar.descricao" autocomplete="off" required />
                                 </div>
                                 <div class="flex justify-end gap-2">
                                     <Button type="button" label="Cancelar" severity="secondary"
-                                            @click="modal.editarAditivo = false"></Button>
+                                        @click="modal.editarAditivo = false"></Button>
                                     <Button type="submit" label="Atualizar"></Button>
                                 </div>
                             </form>
                         </Dialog>
 
                         <Dialog v-model:visible="modal.excluirAditivo" modal header="Remover Aditivo"
-                                :style="{ width: '98%', maxWidth: '500px' }">
+                            :style="{ width: '98%', maxWidth: '500px' }">
                             <div class="grid gap-4 mb-4">
                                 <label for="valor" class="font-semibold w-24">Valor (R$)</label>
                                 <InputText v-model="aditivoExcluir.valor" id="valor" class="flex-auto"
-                                           autocomplete="off" readonly/>
+                                    autocomplete="off" readonly />
                             </div>
                             <div class="grid gap-4 mb-8">
                                 <label for="detalhes" class="font-semibold w-24">Detalhes</label>
-                                <Textarea id="detalhes" class="flex-auto"
-                                          v-model="aditivoExcluir.descricao" autocomplete="off" readonly/>
+                                <Textarea id="detalhes" class="flex-auto" v-model="aditivoExcluir.descricao"
+                                    autocomplete="off" readonly />
                             </div>
                             <div class="flex justify-end gap-2">
                                 <Button type="button" label="Cancelar" severity="secondary"
-                                        @click="modal.excluirAditivo = false"></Button>
+                                    @click="modal.excluirAditivo = false"></Button>
                                 <Button type="button" label="Remover" severity="danger"
-                                        @click="removerAditivo()"></Button>
+                                    @click="removerAditivo()"></Button>
                             </div>
                         </Dialog>
 
@@ -525,11 +537,11 @@ onBeforeMount(() => {
     </AuthenticatedLayout>
 </template>
 <style scoped>
-input:checked ~ .dot {
+input:checked~.dot {
     transform: translateX(100%);
 }
 
-input:checked ~ .dot-dis {
+input:checked~.dot-dis {
     transform: translateX(100%);
 }
 </style>

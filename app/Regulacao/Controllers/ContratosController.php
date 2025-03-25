@@ -30,7 +30,7 @@ class ContratosController extends Controller
             return Inertia::render(
                 'Regulacao/Contratos/Index',
                 [
-                    'contratos' => DB::table('contratos')->select('id', 'contrato', 'ano', 'ativo', 'contratada_nome', 'vigencia_fim')->get()->each(function ($item) {
+                    'contratos' => DB::table('contratos')->select('id', 'contrato', 'ano', 'versao', 'ativo', 'contratada_nome', 'vigencia_fim')->get()->each(function ($item) {
                         $item->view = cripto($item->id, 'ver');
                         $item->id = cripto($item->id, 'editar');
                         return;
@@ -46,7 +46,7 @@ class ContratosController extends Controller
         if ($this->can('Contratos Ver')) {
             return Inertia::render('Regulacao/Contratos/Show', [
                 'contrato' => DB::table('contratos')
-                        ->select('contratos.id', 'contrato', 'ano', 'ativo', 'contratada_cnpj', 'contratada_nome', 'vigencia_inicio', 'vigencia_fim', 'valor_global', 'aditivos', 'contratante', 'descricao', 'users.name', 'contratos.created_at', 'contratos.updated_at')
+                        ->select('contratos.id', 'contrato', 'ano', 'versao', 'ativo', 'contratada_cnpj', 'contratada_nome', 'vigencia_inicio', 'vigencia_fim', 'valor_global', 'aditivos', 'contratante', 'descricao', 'users.name', 'contratos.created_at', 'contratos.updated_at')
                         ->join('users', 'user', '=', 'users.id')
                         ->where('contratos.id', cripto($request->contract, 'ver', 2))
                         ->get()->each(function ($item) {

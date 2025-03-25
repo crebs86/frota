@@ -1,17 +1,17 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
-import {Head, Link} from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
 import moment from 'moment';
-import {cnpjMask, currencyMask} from "@/mask.js";
-import {Column, DataTable} from "primevue";
+import { cnpjMask, currencyMask } from "@/mask.js";
+import { Column, DataTable } from "primevue";
 
 </script>
 
 <template>
 
-    <Head title="Contratos"/>
+    <Head title="Contratos" />
 
 
     <AuthenticatedLayout>
@@ -26,20 +26,19 @@ import {Column, DataTable} from "primevue";
                         <Link
                             v-if="has($page.props.auth.permissions, ['Contratos Editar', 'Contratos Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
                             class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 p-1.5 border m-0.5 mb-1 rounded shadow-lg hover:opacity-65"
-                            :href="route('regulacao.contratos.edit', $page.props.contrato.id)"
-                            title="Editar Contrato">
-                            <img src="/icons/editar.svg" alt="Editar Contrato" class="w-6">
+                            :href="route('regulacao.contratos.edit', $page.props.contrato.id)" title="Editar Contrato">
+                        <img src="/icons/editar.svg" alt="Editar Contrato" class="w-6">
                         </Link>
                         <Link
                             v-if="has(
                                 $page.props.auth.permissions, ['Contrato Ver', 'Contrato Editar', 'Contrato Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
                             class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
                             :href="route('regulacao.contratos.index')" title="Listar Contratos">
-                            <img src="/icons/lista2.svg" alt="Listar Contratos" class="w-6">
+                        <img src="/icons/lista2.svg" alt="Listar Contratos" class="w-6">
                         </Link>
                     </div>
                     <div class="p-2 rounded-lg overflow-y-auto"
-                         :class="$page.props.app.settingsStyles.main.innerSection">
+                        :class="$page.props.app.settingsStyles.main.innerSection">
                         <div class="grid grid-cols-1 gap-3">
                             <ul>
                                 <li class="py-2 hover:opacity-70">
@@ -88,6 +87,10 @@ import {Column, DataTable} from "primevue";
                                     {{ currencyMask($page.props.contrato.valor_global) }}
                                 </li>
                                 <li class="py-2 hover:opacity-70">
+                                    <span class="font-bold">Versão:</span> 
+                                    {{ $page.props.contrato.versao }}
+                                </li>
+                                <li class="py-2 hover:opacity-70">
                                     <span class="font-bold">Aditivos:</span>
                                     <DataTable
                                         :value="$page.props.contrato.aditivos ? JSON.parse($page.props.contrato.aditivos) : []">
@@ -96,7 +99,7 @@ import {Column, DataTable} from "primevue";
                                                 R$ {{ currencyMask(slotProps.data.valor.toFixed(2)) }}
                                             </template>
                                         </Column>
-                                        <Column field="descricao" header="Descrição" sortable style="width: 40%"/>
+                                        <Column field="descricao" header="Descrição" sortable style="width: 40%" />
                                     </DataTable>
                                 </li>
                             </ul>

@@ -6,6 +6,7 @@ use App\Frota\Models\Car;
 use App\Frota\Models\Driver;
 use App\Frota\Models\Garage;
 use App\Frota\Models\Timetable;
+use App\Regulacao\Models\PostoColeta;
 use Illuminate\Support\Facades\Crypt;
 
 /**
@@ -298,5 +299,17 @@ if (!function_exists('cripto')) {
             abort(403);
         }
         return $hash[0];
+    }
+}
+
+if (!function_exists('postos')) {
+
+    function postos()
+    {
+        return cache()->remember('postos', 60 * 60 * 24, function () {
+            return PostoColeta::select('postos_coleta.id', 'postos_coleta.deleted_at', 'branches.name')->join('branches', 'postos_coleta.id', 'branches.id')->withTrashed()->get()->each(function ($posto) {
+                $posto->hash = cripto($posto->id, 'posto-coleta-criar');
+            })->toArray();
+        });
     }
 }
