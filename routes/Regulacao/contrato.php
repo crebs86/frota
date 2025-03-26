@@ -44,6 +44,7 @@ Route::prefix('/regulacao')->middleware(
             Route::post('/buscar-cota', [CotaController::class, 'buscarCota'])->name('buscar-cota');
             Route::post('/salvar-cota-unidade', [CotaController::class, 'salvarCota'])->name('salvar-cota');
             Route::post('/atualizar-cota-unidade', [CotaController::class, 'atualizarCota'])->name('atualizar-cota');
+            Route::post('/copiar-cota-unidade', [CotaController::class, 'copiarCota'])->name('copiar-cota');
         });
     });
 });
