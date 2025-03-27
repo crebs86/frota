@@ -166,7 +166,7 @@ function salvarPostoColeta() {
                                         </li>
                                     </ul>
                                 </div>
-                                <button type="button" @click="salvarPostoColeta"
+                                <button type="button" @click="salvarPostoColeta" :disabled="postoColeta.processing"
                                     class="border border-green-600 bg-green-500 text-green-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-green-700 focus:outline-none focus:shadow-outline">
                                     Cadastrar Posto de Coleta
                                 </button>

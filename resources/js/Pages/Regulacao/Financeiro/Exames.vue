@@ -1,14 +1,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
-import {Head, Link, router, useForm} from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
 import moment from 'moment';
-import {Select, Button, Dialog, Textarea, InputText, DataTable, Column} from "primevue";
-import {FilterMatchMode} from '@primevue/core/api';
-import {onBeforeMount, onMounted, ref} from "vue";
-import {toast} from "@/toast";
-import {currencyMask} from "@/mask.js";
+import { Select, Button, Dialog, Textarea, InputText, DataTable, Column } from "primevue";
+import { FilterMatchMode } from '@primevue/core/api';
+import { onBeforeMount, onMounted, ref } from "vue";
+import { toast } from "@/toast";
+import { currencyMask } from "@/mask.js";
 
 const props = defineProps({
     exames_clinicos: Object | null,
@@ -26,6 +26,10 @@ const lista_exames_clinicos = ref([])
 const visible = ref(false);
 
 const modal = ref({
+    editarValor: false,
+});
+
+const processing = ref({
     editarValor: false,
 });
 
@@ -93,6 +97,7 @@ function editarValor(exame) {
 }
 
 function salvarNovoValorExame() {
+    processing.value.editarValor = true
     axios.put(route('regulacao.financeiro.exames.atualizar-valor-exame', exameAtual.value.hash), exameAtual.value)
         .then((r) => {
             toast.success(r.data)
@@ -109,12 +114,13 @@ function salvarNovoValorExame() {
             }
         })
         .finally(() => {
+            processing.value.editarValor = false
         })
 }
 
 const filters = ref({
-    global: {value: null, matchMode: FilterMatchMode.CONTAINS},
-    exame: {value: null, matchMode: FilterMatchMode.IN}
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    exame: { value: null, matchMode: FilterMatchMode.IN }
 })
 
 onBeforeMount(() => {
@@ -127,7 +133,7 @@ onBeforeMount(() => {
 
 <template>
 
-    <Head title="Financeiro - Exames"/>
+    <Head title="Financeiro - Exames" />
 
     <AuthenticatedLayout>
         <SubSection>
@@ -136,21 +142,29 @@ onBeforeMount(() => {
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.71)]">
-                    <Link
-                        v-if="has(
-                            $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
-                        class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
-                        :href="route('regulacao.financeiro.index')" title="Início Financeiro">
+                    <div class="inline-flex">
+                        <Link
+                            v-if="has(
+                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.home')" title="Início Financeiro">
+                        <img src="/icons/home.svg" alt="Início Financeiro" class="w-6">
+                        </Link>
+                        <Link
+                            v-if="has(
+                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.financeiro.index')" title="Início Financeiro">
                         <img src="/icons/financeiro.svg" alt="Início Financeiro" class="w-6">
-                    </Link>
+                        </Link>
+                    </div>
                     <div class="p-2 rounded-lg overflow-y-auto"
-                         :class="$page.props.app.settingsStyles.main.innerSection">
+                        :class="$page.props.app.settingsStyles.main.innerSection">
                         <div class="grid grid-cols-6 gap-3 place-items-center">
-                            <Select v-model="contrato.dados" :options="props.contratos"
-                                    :selected="contrato.dados"
-                                    @change="lista_exames_clinicos = []; visible = false"
-                                    placeholder="Selecione um contrato" class="w-full col-span-5" filter
-                                    option-label="contratada_nome">
+                            <Select v-model="contrato.dados" :options="props.contratos" :selected="contrato.dados"
+                                @change="lista_exames_clinicos = []; visible = false"
+                                placeholder="Selecione um contrato" class="w-full col-span-5" filter
+                                option-label="contratada_nome">
                                 <template #option="slotProps">
                                     <div class="flex items-center">
                                         <div>{{ slotProps.option.contrato }}/{{ slotProps.option.ano }} -
@@ -160,7 +174,7 @@ onBeforeMount(() => {
                                 </template>
                             </Select>
                             <Button label="Selecionar" severity="success" @click="buscarExamesContrato()"
-                                    :disabled="!contrato.dados"/>
+                                :disabled="!contrato.dados || contrato.processing" />
 
                             <div class="col-span-6 w-full text-lg" v-if="contrato.dados">
                                 <ul> Detalhes do Contrato
@@ -173,22 +187,21 @@ onBeforeMount(() => {
                             </div>
 
                             <div class="col-span-6 w-full grid grid-cols-6"
-                                 v-if="lista_exames_clinicos && lista_exames_clinicos.length > 0">
+                                v-if="lista_exames_clinicos && lista_exames_clinicos.length > 0">
                                 <p
                                     class="col-span-6 uppercase text-lg font-extrabold border-s-2 pl-2 mt-4 mb-2 border-s-yellow-500 bg-yellow-400/40">
                                     Listar exames do contrato {{ contrato.dados?.contrato }}/{{ contrato.dados?.ano }}
                                 </p>
                                 <DataTable v-model:filters="filters" :value="props.exames_financeiro"
-                                           tableStyle="min-width: 50rem"
-                                           :global-filter-fields="['exame']" class="col-span-6">
+                                    tableStyle="min-width: 50rem" :global-filter-fields="['exame']" class="col-span-6">
                                     <template #header>
                                         <div class="flex justify-end">
                                             <IconField>
                                                 <InputIcon>
-                                                    <i class="pi pi-search"/>
+                                                    <i class="pi pi-search" />
                                                 </InputIcon>
                                                 <InputText v-model="filters['global'].value"
-                                                           placeholder="Filtrar por nome do exame"/>
+                                                    placeholder="Filtrar por nome do exame" />
                                             </IconField>
                                         </div>
                                     </template>
@@ -205,7 +218,7 @@ onBeforeMount(() => {
                                             <div class="flex justify-center gap-3">
                                                 <button @click="editarValor(slotProps.data)">
                                                     <img src="/icons/editar.svg" alt="Editar Valor" title="Editar Valor"
-                                                         class="min-w-9 w-9 hover:opacity-75"/>
+                                                        class="min-w-9 w-9 hover:opacity-75" />
                                                 </button>
                                             </div>
                                         </template>
@@ -214,7 +227,7 @@ onBeforeMount(() => {
                             </div>
 
                             <div class="col-span-6 w-full grid grid-cols-6"
-                                 v-else-if="props.exames_financeiro && props.exames_financeiro.length === 0 && visible">
+                                v-else-if="props.exames_financeiro && props.exames_financeiro.length === 0 && visible">
                                 <p
                                     class="col-span-6 uppercase text-lg font-extrabold border-s-2 pl-2 mt-4 mb-2 border-s-blue-500 bg-blue-400/40">
                                     Cadastrar exames para o contrato
@@ -222,15 +235,15 @@ onBeforeMount(() => {
                                 </p>
                                 <form @submit.prevent="verificarESalvar()" class="col-span-6" id="valores">
                                     <Button type="submit" label="Verificar e Salvar" severity="success"
-                                            :disabled="!contrato.dados"/>
+                                        :disabled="!contrato.dados" />
                                     <div class="cols-span-6 w-full my-2 border-b"
-                                         v-for="(v, i) in props.exames_clinicos" :key="i">
+                                        v-for="(v, i) in props.exames_clinicos" :key="i">
                                         <label class="text-sm flex" :for="v.id">
                                             {{ v.Descricao }}*
                                         </label>
                                         <input type="text" :name="v.id" :id="v.id" @keyup="maskCurrency($event)"
-                                               class="w-full rounded border border-black text-gray-700"
-                                               placeholder="Valor unitário (R$)"/>
+                                            class="w-full rounded border border-black text-gray-700"
+                                            placeholder="Valor unitário (R$)" />
                                         <div>
                                             <ul> Detalhes
                                                 <li><span class="font-bold">Código Externo: </span>
@@ -258,9 +271,9 @@ onBeforeMount(() => {
                             </div>
 
                             <Dialog v-model:visible="modal.editarValor" modal header="Editar Valor Exame"
-                                    :style="{ width: '98%', maxWidth: '550px' }">
+                                :style="{ width: '98%', maxWidth: '550px' }">
                                 <form @submit.prevent="salvarNovoValorExame()">
-                                    {{ exameAtual }}
+
                                     <div class="grid gap-4 mb-8">
                                         <ul class="space-y-3">
                                             <li>Exame: {{ exameAtual.exame }}</li>
@@ -270,13 +283,14 @@ onBeforeMount(() => {
                                     <div class="grid gap-4 mb-4">
                                         <label for="valor" class="font-semibold w-24">Novo Valor (R$)</label>
                                         <InputText v-model="exameAtual.valor" id="valor" class="flex-auto"
-                                                   @keyup="exameAtual.valor = currencyMask($event.target.value)"
-                                                   autocomplete="off" required/>
+                                            @keyup="exameAtual.valor = currencyMask($event.target.value)"
+                                            autocomplete="off" required />
                                     </div>
                                     <div class="flex justify-end gap-2">
                                         <Button type="button" label="Cancelar" severity="secondary"
-                                                @click="modal.editarValor = false; exameAtual.valor = exameAtual.original"></Button>
-                                        <Button type="submit" label="Atualizar"></Button>
+                                            @click="modal.editarValor = false; exameAtual.valor = exameAtual.original"></Button>
+                                        <Button type="submit" label="Atualizar"
+                                            :disabled="processing.editarValor"></Button>
                                     </div>
                                 </form>
                             </Dialog>

@@ -93,7 +93,18 @@ class CotaController extends Controller
 
         if ($cotasFinanceiras->count() === 0) {
             $cota = CotaFinanceira::create(array_merge(['user' => auth()->id()], $request->only('contrato', 'posto_coleta', 'valor', 'inicio', 'fim')));
-            return response()->json(['cotas_financeiras' => $cota]);
+
+            return response()->json([
+                'cotas_financeiras' => CotaFinanceira::where([
+                    'posto_coleta' => $request->posto_coleta,
+                    'contrato' => $request->contrato
+                ])->join('branches', 'cotas_financeiras.posto_coleta', 'branches.id')
+                    ->select('cotas_financeiras.id', 'name', 'valor', 'inicio', 'fim', 'alteracoes')
+                    ->get()
+                    ->each(function ($cota) {
+                        $cota->hash = cripto($cota->id, 'cota-financeira');
+                    })
+            ]);
         }
         return response()->json(['cotas_financeiras' => $cotasFinanceiras]);
     }

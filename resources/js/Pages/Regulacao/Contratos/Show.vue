@@ -13,7 +13,6 @@ import { Column, DataTable } from "primevue";
 
     <Head title="Contratos" />
 
-
     <AuthenticatedLayout>
 
         <SubSection>
@@ -23,6 +22,13 @@ import { Column, DataTable } from "primevue";
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.57)]">
                     <div class="inline-flex">
+                        <Link
+                            v-if="has(
+                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.home')" title="Início Financeiro">
+                        <img src="/icons/home.svg" alt="Início Financeiro" class="w-6">
+                        </Link>
                         <Link
                             v-if="has($page.props.auth.permissions, ['Contratos Editar', 'Contratos Apagar']) || has($page.props.auth.roles, ['Super Admin'])"
                             class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 p-1.5 border m-0.5 mb-1 rounded shadow-lg hover:opacity-65"
@@ -87,7 +93,7 @@ import { Column, DataTable } from "primevue";
                                     {{ currencyMask($page.props.contrato.valor_global) }}
                                 </li>
                                 <li class="py-2 hover:opacity-70">
-                                    <span class="font-bold">Versão:</span> 
+                                    <span class="font-bold">Versão:</span>
                                     {{ $page.props.contrato.versao }}
                                 </li>
                                 <li class="py-2 hover:opacity-70">

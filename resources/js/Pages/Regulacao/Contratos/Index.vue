@@ -22,13 +22,22 @@ import Column from 'primevue/column';
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.57)]">
-                    <Link
-                        v-if="has(
-                            $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
-                        class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
-                        :href="route('regulacao.contratos.create')" title="Novo Contrato">
-                    <img src="/icons/add.svg" alt="Novo Contrato" class="w-6">
-                    </Link>
+                    <div class="inline-flex">
+                        <Link
+                            v-if="has(
+                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.home')" title="Início Financeiro">
+                        <img src="/icons/home.svg" alt="Início Financeiro" class="w-6">
+                        </Link>
+                        <Link
+                            v-if="has(
+                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.contratos.create')" title="Novo Contrato">
+                        <img src="/icons/add.svg" alt="Novo Contrato" class="w-6">
+                        </Link>
+                    </div>
                     <div class="p-2 rounded-lg overflow-y-auto"
                         :class="$page.props.app.settingsStyles.main.innerSection">
                         <div class="py-2">

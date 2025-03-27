@@ -15,7 +15,6 @@ import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';/**/
 
-
 const props = defineProps({
     contratos: Object,
     postos_coleta: Object
@@ -75,6 +74,7 @@ function salvarCota() {
     if (!cota.value.valor || !cota.value.inicio || !cota.value.fim || !busca.value.posto_coleta || !busca.value.contrato) {
         toast.error('Informe todos os campos')
     } else {
+        busca.value.loading = true
         axios.post(route('regulacao.financeiro.cota.salvar-cota'), {
             contrato: busca.value.contrato.hash,
             posto_coleta: busca.value.posto_coleta.hash,
@@ -105,6 +105,11 @@ const modal = ref({
     copiarCota: false,
 })
 
+const processing = ref({
+    editarCota: false,
+    copiarCota: false,
+})
+
 const cotaAtual = ref({})
 
 function setCotaAtual(valor, editar = true) {
@@ -120,6 +125,7 @@ function setCotaAtual(valor, editar = true) {
 }
 
 function atualizarCota() {
+    processing.value.editarCota = true
     axios.post(route('regulacao.financeiro.cota.atualizar-cota'), {
         contrato: busca.value.contrato.hash,
         posto_coleta: busca.value.posto_coleta.hash,
@@ -142,10 +148,12 @@ function atualizarCota() {
             }
         })
         .finally(() => {
+            processing.value.editarCota = false
         })
 }
 
 function copiarCota() {
+    processing.value.copiarCota = true
     axios.post(route('regulacao.financeiro.cota.copiar-cota'), {
         contrato: busca.value.contrato.hash,
         posto_coleta: busca.value.posto_coleta.hash,
@@ -168,6 +176,7 @@ function copiarCota() {
             }
         })
         .finally(() => {
+            processing.value.copiarCota = false
         })
 }
 
@@ -184,13 +193,22 @@ function copiarCota() {
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.58)]">
-                    <Link
-                        v-if="has(
-                            $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
-                        class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
-                        :href="route('regulacao.financeiro.index')" title="Início Financeiro">
-                    <img src="/icons/financeiro.svg" alt="Início Financeiro" class="w-6">
-                    </Link>
+                    <div class="inline-flex">
+                        <Link
+                            v-if="has(
+                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.home')" title="Início Financeiro">
+                        <img src="/icons/home.svg" alt="Início Financeiro" class="w-6">
+                        </Link>
+                        <Link
+                            v-if="has(
+                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.financeiro.index')" title="Início Financeiro">
+                        <img src="/icons/financeiro.svg" alt="Início Financeiro" class="w-6">
+                        </Link>
+                    </div>
 
                     <div class="p-2 rounded-lg overflow-y-auto"
                         :class="$page.props.app.settingsStyles.main.innerSection">
@@ -225,7 +243,8 @@ function copiarCota() {
                                 </div>
 
                                 <div class="col-span-4">
-                                    <Button type="submit" class="mt-3" severity="info">Buscar Cota</Button>
+                                    <Button type="submit" class="mt-3" severity="info" :disabled="busca.loading">Buscar
+                                        Cota</Button>
                                 </div>
 
                                 <div class="text-center col-span-3">
@@ -329,7 +348,7 @@ function copiarCota() {
                                         </div>
                                     </div>
 
-                                    <Button type="submit" label="Salvar Cota" class="mt-3" />
+                                    <Button type="submit" label="Salvar Cota" class="mt-3" :disabled="busca.loading" />
                                 </form>
                             </div>
                             <Dialog v-model:visible="modal.editarCota" modal header="Editar Cota"
@@ -374,7 +393,8 @@ function copiarCota() {
                                     <div class="flex justify-end gap-2">
                                         <Button type="button" label="Cancelar" severity="secondary"
                                             @click="modal.editarCota = false"></Button>
-                                        <Button type="submit" label="Atualizar Cota"></Button>
+                                        <Button type="submit" label="Atualizar Cota"
+                                            :disabled="processing.editarCota"></Button>
                                     </div>
                                 </form>
                             </Dialog>
@@ -407,7 +427,8 @@ function copiarCota() {
                                     <div class="flex justify-end gap-2">
                                         <Button type="button" label="Cancelar" severity="secondary"
                                             @click="modal.copiarCota = false"></Button>
-                                        <Button type="submit" label="Copiar Cota" severity="info"></Button>
+                                        <Button type="submit" label="Copiar Cota" severity="info"
+                                            :disabled="processing.copiarCota"></Button>
                                     </div>
                                 </form>
                             </Dialog>

@@ -5,7 +5,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
 import { toast } from '@/toast';
 import { currencyMask, cnpjMask } from '@/mask';
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, onUpdated, ref } from 'vue';
 import { Button, Dialog, InputText, Textarea, DataTable, Column, Row } from 'primevue';
 
 const props = defineProps({
@@ -90,7 +90,7 @@ const maskCNPJ = (event) => {
     contrato.contratada_cnpj = cnpjMask(input.value);
 }
 
-
+/*
 function somar(aditivos) {
     let total = (props.contrato.valor_global);
     //console.log(total, props.contrato.valor_global);
@@ -101,7 +101,7 @@ function somar(aditivos) {
         });
     }
     return 'R$ ' + currencyMask(parseFloat(total.toString()).toFixed(2))
-}
+}/** */
 
 const aditivoEditar = useForm({
     indice: '',
@@ -189,6 +189,10 @@ onBeforeMount(() => {
     }
 })
 
+onUpdated(() => {
+    contrato.valor = currencyMask(props.contrato.valor_global)
+})
+
 </script>
 
 <template>
@@ -205,6 +209,13 @@ onBeforeMount(() => {
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.57)]">
                     <div class="inline-flex">
+                        <Link
+                            v-if="has(
+                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.home')" title="Início Financeiro">
+                        <img src="/icons/home.svg" alt="Início Financeiro" class="w-6">
+                        </Link>
                         <Link
                             v-if="props.edit && has(
                                 $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
@@ -428,10 +439,6 @@ onBeforeMount(() => {
                                         </Column>
                                     </DataTable>
 
-                                    <div class="col-span-5 w-full">
-                                        Total atual do contrato:
-                                        {{ somar(contrato.aditivos) }}
-                                    </div>
                                 </div>
                                 <div class="col-span-5 w-full" v-if="props.editar">
 
@@ -451,7 +458,7 @@ onBeforeMount(() => {
 
                                 <div class="col-span-5 inline-flex gap-3">
                                     <div v-if="props.editar">
-                                        <button type="submit"
+                                        <button type="submit" :disabled="contrato.processing"
                                             class="border border-blue-600 bg-blue-500 text-blue-100 rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-blue-700 focus:outline-none focus:shadow-outline">
                                             Salvar Contrato
                                         </button>
@@ -483,7 +490,7 @@ onBeforeMount(() => {
                                 <div class="flex justify-end gap-2">
                                     <Button type="button" label="Cancelar" severity="secondary"
                                         @click="modal.aditivo = false"></Button>
-                                    <Button type="submit" label="Inserir"></Button>
+                                    <Button type="submit" label="Inserir" :disabled="aditivo.processing"></Button>
                                 </div>
                             </form>
                         </Dialog>
@@ -505,7 +512,8 @@ onBeforeMount(() => {
                                 <div class="flex justify-end gap-2">
                                     <Button type="button" label="Cancelar" severity="secondary"
                                         @click="modal.editarAditivo = false"></Button>
-                                    <Button type="submit" label="Atualizar"></Button>
+                                    <Button type="submit" label="Atualizar"
+                                        :disabled="aditivoEditar.processing"></Button>
                                 </div>
                             </form>
                         </Dialog>
@@ -525,8 +533,8 @@ onBeforeMount(() => {
                             <div class="flex justify-end gap-2">
                                 <Button type="button" label="Cancelar" severity="secondary"
                                     @click="modal.excluirAditivo = false"></Button>
-                                <Button type="button" label="Remover" severity="danger"
-                                    @click="removerAditivo()"></Button>
+                                <Button type="button" label="Remover" severity="danger" @click="removerAditivo()"
+                                    :disabled="aditivoExcluir.processing"></Button>
                             </div>
                         </Dialog>
 

@@ -1,12 +1,13 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Regulacao\Controllers\CotaController;
+use App\Regulacao\Controllers\HomeController;
+use App\Regulacao\Controllers\AgendaController;
 use App\Regulacao\Controllers\ExamesController;
+use App\Regulacao\Controllers\ContratosController;
 use App\Regulacao\Controllers\FinanceiroController;
 use App\Regulacao\Controllers\PostoColetaController;
-use Illuminate\Support\Facades\Route;
-use App\Regulacao\Controllers\ContratosController;
-use App\Regulacao\Controllers\HomeController;
 
 Route::prefix('/regulacao')->middleware(
     getSettingMustVerifyEmail() ? ['auth', 'verified'] : ['auth']
@@ -46,5 +47,10 @@ Route::prefix('/regulacao')->middleware(
             Route::post('/atualizar-cota-unidade', [CotaController::class, 'atualizarCota'])->name('atualizar-cota');
             Route::post('/copiar-cota-unidade', [CotaController::class, 'copiarCota'])->name('copiar-cota');
         });
+    });
+
+
+    Route::prefix('/agenda')->name('agenda.')->group(function () {
+        Route::get('/', [AgendaController::class, 'index'])->name('index');
     });
 });
