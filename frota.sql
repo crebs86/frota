@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Tempo de geração: 25/03/2025 às 23:40
--- Versão do servidor: 8.0.41-0ubuntu0.24.04.1
--- Versão do PHP: 8.3.6
+-- Host: localhost:3306
+-- Tempo de geração: 31/03/2025 às 18:32
+-- Versão do servidor: 8.0.37
+-- Versão do PHP: 8.3.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -47,6 +47,52 @@ INSERT INTO `acl_updates` (`id`, `updates`, `updated_at`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `agendamentos`
+--
+
+CREATE TABLE `agendamentos` (
+  `id` bigint UNSIGNED NOT NULL,
+  `agenda` bigint UNSIGNED NOT NULL,
+  `CodRequisicao` int UNSIGNED NOT NULL,
+  `CodExameLaboratorial` int UNSIGNED NOT NULL,
+  `valor` decimal(8,2) NOT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `agendas`
+--
+
+CREATE TABLE `agendas` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user` bigint UNSIGNED NOT NULL,
+  `posto_coleta` int UNSIGNED NOT NULL,
+  `vigencia_inicio` date NOT NULL,
+  `vigencia_fim` date NOT NULL,
+  `hora_inicio` time NOT NULL,
+  `hora_fim` time NOT NULL,
+  `intervalo` time NOT NULL,
+  `vagas` tinyint NOT NULL,
+  `alteracoes` text COLLATE utf8mb4_unicode_ci,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Despejando dados para a tabela `agendas`
+--
+
+INSERT INTO `agendas` (`id`, `user`, `posto_coleta`, `vigencia_inicio`, `vigencia_fim`, `hora_inicio`, `hora_fim`, `intervalo`, `vagas`, `alteracoes`, `deleted_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 4, '2025-04-01', '2025-04-30', '07:00:00', '10:00:00', '00:10:00', 25, NULL, NULL, '2025-03-31 18:08:54', '2025-03-31 18:08:54');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `attaches`
 --
 
@@ -54,7 +100,7 @@ CREATE TABLE `attaches` (
   `id` bigint UNSIGNED NOT NULL,
   `maintenance_id` bigint UNSIGNED NOT NULL,
   `type` int NOT NULL,
-  `filename` varchar(24) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `filename` varchar(24) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -238,14 +284,14 @@ CREATE TABLE `contratos` (
   `user` bigint UNSIGNED NOT NULL,
   `contrato` int NOT NULL,
   `ano` int NOT NULL,
-  `contratada_nome` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contratada_cnpj` varchar(14) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contratante` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contratada_nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contratada_cnpj` varchar(14) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contratante` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `vigencia_inicio` date NOT NULL,
   `vigencia_fim` date NOT NULL,
   `valor_global` decimal(11,2) NOT NULL,
   `aditivos` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `descricao` varchar(550) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descricao` varchar(550) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `ativo` tinyint(1) NOT NULL,
   `versao` tinyint NOT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -258,8 +304,9 @@ CREATE TABLE `contratos` (
 --
 
 INSERT INTO `contratos` (`id`, `user`, `contrato`, `ano`, `contratada_nome`, `contratada_cnpj`, `contratante`, `vigencia_inicio`, `vigencia_fim`, `valor_global`, `aditivos`, `descricao`, `ativo`, `versao`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(1, 1, 241, 2022, 'Target Soluções Inteligentes', '22840676000126', 'SEMSA/FMS', '2024-03-22', '2025-03-22', 1000000.00, '[{\"valor\":1075482.5,\"descricao\":\"1\\u00ba Aditivo|2023-2024\",\"indice\":\"GDpOJUkRiwAzMHEwx\"},{\"valor\":75482.5,\"descricao\":\"1\\u00b0 reajuste 2023-2024\",\"indice\":\"jqA7B3JMLiHU8whiP\"}]', 'Unidades A, B e C\nContrato inicial de R$ 1.000.000,00\nReajuste e 1º aditivo em 22/03/2025', 1, 1, NULL, '2025-03-22 12:12:04', '2025-03-23 14:21:11'),
-(2, 1, 45987, 2025, 'Laboratório A', '24516876000153', 'FMS', '2025-03-07', '2026-03-22', 456987.15, NULL, 'Emergencial', 1, 1, NULL, '2025-03-22 14:07:37', '2025-03-22 14:10:33');
+(1, 1, 241, 2022, 'Target Soluções Inteligentes', '22840676000126', 'SEMSA/FMS', '2024-03-22', '2025-03-22', 1000000.00, '[]', 'Unidades A, B e C\nContrato inicial de R$ 1.000.000,00\nReajuste e 1º aditivo em 22/03/2025', 1, 1, NULL, '2025-03-22 12:12:04', '2025-03-27 17:21:17'),
+(2, 1, 45987, 2025, 'Laboratório A', '24516876000153', 'FMS', '2025-03-07', '2026-03-22', 456987.15, NULL, 'Emergencial', 1, 1, NULL, '2025-03-22 14:07:37', '2025-03-22 14:10:33'),
+(3, 1, 123654, 2024, 'Crebs Dev', '28328583000101', 'SEMSA', '2024-09-02', '2025-09-02', 1000500.00, NULL, 'Exames bioquímicos', 1, 1, NULL, '2025-03-26 19:44:56', '2025-03-26 19:44:56');
 
 -- --------------------------------------------------------
 
@@ -286,8 +333,16 @@ CREATE TABLE `cotas_financeiras` (
 --
 
 INSERT INTO `cotas_financeiras` (`id`, `posto_coleta`, `contrato`, `user`, `valor`, `alteracoes`, `inicio`, `fim`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(1, 4, 1, 1, 234.23, NULL, '2024-04-01', '2025-04-01', NULL, '2025-03-25 21:36:30', '2025-03-25 21:36:30'),
-(2, 8, 2, 1, 1222.22, NULL, '2025-03-01', '2025-03-29', NULL, '2025-03-25 21:39:10', '2025-03-25 21:39:10');
+(1, 4, 1, 1, 1000.00, '[{\"user\":\"Super Admin\",\"valor\":\"1000.00\",\"data\":\"2025-03-25 18:36:30\",\"inicio\":\"2025-04-01\",\"fim\":\"2025-04-30\"}]', '2025-04-01', '2025-04-30', NULL, '2025-03-25 21:36:30', '2025-03-27 18:02:43'),
+(2, 8, 1, 1, 1000.31, '[{\"user\":\"Super Admin\",\"valor\":\"1000.25\",\"data\":\"2025-03-25 18:39:10\",\"inicio\":\"2025-03-27\",\"fim\":\"2025-04-30\"},{\"user\":\"Super Admin\",\"valor\":\"1000.27\",\"data\":\"2025-03-26 13:44:11\",\"inicio\":\"2025-03-27\",\"fim\":\"2025-04-30\"},{\"user\":\"Super Admin\",\"valor\":\"1000.28\",\"data\":\"2025-03-26 13:46:32\",\"inicio\":\"2025-03-27\",\"fim\":\"2025-04-30\"},{\"user\":\"Super Admin\",\"valor\":\"1000.29\",\"data\":\"2025-03-26 13:50:47\",\"inicio\":\"2025-03-27\",\"fim\":\"2025-04-30\"},{\"user\":\"Super Admin\",\"valor\":\"1000.30\",\"data\":\"2025-03-26 13:51:11\",\"inicio\":\"2025-03-27\",\"fim\":\"2025-04-30\"},{\"user\":\"Super Admin\",\"valor\":\"1000.31\",\"data\":\"2025-03-26 13:51:16\",\"inicio\":\"2025-03-27\",\"fim\":\"2025-04-30\"}]', '2025-03-27', '2025-04-30', NULL, '2025-03-25 21:39:10', '2025-03-26 16:51:16'),
+(3, 8, 1, 1, 460.51, '[{\"user\":\"Super Admin\",\"valor\":\"456.35\",\"data\":\"2025-03-26 09:21:03\",\"inicio\":\"2025-03-01\",\"fim\":\"2025-03-15\"},{\"user\":\"Super Admin\",\"valor\":\"460.00\",\"data\":\"2025-03-26 14:03:57\",\"inicio\":\"2025-03-01\",\"fim\":\"2025-03-15\"},{\"user\":\"Super Admin\",\"valor\":\"460.50\",\"data\":\"2025-03-26 14:05:09\",\"inicio\":\"2025-03-01\",\"fim\":\"2025-03-15\"},{\"user\":\"Super Admin\",\"valor\":\"460.51\",\"data\":\"2025-03-26 14:08:23\",\"inicio\":\"2025-03-01\",\"fim\":\"2025-03-15\"}]', '2025-03-01', '2025-03-15', NULL, '2025-03-26 12:21:03', '2025-03-26 17:08:23'),
+(4, 8, 1, 1, 460.51, NULL, '2025-04-01', '2025-04-30', NULL, '2025-03-26 17:35:11', '2025-03-26 17:35:11'),
+(5, 7, 1, 1, 25780.00, NULL, '2025-03-27', '2025-12-31', NULL, '2025-03-27 18:12:55', '2025-03-27 18:12:55'),
+(6, 7, 2, 1, 12344.40, NULL, '2025-03-28', '2025-03-29', NULL, '2025-03-27 18:17:00', '2025-03-27 18:17:00'),
+(7, 9, 1, 1, 25435.43, NULL, '2025-03-27', '2025-03-29', NULL, '2025-03-27 18:18:19', '2025-03-27 18:18:19'),
+(8, 9, 2, 1, 445.53, NULL, '2025-03-28', '2025-03-28', NULL, '2025-03-27 18:25:44', '2025-03-27 18:25:44'),
+(9, 9, 3, 1, 1232.33, NULL, '2025-03-28', '2025-03-28', NULL, '2025-03-27 18:27:52', '2025-03-27 18:27:52'),
+(10, 8, 3, 1, 123.00, '[{\"user\":\"Super Admin\",\"valor\":\"123.44\",\"data\":\"2025-03-27 15:31:20\",\"inicio\":\"2025-03-27\",\"fim\":\"2025-03-28\"}]', '2025-03-27', '2025-03-28', NULL, '2025-03-27 18:31:20', '2025-03-27 18:31:49');
 
 -- --------------------------------------------------------
 
@@ -651,7 +706,7 @@ CREATE TABLE `exames_financeiro` (
 --
 
 INSERT INTO `exames_financeiro` (`id`, `user`, `CodExameLaboratorial`, `contrato`, `valor`, `observacao`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 2, 2.99, NULL, '2025-03-24 01:43:29', '2025-03-24 19:48:36'),
+(1, 1, 1, 2, 1.95, NULL, '2025-03-24 01:43:29', '2025-03-27 17:28:52'),
 (2, 1, 2, 2, 2.25, NULL, '2025-03-24 01:43:29', '2025-03-24 19:46:04'),
 (3, 1, 3, 2, 3.21, NULL, '2025-03-24 01:43:29', '2025-03-24 21:23:58'),
 (4, 1, 4, 2, 12.34, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
@@ -935,7 +990,7 @@ INSERT INTO `exames_financeiro` (`id`, `user`, `CodExameLaboratorial`, `contrato
 (282, 1, 282, 2, 35.68, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (283, 1, 283, 2, 67.48, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
 (284, 1, 284, 2, 71.32, NULL, '2025-03-24 01:43:29', '2025-03-24 01:43:29'),
-(569, 1, 1, 1, 0.01, NULL, NULL, NULL),
+(569, 1, 1, 1, 0.02, NULL, NULL, '2025-03-26 17:49:26'),
 (570, 1, 2, 1, 0.12, NULL, NULL, NULL),
 (571, 1, 3, 1, 1.23, NULL, NULL, NULL),
 (572, 1, 4, 1, 12.34, NULL, NULL, NULL),
@@ -1311,6 +1366,22 @@ INSERT INTO `garages` (`id`, `deleted_at`, `created_at`, `updated_at`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `gastos`
+--
+
+CREATE TABLE `gastos` (
+  `id` bigint UNSIGNED NOT NULL,
+  `CodPaciente` int UNSIGNED NOT NULL,
+  `CodRequisicao` int UNSIGNED NOT NULL,
+  `valor_total` decimal(8,2) NOT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `incidents`
 --
 
@@ -1385,11 +1456,11 @@ CREATE TABLE `maintenances` (
   `type` int NOT NULL,
   `date` date NOT NULL,
   `time` time DEFAULT NULL,
-  `place` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mechanic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `replaces` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `place` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mechanic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `replaces` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `cost` double DEFAULT NULL,
-  `obs` text COLLATE utf8mb4_unicode_ci,
+  `obs` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1454,7 +1525,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (37, '2025_03_19_133722_create_contratos_table', 5),
 (38, '2025_03_23_174252_create_exames_financeiro_table', 6),
 (39, '2025_03_25_080903_create_postos_coleta_table', 7),
-(40, '2025_03_25_103625_create_cotas_financeiras_table', 7);
+(40, '2025_03_25_103625_create_cotas_financeiras_table', 7),
+(41, '2025_03_30_083241_create_agendas_table', 8),
+(42, '2025_03_30_083250_create_agendamentos_table', 9),
+(43, '2025_03_30_195600_create_requisicoes_table', 9),
+(44, '2025_03_30_195702_create_gastos_table', 9);
 
 -- --------------------------------------------------------
 
@@ -1713,6 +1788,21 @@ INSERT INTO `requests` (`id`, `driver`, `user`, `mediator`, `to`, `local`, `vaca
 (3, 2, 3, NULL, 4, NULL, NULL, '2025-01-20', '15:30:00', NULL, '[\"ACS Maria\",\"ASS Andrea\"]', 0),
 (4, NULL, 3, NULL, 2, NULL, NULL, '2025-01-21', '09:00:00', NULL, '[\"Gabinete\"]', 0),
 (5, 2, 1, NULL, 1, 'Ali', NULL, '2025-01-27', '07:00:00', '00:10:00', '[\"Ele ali\"]', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `requisicoes`
+--
+
+CREATE TABLE `requisicoes` (
+  `id` bigint UNSIGNED NOT NULL,
+  `CodPaciente` int UNSIGNED NOT NULL,
+  `data_agendamento` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -2226,6 +2316,20 @@ ALTER TABLE `acl_updates`
   ADD UNIQUE KEY `acl_updates_id_unique` (`id`);
 
 --
+-- Índices de tabela `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `agendamentos_agenda_foreign` (`agenda`);
+
+--
+-- Índices de tabela `agendas`
+--
+ALTER TABLE `agendas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `agendas_user_foreign` (`user`);
+
+--
 -- Índices de tabela `attaches`
 --
 ALTER TABLE `attaches`
@@ -2347,6 +2451,12 @@ ALTER TABLE `garages`
   ADD UNIQUE KEY `garages_id_unique` (`id`);
 
 --
+-- Índices de tabela `gastos`
+--
+ALTER TABLE `gastos`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Índices de tabela `incidents`
 --
 ALTER TABLE `incidents`
@@ -2455,6 +2565,12 @@ ALTER TABLE `requests`
   ADD KEY `requests_to_foreign` (`to`);
 
 --
+-- Índices de tabela `requisicoes`
+--
+ALTER TABLE `requisicoes`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Índices de tabela `roles`
 --
 ALTER TABLE `roles`
@@ -2544,6 +2660,18 @@ ALTER TABLE `user_updates`
 --
 
 --
+-- AUTO_INCREMENT de tabela `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `agendas`
+--
+ALTER TABLE `agendas`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de tabela `attaches`
 --
 ALTER TABLE `attaches`
@@ -2577,13 +2705,13 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT de tabela `contratos`
 --
 ALTER TABLE `contratos`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `cotas_financeiras`
 --
 ALTER TABLE `cotas_financeiras`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de tabela `exames_clinicos`
@@ -2610,6 +2738,12 @@ ALTER TABLE `fuels`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
+-- AUTO_INCREMENT de tabela `gastos`
+--
+ALTER TABLE `gastos`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `incidents`
 --
 ALTER TABLE `incidents`
@@ -2631,7 +2765,7 @@ ALTER TABLE `maintenances`
 -- AUTO_INCREMENT de tabela `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT de tabela `permissions`
@@ -2650,6 +2784,12 @@ ALTER TABLE `personal_access_tokens`
 --
 ALTER TABLE `requests`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de tabela `requisicoes`
+--
+ALTER TABLE `requisicoes`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `roles`
@@ -2696,6 +2836,18 @@ ALTER TABLE `users`
 --
 ALTER TABLE `acl_updates`
   ADD CONSTRAINT `acl_updates_id_foreign` FOREIGN KEY (`id`) REFERENCES `users` (`id`);
+
+--
+-- Restrições para tabelas `agendamentos`
+--
+ALTER TABLE `agendamentos`
+  ADD CONSTRAINT `agendamentos_agenda_foreign` FOREIGN KEY (`agenda`) REFERENCES `agendas` (`id`);
+
+--
+-- Restrições para tabelas `agendas`
+--
+ALTER TABLE `agendas`
+  ADD CONSTRAINT `agendas_user_foreign` FOREIGN KEY (`user`) REFERENCES `users` (`id`);
 
 --
 -- Restrições para tabelas `attaches`
