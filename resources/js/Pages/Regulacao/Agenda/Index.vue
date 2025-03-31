@@ -1,7 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
-import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
 import moment from 'moment';
@@ -24,8 +23,8 @@ import moment from 'moment';
                             v-if="has(
                                 $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
                             class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
-                            :href="route('regulacao.home')" title="Início Financeiro">
-                        <img src="/icons/home.svg" alt="Início Financeiro" class="w-6">
+                            :href="route('regulacao.home')" title="Início Regulação">
+                        <img src="/icons/home.svg" alt="Início Regulação" class="w-6">
                         </Link>
                         <Link
                             v-if="has(
@@ -33,6 +32,13 @@ import moment from 'moment';
                             class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
                             :href="route('regulacao.financeiro.index')" title="Início Financeiro">
                         <img src="/icons/financeiro.svg" alt="Início Financeiro" class="w-6">
+                        </Link>
+                        <Link
+                            v-if="has(
+                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
+                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
+                            :href="route('regulacao.agenda.create')" title="Criar Agenda">
+                        <img src="/icons/add.svg" alt="Criar Agenda" class="w-6">
                         </Link>
                     </div>
                     <div class="p-2 rounded-lg overflow-y-auto"

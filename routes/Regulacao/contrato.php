@@ -52,5 +52,7 @@ Route::prefix('/regulacao')->middleware(
 
     Route::prefix('/agenda')->name('agenda.')->group(function () {
         Route::get('/', [AgendaController::class, 'index'])->name('index');
+        Route::get('/criar-agenda', [AgendaController::class, 'create'])->name('create');
+        Route::post('/buscar-agendas', [AgendaController::class, 'buscarAgendas'])->name('buscar-agendas');
     });
 });

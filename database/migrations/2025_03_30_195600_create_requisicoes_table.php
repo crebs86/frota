@@ -10,20 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('gastos', function (Blueprint $table) {
+        Schema::create('requisicoes', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedInteger('CodPaciente');
 
-            $table->unsignedInteger('CodRequisicao');/** */
-            /*$table->unsignedInteger('CodRequisicao');
-            $table->foreign('CodRequisicao')
-                ->references('id')
-                ->on('requisicoes');/** */
-
-            $table->decimal('valor_total');
+            $table->timestamp('data_agendamento')->nullable();
 
             $table->softDeletes();
+
             $table->timestamps();
         });
     }
@@ -33,6 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('gastos');
+        Schema::dropIfExists('requisicoes');
     }
 };

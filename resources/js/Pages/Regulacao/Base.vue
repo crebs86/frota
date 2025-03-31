@@ -1,7 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SubSection from '@/Components/Admin/SubSection.vue';
-import FrotaMenu from '@/Components/Admin/Menus/Frota/FrotaMenu.vue';
 import {Head, Link} from '@inertiajs/vue3';
 import has from '@/arrayHelpers'
 import moment from 'moment';
