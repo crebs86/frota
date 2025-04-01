@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Tempo de geração: 31/03/2025 às 18:32
+-- Tempo de geração: 01/04/2025 às 18:14
 -- Versão do servidor: 8.0.37
 -- Versão do PHP: 8.3.1
 
@@ -75,7 +75,7 @@ CREATE TABLE `agendas` (
   `vigencia_fim` date NOT NULL,
   `hora_inicio` time NOT NULL,
   `hora_fim` time NOT NULL,
-  `intervalo` time NOT NULL,
+  `intervalo` tinyint NOT NULL,
   `vagas` tinyint NOT NULL,
   `alteracoes` text COLLATE utf8mb4_unicode_ci,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -88,7 +88,12 @@ CREATE TABLE `agendas` (
 --
 
 INSERT INTO `agendas` (`id`, `user`, `posto_coleta`, `vigencia_inicio`, `vigencia_fim`, `hora_inicio`, `hora_fim`, `intervalo`, `vagas`, `alteracoes`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(1, 1, 4, '2025-04-01', '2025-04-30', '07:00:00', '10:00:00', '00:10:00', 25, NULL, NULL, '2025-03-31 18:08:54', '2025-03-31 18:08:54');
+(1, 1, 4, '2025-04-01', '2025-04-30', '07:00:00', '10:00:00', 0, 25, '[{\"user\":\"Super Admin\",\"vagas\":25,\"intervalo\":0,\"data\":\"2025-03-31 15:08:54\",\"vigencia_inicio\":\"2025-04-01\",\"vigencia_fim\":\"2025-04-30\",\"hora_inicio\":\"07:00:00\",\"hora_fim\":\"10:00:00\"},{\"user\":\"Super Admin\",\"vagas\":25,\"intervalo\":\"0\",\"data\":\"2025-04-01 14:30:03\",\"vigencia_inicio\":\"2025-04-01\",\"vigencia_fim\":\"2025-04-30\",\"hora_inicio\":\"07:00:00\",\"hora_fim\":\"10:00:00\"}]', NULL, '2025-03-31 18:08:54', '2025-04-01 17:30:03'),
+(2, 1, 7, '2025-04-01', '2025-04-15', '07:00:00', '07:00:00', 5, 20, '[{\"user\":\"Super Admin\",\"valor\":null,\"data\":\"2025-04-01 14:16:46\",\"vigencia_inicio\":\"2025-04-01\",\"vigencia_fim\":\"2025-04-15\",\"hora_inicio\":\"07:00:00\",\"hora_fim\":\"07:00:00\"},{\"user\":\"Super Admin\",\"vagas\":\"20\",\"intervalo\":\"5\",\"data\":\"2025-04-01 14:25:25\",\"vigencia_inicio\":\"2025-04-01\",\"vigencia_fim\":\"2025-04-15\",\"hora_inicio\":\"07:00:00\",\"hora_fim\":\"07:00:00\"}]', NULL, NULL, '2025-04-01 17:25:25'),
+(3, 1, 9, '2025-04-01', '2025-04-15', '07:00:00', '07:00:00', 5, 18, '[{\"user\":\"Super Admin\",\"vagas\":20,\"intervalo\":0,\"data\":\"2025-04-01 14:30:48\",\"vigencia_inicio\":\"2025-04-01\",\"vigencia_fim\":\"2025-04-15\",\"hora_inicio\":\"07:00:54\",\"hora_fim\":\"07:00:54\"},{\"user\":\"Super Admin\",\"vagas\":\"18\",\"intervalo\":\"0\",\"data\":\"2025-04-01 14:30:56\",\"vigencia_inicio\":\"2025-04-01\",\"vigencia_fim\":\"2025-04-15\",\"hora_inicio\":\"07:00:00\",\"hora_fim\":\"07:00:00\"},{\"user\":\"Super Admin\",\"vagas\":\"18\",\"intervalo\":\"0\",\"data\":\"2025-04-01 14:30:58\",\"vigencia_inicio\":\"2025-04-01\",\"vigencia_fim\":\"2025-04-15\",\"hora_inicio\":\"07:00:00\",\"hora_fim\":\"07:00:00\"},{\"user\":\"Super Admin\",\"vagas\":18,\"intervalo\":\"5\",\"data\":\"2025-04-01 14:31:21\",\"vigencia_inicio\":\"2025-04-01\",\"vigencia_fim\":\"2025-04-15\",\"hora_inicio\":\"07:00:00\",\"hora_fim\":\"07:00:00\"}]', '2025-04-01 18:10:17', NULL, '2025-04-01 18:10:17'),
+(4, 1, 8, '2025-04-01', '2025-04-04', '07:00:00', '07:00:00', 0, 30, NULL, NULL, NULL, NULL),
+(5, 1, 8, '2025-04-07', '2025-04-11', '07:00:00', '07:00:00', 0, 20, NULL, '2025-04-01 18:09:33', NULL, '2025-04-01 18:09:33'),
+(6, 1, 7, '2025-04-16', '2025-04-30', '12:37:00', '12:37:00', 1, 18, NULL, '2025-04-01 18:08:21', NULL, '2025-04-01 18:08:21');
 
 -- --------------------------------------------------------
 
@@ -2669,7 +2674,7 @@ ALTER TABLE `agendamentos`
 -- AUTO_INCREMENT de tabela `agendas`
 --
 ALTER TABLE `agendas`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `attaches`
