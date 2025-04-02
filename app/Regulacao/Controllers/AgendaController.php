@@ -151,4 +151,15 @@ class AgendaController extends Controller
 
         return response()->json('Você não possui permissão para acessar este recurso.', 403);
     }
+
+    public function reativarAgenda(Request $request)
+    {
+        if ($this->can('Regulacao Apagar', 'Regulacao Editar')) {
+            if (Agenda::withTrashed()->find(cripto($request->agenda, 'agenda', 2))?->restore()) {
+                return $this->buscarAgendas($request);
+            }
+        }
+
+        return response()->json('Você não possui permissão para acessar este recurso.', 403);
+    }
 }

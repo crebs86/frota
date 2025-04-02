@@ -30,5 +30,3 @@ resources\js\Pages\Frota\Requests\Evaluate.vue
     ao enviar valores dos exames, certificar-se que já não existe
     fazer um preg_match para verificar se os valores R$ são válidos
     criar página de exclusão de Posto de Coleta
-    criar reativação de agenda, com substituição do ícone de acordo com status de deleted_at
-

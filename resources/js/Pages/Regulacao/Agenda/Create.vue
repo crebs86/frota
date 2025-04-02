@@ -166,6 +166,10 @@ const desativar = ref({
     abrir: false
 })
 
+const reativar = ref({
+    loading: false,
+})
+
 function desativarAgenda() {
     desativar.value.loading = true
     axios.post(route('regulacao.agenda.delete'), {
@@ -181,6 +185,24 @@ function desativarAgenda() {
         .finally(() => {
             desativar.value.loading = false
             desativar.value.abrir = false
+        })
+}
+
+function reativarAgenda() {
+    reativar.value.loading = true
+    axios.post(route('regulacao.agenda.restore'), {
+        hash: agenda.value.posto_coleta.hash,
+        agenda: editarAgenda.value.hash
+    })
+        .then((r) => {
+            toast.success('A agenda foi reativada.')
+            agenda.value.agendas = r.data
+        }).catch((e) => {
+            console.log(e)
+            toast.error('Erro ao processar solicitação');
+        })
+        .finally(() => {
+            reativar.value.loading = false
         })
 }
 
@@ -275,9 +297,18 @@ function desativarAgenda() {
                                                     </button>
                                                     <button title="Desativar Agenda"
                                                         @click="editarAgenda.hash = slotProps.data.hash; desativar.abrir = true;"
-                                                        v-if="has(
-                                                            $page.props.auth.permissions, ['Contratos Apagar']) || has($page.props.auth.roles, ['Super Admin'])">
+                                                        v-if="(has(
+                                                            $page.props.auth.permissions, ['Contratos Apagar']) || has($page.props.auth.roles, ['Super Admin'])) && slotProps.data.deleted_at === null">
                                                         <img src="/icons/desabilitar.svg" alt="Desativar Agenda"
+                                                            class="min-w-9 w-9 hover:opacity-75" />
+                                                    </button>
+                                                    <button title="Reativar Agenda"
+                                                        @click="editarAgenda.hash = slotProps.data.hash; reativarAgenda()"
+                                                        v-if="(has(
+                                                            $page.props.auth.permissions, ['Contratos Apagar']) || has($page.props.auth.roles, ['Super Admin'])) && slotProps.data.deleted_at !== null">
+                                                        <ProgressSpinner v-if="reativar.loading"
+                                                            style="width: 15px; height: 15px;" strokeWidth="8" />
+                                                        <img src="/icons/undo.svg" alt="Reativar Agenda" v-else
                                                             class="min-w-9 w-9 hover:opacity-75" />
                                                     </button>
                                                 </div>

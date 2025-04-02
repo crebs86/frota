@@ -56,6 +56,7 @@ Route::prefix('/regulacao')->middleware(
         Route::post('/criar-agenda', [AgendaController::class, 'store'])->name('store');
         Route::put('/atualizar-agenda', [AgendaController::class, 'update'])->name('update');
         Route::post('/buscar-agendas', [AgendaController::class, 'buscarAgendas'])->name('buscar-agendas');
-        Route::post('/desativar-agendas', [AgendaController::class, 'desativarAgenda'])->name('delete');
+        Route::post('/desativar-agenda', [AgendaController::class, 'desativarAgenda'])->name('delete');
+        Route::post('/reativar-agenda', [AgendaController::class, 'reativarAgenda'])->name('restore');
     });
 });
