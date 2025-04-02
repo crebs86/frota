@@ -51,7 +51,7 @@ Route::prefix('/regulacao')->middleware(
 
 
     Route::prefix('/agenda')->name('agenda.')->group(function () {
-        Route::get('/', [AgendaController::class, 'index'])->name('index');
+        Route::get('/{page?}', [AgendaController::class, 'index'])->name('index');
         Route::get('/criar-agenda', [AgendaController::class, 'create'])->name('create');
         Route::post('/criar-agenda', [AgendaController::class, 'store'])->name('store');
         Route::put('/atualizar-agenda', [AgendaController::class, 'update'])->name('update');

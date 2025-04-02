@@ -12,7 +12,6 @@ use App\Regulacao\Models\Agenda;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Regulacao\Models\PostoColeta;
-use Illuminate\Http\RedirectResponse;
 
 
 class AgendaController extends Controller
@@ -32,10 +31,19 @@ class AgendaController extends Controller
     /**
      * @return Response
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         if ($this->can('Regulacao Ver', 'Regulacao Editar', 'Regulacao Apagar', 'Regulacao Criar')) {
-            return Inertia::render('Regulacao/Agenda/Index');
+
+            $agendas = Agenda::withTrashed()
+                ->select('agendas.id', 'agendas.user', 'agendas.posto_coleta', 'agendas.vigencia_inicio', 'agendas.vigencia_fim', 'agendas.hora_inicio', 'agendas.hora_fim', 'agendas.intervalo', 'agendas.vagas', 'agendas.deleted_at', 'agendas.created_at')
+                ->paginate(1);
+            return Inertia::render('Regulacao/Agenda/Index', [
+                'agendas' => $agendas->through(function ($item) {
+                    $item->hash = cripto($item->id, 'agenda');
+                    return $item;
+                })
+            ]);
         }
         return Inertia::render('Admin/403');
     }
@@ -61,7 +69,8 @@ class AgendaController extends Controller
             return response()->json(
                 Agenda::where('posto_coleta', cripto($request->hash, 'agenda', 2))
                     ->withTrashed()
-                    ->get()->each(function ($item) {
+                    ->get()
+                    ->each(function ($item) {
                         $item->hash = cripto($item->id, 'agenda');
                     })
             );
