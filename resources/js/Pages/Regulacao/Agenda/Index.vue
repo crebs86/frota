@@ -9,12 +9,12 @@ import moment from 'moment';
 
 <template>
 
-    <Head title="Agenda" />
+    <Head title="Agendas" />
 
     <AuthenticatedLayout>
         <SubSection>
             <template #header>
-                Agenda
+                Agendas
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.59)]">
@@ -25,13 +25,6 @@ import moment from 'moment';
                             class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
                             :href="route('regulacao.home')" title="Início Regulação">
                         <img src="/icons/home.svg" alt="Início Regulação" class="w-6">
-                        </Link>
-                        <Link
-                            v-if="has(
-                                $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
-                            class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
-                            :href="route('regulacao.financeiro.index')" title="Início Financeiro">
-                        <img src="/icons/financeiro.svg" alt="Início Financeiro" class="w-6">
                         </Link>
                         <Link
                             v-if="has(

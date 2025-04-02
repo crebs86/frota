@@ -215,7 +215,7 @@ function reativarAgenda() {
     <AuthenticatedLayout>
         <SubSection>
             <template #header>
-                Agendas
+                Configurar Agendas
             </template>
             <template #content>
                 <div :class="$page.props.app.settingsStyles.main.subSection" class="mx-0.5 min-h-[calc(100vh/1.59)]">
@@ -231,8 +231,8 @@ function reativarAgenda() {
                             v-if="has(
                                 $page.props.auth.permissions, ['Contrato Criar']) || has($page.props.auth.roles, ['Super Admin'])"
                             class="flex gap-1 max-w-max text-blue-700 hover:text-gray-700 bg-blue-200 hover:bg-blue-400 p-1.5 border m-0.5 mb-1 rounded shadow-lg"
-                            :href="route('regulacao.financeiro.index')" title="Início Financeiro">
-                        <img src="/icons/financeiro.svg" alt="Início Financeiro" class="w-6">
+                            :href="route('regulacao.agenda.index')" title="Início Agenda">
+                        <img src="/icons/agenda.svg" alt="Início Agenda" class="w-6">
                         </Link>
                     </div>
                     <div class="p-2 rounded-lg overflow-y-auto"
