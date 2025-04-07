@@ -36,13 +36,22 @@ class AgendaController extends Controller
         if ($this->can('Regulacao Ver', 'Regulacao Editar', 'Regulacao Apagar', 'Regulacao Criar')) {
 
             $agendas = Agenda::withTrashed()
-                ->select('agendas.id', 'agendas.user', 'agendas.posto_coleta', 'agendas.vigencia_inicio', 'agendas.vigencia_fim', 'agendas.hora_inicio', 'agendas.hora_fim', 'agendas.intervalo', 'agendas.vagas', 'agendas.deleted_at', 'agendas.created_at')
-                ->paginate(1);
+                ->select('agendas.id', 'branches.name as posto_coleta', 'agendas.vigencia_inicio', 'agendas.vigencia_fim', 'agendas.hora_inicio', 'agendas.hora_fim', 'agendas.intervalo', 'agendas.vagas', 'agendas.deleted_at', 'agendas.created_at')
+                ->join('branches', 'branches.id', 'agendas.posto_coleta')
+                ->paginate(3);
             return Inertia::render('Regulacao/Agenda/Index', [
                 'agendas' => $agendas->through(function ($item) {
                     $item->hash = cripto($item->id, 'agenda');
+                    $item->id = rand(1, 100);
                     return $item;
-                })
+                }),
+                'postos_coleta' => activeBranches()
+                    ->whereIn('id', collect(postos())->pluck('id')->values())
+                    ->each(function ($item) {
+                        $item->hash = cripto($item->id, 'filtro');
+                        $item->id = rand(1, 100);
+                    })->values()
+
             ]);
         }
         return Inertia::render('Admin/403');
