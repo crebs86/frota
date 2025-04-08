@@ -235,7 +235,7 @@ if (!function_exists('cripto')) {
             $b64 = base64_encode($original[rand(1, 63)] . $string . '_' . auth()->id() . '_' . $chave);
             return encode($b64, $original, $variants[array_rand($variants)]);
         } elseif ($type = 2) {
-            return decode(str_replace('|', '/', $string), $variants[$string[0]], $original, $chave);
+            return decode(str_replace(['|', '.'], ['/', '+'], $string), $variants[$string[0]], $original, $chave);
         }
         abort(403);
     }
@@ -265,7 +265,7 @@ if (!function_exists('cripto')) {
                 $codigo .= $caractere;
             }
         }
-        return str_replace('/', '|', $codigo);
+        return str_replace(['/', '+'], ['|', '.'], $codigo);
     }
 
     function decode($string, $alternativo, $original, $chave)
