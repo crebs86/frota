@@ -35,10 +35,28 @@ class AgendaController extends Controller
     {
         if ($this->can('Regulacao Ver', 'Regulacao Editar', 'Regulacao Apagar', 'Regulacao Criar')) {
 
+            //dd($request->direcao, $this->orderByFilter($request->ordem), $request->direcao && $request->direcao === 'Descendente' ? 'DESC' : 'ASC');
             $agendas = Agenda::withTrashed()
+                ->where(function ($query) use ($request) {
+                    if ($request->hash) {
+                        $query->where('posto_coleta', cripto($request->hash, 'filtro', 2));
+                    }
+                    if ($request->status) {
+                        $query->where('agendas.deleted_at', $request->status === 'Inativo' ? '!=' : '=', null);
+                    }
+                    if ($request->inicio) {
+                        $query->whereDate('vigencia_inicio', '>=', $request->inicio);
+                    }
+                    if ($request->fim) {
+                        $query->whereDate('vigencia_fim', '<=', $request->fim);
+                    }
+                    return $query;
+                })
+                ->orderBy($this->orderByFilter($request->ordem), $request->direcao && $request->direcao === 'Descendente' ? 'DESC' : 'ASC')
                 ->select('agendas.id', 'branches.name as posto_coleta', 'agendas.vigencia_inicio', 'agendas.vigencia_fim', 'agendas.hora_inicio', 'agendas.hora_fim', 'agendas.intervalo', 'agendas.vagas', 'agendas.deleted_at', 'agendas.created_at')
                 ->join('branches', 'branches.id', 'agendas.posto_coleta')
-                ->paginate(3);
+                ->paginate(20);
+
             return Inertia::render('Regulacao/Agenda/Index', [
                 'agendas' => $agendas->through(function ($item) {
                     $item->hash = cripto($item->id, 'agenda');
@@ -50,11 +68,27 @@ class AgendaController extends Controller
                     ->each(function ($item) {
                         $item->hash = cripto($item->id, 'filtro');
                         $item->id = rand(1, 100);
-                    })->values()
+                    })->values(),
+                'page' => $request->page ?? null,
+                'posto_coleta' => $request->posto_coleta ?? null,
+                'status' => $request->status ?? null,
+                'inicio' => $request->inicio ?? null,
+                'fim' => $request->fim ?? null,
+                'ordem' => $request->ordem ?? null,
+                'direcao' => $request->direcao ?? null
 
             ]);
         }
         return Inertia::render('Admin/403');
+    }
+
+    private function orderByFilter($ordem)
+    {
+        if ($ordem && in_array($ordem, [1, 2, 3, 4, 5, 6, 7])) {
+            return ['branches.name', 'vigencia_inicio', 'vigencia_fim', 'hora_inicio', 'hora_fim', 'vagas', 'intervalo'][$ordem];
+        } else {
+            return 'id';
+        }
     }
 
     public function create()
